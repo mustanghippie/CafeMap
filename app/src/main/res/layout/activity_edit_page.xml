@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="drgn.cafemap.EditPageActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cast_intro_overlay_title_margin_top"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/cafeName"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_weight="0.11"
+            android:gravity="left|center"
+            android:text="Cafe name"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/Address"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_weight="0.13"
+            android:gravity="left|center"
+            android:text="Address"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
