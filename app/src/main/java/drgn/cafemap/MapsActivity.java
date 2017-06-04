@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +28,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
@@ -149,9 +145,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-            //mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("TestMarker").title("TestMarker").snippet("Population XXXX"));
-
-
             // マーカー追加処理
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -176,32 +169,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
             } else {
                 Toast.makeText(getApplicationContext(), "GPS取得に失敗", Toast.LENGTH_LONG).show();
+
+                // サンプル用初期位置
                 LatLng home = new LatLng(49.238323199999996, -123.0418275);
-
-
-                MapControlModel mcm = new MapControlModel();
-                Map<String,Map<String,String>> result = mcm.getMarkerList();
-                MarkerOptions options;
-                LatLng location;
-                for (int i=0;i<result.size();i++){
-                    options= new MarkerOptions();
-                    location = new LatLng( Double.parseDouble(result.get("key"+String.valueOf(i)).get("lat")),
-                            Double.parseDouble(result.get("key"+String.valueOf(i)).get("lon")));
-                    options.position(location);
-                    options.title(result.get("key"+String.valueOf(i)).get("name"));
-                    // マップにマーカー追加
-                    mMap.addMarker(options);
-                }
-
-
                 // カメラ移動
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 17));
 
-                // Firebase test
-                FirebaseClass fc = new FirebaseClass();
-
             }
-            
+
+            // Reads markers from firebase and set markers up
+            FirebaseConnectionModel fc = new FirebaseConnectionModel(mMap);
+            fc.setMarkersOnGoogleMap();
 
         } else {
             Log.d("debug", "permission error");
@@ -221,14 +199,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             double lng = location.getLongitude();
 
             Log.d("debug", "location=" + lat + "," + lng);
-//
-//            Toast.makeText(this, "location=" + lat + "," + lng, Toast.LENGTH_SHORT).show();
-
-            // Add a marker and move the camera
-//            LatLng newLocation = new LatLng(lat, lng);
-//            mMap.addMarker(new MarkerOptions().position(newLocation).title("My Location"));
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(newLocation));
-
         }
     }
 
