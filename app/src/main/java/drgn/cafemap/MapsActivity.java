@@ -1,5 +1,8 @@
 package drgn.cafemap;
+
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -27,6 +30,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
 
@@ -43,7 +49,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int priority[] = {LocationRequest.PRIORITY_HIGH_ACCURACY, LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
             LocationRequest.PRIORITY_LOW_POWER, LocationRequest.PRIORITY_NO_POWER};
     private int locationPriority;
-    private PopupWindow mPopupWindow;
 
 
     @Override
@@ -57,23 +62,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // 測位の精度、消費電力の優先度
         locationPriority = priority[1];
 
-        if(locationPriority == priority[0]){
+        if (locationPriority == priority[0]) {
             // 位置情報の精度を優先する場合
             locationRequest.setPriority(locationPriority);
             locationRequest.setInterval(5000);
             locationRequest.setFastestInterval(16);
-        }
-        else if(locationPriority == priority[1]){
+        } else if (locationPriority == priority[1]) {
             // 消費電力を考慮する場合
             locationRequest.setPriority(locationPriority);
             locationRequest.setInterval(60000);
             locationRequest.setFastestInterval(16);
-        }
-        else if(locationPriority == priority[2]){
+        } else if (locationPriority == priority[2]) {
             // "city" level accuracy
             locationRequest.setPriority(locationPriority);
-        }
-        else{
+        } else {
             // 外部からのトリガーでの測位のみ
             locationRequest.setPriority(locationPriority);
         }
@@ -121,8 +123,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
-
-
                     return null;
                 }
 
@@ -130,11 +130,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public View getInfoContents(Marker marker) {
                     View view = getLayoutInflater().inflate(R.layout.info_window, null);
                     // タイトル設定
-                    TextView title = (TextView)view.findViewById(R.id.info_title);
+                    TextView title = (TextView) view.findViewById(R.id.info_title);
                     title.setText(marker.getTitle());
 
                     // 画像設定
-                    ImageView img = (ImageView)view.findViewById(R.id.info_image);
+                    ImageView img = (ImageView) view.findViewById(R.id.info_image);
                     img.setImageResource(R.drawable.sample_image);
                     return view;
                 }
@@ -143,22 +143,69 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
-                    Log.d("Click Info Window","Click Info Window");
+                    Log.d("Click Info Window", "Click Info Window");
                     Intent intent = new Intent(getApplication(), EditPageActivity.class);
                     startActivity(intent);
                 }
             });
 
-            LatLng loation = new LatLng(0,0);
-            MarkerOptions options = new MarkerOptions();
-            options.position(loation);
-            options.title("TETETE");
-            // マップにマーカー追加
-            Marker marker = mMap.addMarker(options);
-
             //mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("TestMarker").title("TestMarker").snippet("Population XXXX"));
-        }
-        else{
+
+
+            // マーカー追加処理
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng point) {
+
+                    // タップした位置の表示
+                    Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_LONG).show();
+                    Log.d("MarkerClick",String.valueOf(point.latitude)+" "+String.valueOf(point.longitude));
+                    // マーカーを追加
+                    LatLng latLng = new LatLng(point.latitude, point.longitude);
+                    mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
+                }
+            });
+
+
+            //LocationManagerの取得(初回のマップ移動)
+            LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            //GPSから現在地の情報を取得
+            Location myLocate = locationManager.getLastKnownLocation("gps");
+            if (myLocate != null) {
+                LatLng currentLocation = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+            } else {
+                Toast.makeText(getApplicationContext(), "GPS取得に失敗", Toast.LENGTH_LONG).show();
+                LatLng home = new LatLng(49.238323199999996, -123.0418275);
+
+
+                MapControlModel mcm = new MapControlModel();
+                Map<String,Map<String,String>> result = mcm.getMarkerList();
+                MarkerOptions options;
+                LatLng location;
+                for (int i=0;i<result.size();i++){
+                    options= new MarkerOptions();
+                    location = new LatLng( Double.parseDouble(result.get("key"+String.valueOf(i)).get("lat")),
+                            Double.parseDouble(result.get("key"+String.valueOf(i)).get("lon")));
+                    options.position(location);
+                    options.title(result.get("key"+String.valueOf(i)).get("name"));
+                    // マップにマーカー追加
+                    mMap.addMarker(options);
+                }
+
+
+                // カメラ移動
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 17));
+
+                // Firebase test
+                FirebaseClass fc = new FirebaseClass();
+
+            }
+
+
+
+
+        } else {
             Log.d("debug", "permission error");
             return;
         }
@@ -166,27 +213,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("debug","onLocationChanged");
+        // 現在地へ
+        Log.d("debug", "onLocationChanged");
         if (onLocationChangedListener != null) {
+            // GPSのマークを表示する
             onLocationChangedListener.onLocationChanged(location);
 
             double lat = location.getLatitude();
             double lng = location.getLongitude();
 
-            Log.d("debug","location="+lat+","+lng);
-
-            Toast.makeText(this, "location="+lat+","+lng, Toast.LENGTH_SHORT).show();
+            Log.d("debug", "location=" + lat + "," + lng);
+//
+//            Toast.makeText(this, "location=" + lat + "," + lng, Toast.LENGTH_SHORT).show();
 
             // Add a marker and move the camera
-            LatLng newLocation = new LatLng(lat, lng);
-            mMap.addMarker(new MarkerOptions().position(newLocation).title("My Location"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(newLocation));
+//            LatLng newLocation = new LatLng(lat, lng);
+//            mMap.addMarker(new MarkerOptions().position(newLocation).title("My Location"));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(newLocation));
 
         }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
+        Log.d("Debug", "onConnected");
         // check permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -194,14 +244,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //FusedLocationApi
             FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, createLocationRequest(), this);
-        }
-        else{
+        } else {
             Log.d("debug", "permission error");
             return;
         }
     }
 
     private LocationRequest createLocationRequest() {
+        Log.d("Debug", "createLocationRequest");
         return new LocationRequest()
                 .setInterval(1000)
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
