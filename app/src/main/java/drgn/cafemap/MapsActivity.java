@@ -201,9 +201,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 FirebaseClass fc = new FirebaseClass();
 
             }
-
-
-
+            
 
         } else {
             Log.d("debug", "permission error");
