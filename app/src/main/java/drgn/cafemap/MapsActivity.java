@@ -2,6 +2,9 @@ package drgn.cafemap;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.Manifest;
@@ -9,6 +12,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -28,6 +33,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
@@ -119,20 +128,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
-                    return null;
+
+                    View view = getLayoutInflater().inflate(R.layout.info_window, null);
+
+                    // 画像設定
+                    ImageView img = (ImageView) view.findViewById(R.id.badge);
+                    //img.setImageResource(R.drawable.home);
+                    String imgName = marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png";
+                    try {
+                        InputStream istream = getResources().getAssets().open(imgName);
+                        Bitmap bitmap = BitmapFactory.decodeStream(istream);
+                        img.setImageBitmap(bitmap);
+                        //imageView3.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        Log.d("Assets", "Error");
+                    }
+
+                    // タイトル設定
+                    String title = marker.getTitle();
+                    TextView titleUi = (TextView) view.findViewById(R.id.title);
+                    // Spannable string allows us to edit the formatting of the text.
+                    SpannableString titleText = new SpannableString(title);
+                    titleText.setSpan(new ForegroundColorSpan(Color.BLACK), 0, titleText.length(), 0);
+                    titleUi.setText(titleText);
+
+                    String snippet = marker.getSnippet();
+                    TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
+                    if (snippet != null) {
+                        SpannableString snippetText = new SpannableString(snippet);
+                        if (snippet.equals("Wi-fi: Good"))
+                            snippetText.setSpan(new ForegroundColorSpan(Color.YELLOW), 7, 11, 0);
+                        if (snippet.equals("Wi-fi: Bad"))
+                            snippetText.setSpan(new ForegroundColorSpan(Color.BLUE), 7, 10, 0);
+                        snippetUi.setText(snippetText);
+
+                    }
+
+                    return view;
                 }
 
                 @Override
                 public View getInfoContents(Marker marker) {
-                    View view = getLayoutInflater().inflate(R.layout.info_window, null);
-                    // タイトル設定
-                    TextView title = (TextView) view.findViewById(R.id.info_title);
-                    title.setText(marker.getTitle());
 
-                    // 画像設定
-                    ImageView img = (ImageView) view.findViewById(R.id.info_image);
-                    img.setImageResource(R.drawable.sample_image);
-                    return view;
+                    return null;
                 }
             });
 
@@ -151,8 +189,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onMapClick(LatLng point) {
 
                     // タップした位置の表示
-                    Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_LONG).show();
-                    Log.d("MarkerClick",String.valueOf(point.latitude)+" "+String.valueOf(point.longitude));
+                    Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_SHORT).show();
+                    Log.d("MarkerClick", String.valueOf(point.latitude) + " " + String.valueOf(point.longitude));
                     // マーカーを追加
                     LatLng latLng = new LatLng(point.latitude, point.longitude);
                     mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
@@ -180,6 +218,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Reads markers from firebase and set markers up
             FirebaseConnectionModel fc = new FirebaseConnectionModel(mMap);
             fc.setMarkersOnGoogleMap();
+
+            //System.out.println("Marker Info = " +fc.getMarker());
 
         } else {
             Log.d("debug", "permission error");

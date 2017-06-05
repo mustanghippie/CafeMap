@@ -11,9 +11,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static android.content.ContentValues.TAG;
 
 /**
@@ -25,7 +22,7 @@ public class FirebaseConnectionModel {
     private DatabaseReference mDatabase;
     private GoogleMap mMap;
 
-    public FirebaseConnectionModel(GoogleMap mMap){
+    public FirebaseConnectionModel(GoogleMap mMap) {
 
         this.mMap = mMap;
         this.mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -34,10 +31,9 @@ public class FirebaseConnectionModel {
 
     }
 
-    protected void setMarkersOnGoogleMap(){
+    protected void setMarkersOnGoogleMap() {
 
-        // Read from the database
-        mDatabase.child("MarkerList").addValueEventListener(new ValueEventListener() {
+        mDatabase.child("MarkerList").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
@@ -48,17 +44,20 @@ public class FirebaseConnectionModel {
                 LatLng location;
 
                 // location start from 1
-                for (int i=1;;i++){
-                    if( (name = dataSnapshot.child("location"+String.valueOf(i)).child("name").getValue(String.class)) == null) break;
+                for (int i = 1; ; i++) {
+                    if ((name = dataSnapshot.child("location" + String.valueOf(i)).child("name").getValue(String.class)) == null)
+                        break;
 
-                    options= new MarkerOptions();
+                    options = new MarkerOptions();
                     options.title(name);
-                    location = new LatLng( dataSnapshot.child("location"+String.valueOf(i)).child("lat").getValue(Double.class),
-                            dataSnapshot.child("location"+String.valueOf(i)).child("lon").getValue(Double.class));
+                    location = new LatLng(dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class),
+                            dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class));
                     options.position(location);
+                    options.snippet("Wi-fi: " + dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class));
 
                     // マップにマーカー追加
                     mMap.addMarker(options);
+
                 }
             }
 
@@ -70,5 +69,4 @@ public class FirebaseConnectionModel {
         });
 
     }
-
 }
