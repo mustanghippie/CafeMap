@@ -18,6 +18,8 @@ public class DetailPageActivity extends AppCompatActivity {
         nameTextView = (TextView) findViewById(R.id.cafeName);
         nameTextView.setText(getIntent().getStringExtra("key"));
 
+        MapsActivity.fcm.getTestValue();
+
     }
 
 }
