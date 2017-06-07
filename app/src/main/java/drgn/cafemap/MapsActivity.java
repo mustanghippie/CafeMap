@@ -175,7 +175,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 @Override
                 public View getInfoContents(Marker marker) {
-
                     return null;
                 }
             });
@@ -195,10 +194,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng point) {
-
                     // タップした位置の表示
                     Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_SHORT).show();
-                    Log.d("MarkerClick", String.valueOf(point.latitude) + " " + String.valueOf(point.longitude));
                     // マーカーを追加
                     LatLng latLng = new LatLng(point.latitude, point.longitude);
                     mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));

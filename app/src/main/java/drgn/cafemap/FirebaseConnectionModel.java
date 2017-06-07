@@ -13,6 +13,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -24,6 +27,7 @@ public class FirebaseConnectionModel {
     private DatabaseReference mDatabase;
     private GoogleMap mMap;
     private String testValue = "null";
+    private HashMap<String,String> hMap = new HashMap<>();
 
     public FirebaseConnectionModel(GoogleMap mMap) {
 
@@ -109,6 +113,12 @@ public class FirebaseConnectionModel {
 
                     // マップにマーカー追加
                     mMap.addMarker(options);
+//                    String key = dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class).toString()
+//                            +dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class).toString();
+//                    //System.out.println(key);
+//                    map.put(dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class).toString()
+//                        +dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class).toString(),"location1");
+                    //hMap.put(key,"aaaaa");
 
                 }
 
@@ -125,7 +135,8 @@ public class FirebaseConnectionModel {
     }
 
     public String getTestValue() {
-        System.out.println(testValue+" ==============");
+//        System.out.println(hMap+" ==============");
+//        System.out.println("Fire---------");
         return testValue;
     }
 }
