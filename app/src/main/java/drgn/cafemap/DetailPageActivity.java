@@ -13,6 +13,8 @@ public class DetailPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_page);
 
+        System.out.println("Ryu¥¥¥¥¥");
+
         nameTextView = (TextView) findViewById(R.id.cafeName);
         nameTextView.setText(getIntent().getStringExtra("key"));
 
