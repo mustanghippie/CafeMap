@@ -48,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest locationRequest;
+    public static FirebaseConnectionModel fcm;
 
     private OnLocationChangedListener onLocationChangedListener = null;
 
@@ -125,6 +126,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
 
+            // Reads markers from firebase and set markers up
+            fcm = new FirebaseConnectionModel(mMap);
+            fcm.setMarkersOnGoogleMap();
+
+
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
@@ -174,11 +180,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
+            // 情報ウィンドウクリック時のアクション
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     Log.d("Click Info Window", "Click Info Window");
-                    Intent intent = new Intent(getApplication(), EditPageActivity.class);
+                    Intent intent = new Intent(getApplication(), DetailPageActivity.class);
+                    intent.putExtra("key",fcm.getTestValue());
                     startActivity(intent);
                 }
             });
@@ -214,12 +222,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 17));
 
             }
-
-            // Reads markers from firebase and set markers up
-            FirebaseConnectionModel fc = new FirebaseConnectionModel(mMap);
-            fc.setMarkersOnGoogleMap();
-
-            //System.out.println("Marker Info = " +fc.getMarker());
 
         } else {
             Log.d("debug", "permission error");
