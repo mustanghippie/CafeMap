@@ -12,23 +12,142 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/cafeName"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_weight="0.11"
-            android:gravity="left|center"
-            android:text="Cafe name"
-            android:textSize="30sp" />
 
-        <TextView
-            android:id="@+id/Address"
+
+
+
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_weight="0.13"
-            android:gravity="left|center"
-            android:text="Address"
-            android:textSize="30sp" />
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"></ImageView>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/icon_location"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_margin="16dp"/>
+
+            <TextView
+                android:id="@+id/cafeName"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
+                android:gravity="left"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/icon_time"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_margin="16dp"/>
+
+            <TextView
+                android:id="@+id/cafeTime"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
+                android:gravity="left"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/icon_tel"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_margin="16dp"/>
+
+            <TextView
+            android:id="@+id/cafeTel"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
+                android:gravity="left"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/icon_socket"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_margin="16dp"/>
+
+            <TextView
+                android:id="@+id/cafeSocket"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
+                android:gravity="left"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/icon_wifi"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_margin="16dp"/>
+
+            <TextView
+                android:id="@+id/cafeWifi"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
+                android:gravity="left"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/icon_power"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_margin="16dp"/>
+
+            <TextView
+                android:id="@+id/cafePower"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="22dp"
+                android:gravity="left"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
