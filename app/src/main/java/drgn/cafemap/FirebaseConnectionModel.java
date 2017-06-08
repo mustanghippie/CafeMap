@@ -140,6 +140,7 @@ public class FirebaseConnectionModel {
         cafeMap.put("name", dataSnapshot.child("location" + String.valueOf(index)).child("name").getValue(String.class));
         cafeMap.put("address",dataSnapshot.child("location" + String.valueOf(index)).child("address").getValue(String.class));
         cafeMap.put("time",dataSnapshot.child("location" + String.valueOf(index)).child("time").getValue(String.class));
+        cafeMap.put("tel",dataSnapshot.child("location" + String.valueOf(index)).child("tel").getValue(String.class));
         cafeMap.put("socket",dataSnapshot.child("location" + String.valueOf(index)).child("socket").getValue(String.class));
         cafeMap.put("wifi",dataSnapshot.child("location" + String.valueOf(index)).child("wifi").getValue(String.class));
 
