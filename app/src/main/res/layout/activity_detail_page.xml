@@ -12,10 +12,6 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-
-
-
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="200dp"
@@ -65,14 +61,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_height="70dp"
-            android:layout_weight="0.11"
-            android:gravity="left|center"
-            android:text="Cafe name"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/cafeAddress"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:orientation="horizontal">
@@ -84,7 +72,7 @@
                 android:layout_margin="16dp"/>
 
             <TextView
-            android:id="@+id/cafeTel"
+                android:id="@+id/cafeTel"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="22dp"
@@ -156,33 +144,6 @@
 
         </LinearLayout>
 
-
-        <TextView
-            android:id="@+id/cafeTime"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_weight="0.11"
-            android:gravity="left|center"
-            android:text="time"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/cafeSocket"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_weight="0.11"
-            android:gravity="left|center"
-            android:text="socket"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/cafeWifi"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_weight="0.11"
-            android:gravity="left|center"
-            android:text="wifi"
-            android:textSize="30sp" />
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

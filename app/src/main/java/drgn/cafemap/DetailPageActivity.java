@@ -24,8 +24,8 @@ public class DetailPageActivity extends AppCompatActivity {
 
         nameTextView = (TextView) findViewById(R.id.cafeName);
         nameTextView.setText(cafeDetail.get("name"));
-        addressTextView = (TextView) findViewById(R.id.cafeAddress);
-        addressTextView.setText(cafeDetail.get("address"));
+//        addressTextView = (TextView) findViewById(R.id.cafeAddress);
+//        addressTextView.setText(cafeDetail.get("address"));
         timeTextView = (TextView) findViewById(R.id.cafeTime);
         timeTextView.setText(cafeDetail.get("time"));
         socketTextView = (TextView) findViewById(R.id.cafeSocket);
