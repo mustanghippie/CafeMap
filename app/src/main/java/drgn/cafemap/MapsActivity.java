@@ -183,9 +183,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
-                    Log.d("Click Info Window", "Click Info Window");
+                    //Log.d("Click Info Window", "Click Info Window");
                     Intent intent = new Intent(getApplication(), DetailPageActivity.class);
-                    intent.putExtra("key",fcm.getTestValue());
+                    LatLng latlng = marker.getPosition();
+
+                    intent.putExtra("lat",latlng.latitude);
+                    // lat + lon
+                    intent.putExtra("indexKey",String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude));
                     startActivity(intent);
                 }
             });
