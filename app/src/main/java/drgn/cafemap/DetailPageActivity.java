@@ -14,7 +14,6 @@ public class DetailPageActivity extends AppCompatActivity {
     private TextView socketTextView;
     private TextView wifiTextView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +32,6 @@ public class DetailPageActivity extends AppCompatActivity {
         socketTextView.setText("(Socket) " +cafeDetail.get("socket"));
         wifiTextView = (TextView) findViewById(R.id.cafeWifi);
         wifiTextView.setText("(Wi-fi) " +cafeDetail.get("wifi"));
-
     }
 
 }
