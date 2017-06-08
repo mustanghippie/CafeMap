@@ -11,6 +11,7 @@ public class DetailPageActivity extends AppCompatActivity {
     private TextView nameTextView;
     private TextView addressTextView;
     private TextView timeTextView;
+    private TextView telTextView;
     private TextView socketTextView;
     private TextView wifiTextView;
 
@@ -26,6 +27,8 @@ public class DetailPageActivity extends AppCompatActivity {
         nameTextView.setText(cafeDetail.get("name"));
 //        addressTextView = (TextView) findViewById(R.id.cafeAddress);
 //        addressTextView.setText(cafeDetail.get("address"));
+        telTextView=(TextView) findViewById(R.id.cafeTel);
+        telTextView.setText(cafeDetail.get("tel"));
         timeTextView = (TextView) findViewById(R.id.cafeTime);
         timeTextView.setText(cafeDetail.get("time"));
         socketTextView = (TextView) findViewById(R.id.cafeSocket);
