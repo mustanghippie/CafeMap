@@ -26,15 +26,12 @@ public class FirebaseConnectionModel {
 
     private DatabaseReference mDatabase;
     private GoogleMap mMap;
-    private String testValue = "null";
-    private HashMap<String,String> hMap = new HashMap<>();
+    private Map<String, HashMap<String, String>> cafeMap = new HashMap<>();
 
     public FirebaseConnectionModel(GoogleMap mMap) {
 
         this.mMap = mMap;
         this.mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        //Log.d("Debug","boot firebase");
 
     }
 
@@ -89,15 +86,16 @@ public class FirebaseConnectionModel {
 //        });
 
 
-        mDatabase.child("MarkerList").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("MarkerList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
 
-                String name;
+                String name, wifi, socket;
                 MarkerOptions options;
                 LatLng location;
+                double lat, lon;
 
                 // location start from 1
                 for (int i = 1; ; i++) {
@@ -106,23 +104,25 @@ public class FirebaseConnectionModel {
 
                     options = new MarkerOptions();
                     options.title(name);
-                    location = new LatLng(dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class),
-                            dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class));
+
+                    lat = dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class);
+                    lon = dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class);
+                    location = new LatLng(lat, lon);
                     options.position(location);
-                    options.snippet("Wi-fi: " + dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class));
+                    wifi = dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class);
+                    socket = dataSnapshot.child("location" + String.valueOf(i)).child("socket").getValue(String.class);
+                    options.snippet("Wi-fi: " + wifi + "\n" + "Socket: " + socket);
 
                     // マップにマーカー追加
                     mMap.addMarker(options);
-//                    String key = dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class).toString()
-//                            +dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class).toString();
-//                    //System.out.println(key);
-//                    map.put(dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class).toString()
-//                        +dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class).toString(),"location1");
-                    //hMap.put(key,"aaaaa");
+
+                    // make hashmap for detail page
+                    String key = dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class).toString()
+                            + dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class).toString();
+                    cafeMap.put(key,cafeDetailMap(dataSnapshot, i));
 
                 }
 
-                testValue = "INITIALIZE----";
             }
 
             @Override
@@ -134,9 +134,23 @@ public class FirebaseConnectionModel {
 
     }
 
-    public String getTestValue() {
-//        System.out.println(hMap+" ==============");
-//        System.out.println("Fire---------");
-        return testValue;
+    private HashMap<String, String> cafeDetailMap(DataSnapshot dataSnapshot, int index) {
+        HashMap<String, String> cafeMap = new HashMap<>();
+
+        cafeMap.put("name", dataSnapshot.child("location" + String.valueOf(index)).child("name").getValue(String.class));
+        cafeMap.put("address",dataSnapshot.child("location" + String.valueOf(index)).child("address").getValue(String.class));
+        cafeMap.put("time",dataSnapshot.child("location" + String.valueOf(index)).child("time").getValue(String.class));
+        cafeMap.put("socket",dataSnapshot.child("location" + String.valueOf(index)).child("socket").getValue(String.class));
+        cafeMap.put("wifi",dataSnapshot.child("location" + String.valueOf(index)).child("wifi").getValue(String.class));
+
+        return cafeMap;
+    }
+
+    public HashMap<String,String> getCafeDetailMap(String key){
+
+        HashMap<String,String> result = new HashMap<>();
+        result = cafeMap.get(key);
+
+        return result;
     }
 }
