@@ -175,7 +175,6 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                     cafeBitmapMap.put(cafeName,bitmap);
-                    System.out.println("onSuccess = "+bitmap);
                     //latch.countDown();
 
                 }
