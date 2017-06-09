@@ -25,27 +25,21 @@ public class DetailPageActivity extends AppCompatActivity {
         if (!newMarkerFlag) {
             String key = getIntent().getStringExtra("indexKey"); // latitude + longitude
 
-            HashMap<String, String> cafeDetail = MapsActivity.fcm.getCafeDetailMap(key);
+            HashMap<String, String> cafeDetail = MapsActivity.fcm.getCafeDetailMap(key)
 
             nameTextView = (TextView) findViewById(R.id.cafeName);
             nameTextView.setText(cafeDetail.get("name"));
-//        addressTextView = (TextView) findViewById(R.id.cafeAddress);
-//        addressTextView.setText(cafeDetail.get("address"));
-            telTextView = (TextView) findViewById(R.id.cafeTel);
+            addressTextView = (TextView) findViewById(R.id.cafeAddress);
+            addressTextView.setText(cafeDetail.get("address"));
+            telTextView=(TextView) findViewById(R.id.cafeTel);
             telTextView.setText(cafeDetail.get("tel"));
             timeTextView = (TextView) findViewById(R.id.cafeTime);
             timeTextView.setText(cafeDetail.get("time"));
             socketTextView = (TextView) findViewById(R.id.cafeSocket);
-            socketTextView.setText("(Socket) " + cafeDetail.get("socket"));
+            socketTextView.setText("(Socket) " +cafeDetail.get("socket"));
             wifiTextView = (TextView) findViewById(R.id.cafeWifi);
-            wifiTextView.setText("(Wi-fi) " + cafeDetail.get("wifi"));
-        }else{
-            // new location
-            System.out.println("MAKE A NEW LOCATION");
-        }
-
-
-
+            wifiTextView.setText("(Wi-fi) " +cafeDetail.get("wifi"));
+      }
     }
 
 }
