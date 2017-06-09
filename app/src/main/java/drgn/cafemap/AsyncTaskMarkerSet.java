@@ -157,13 +157,13 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
 //        }
 
 
-        System.out.println("HIDOUKI-------------");
+        //System.out.println("HIDOUKI-------------");
 
         return "hoge";
     }
 
     private void readImagesFromFirebase(final String cafeName){
-        System.out.println("readImagesFromFirebase "+cafeName);
+
         try {
             final File localFile = File.createTempFile(cafeName, "png");
             imageRef = storageRef.child(cafeName+".png");
@@ -209,5 +209,9 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
 
     public Map<String, Bitmap> getCafeBitmapMap() {
         return cafeBitmapMap;
+    }
+
+    public Map<String, HashMap<String, String>> getCafeMap() {
+        return cafeMap;
     }
 }
