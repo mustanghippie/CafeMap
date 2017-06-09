@@ -25,7 +25,7 @@ public class DetailPageActivity extends AppCompatActivity {
         if (!newMarkerFlag) {
             String key = getIntent().getStringExtra("indexKey"); // latitude + longitude
 
-            HashMap<String, String> cafeDetail = MapsActivity.fcm.getCafeDetailMap(key)
+            HashMap<String, String> cafeDetail = MapsActivity.fcm.getCafeDetailMap(key);
 
             nameTextView = (TextView) findViewById(R.id.cafeName);
             nameTextView.setText(cafeDetail.get("name"));
