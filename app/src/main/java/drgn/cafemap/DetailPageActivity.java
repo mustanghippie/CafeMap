@@ -19,22 +19,27 @@ public class DetailPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_page);
-        String key = getIntent().getStringExtra("indexKey"); // latitude + longitude
 
-        HashMap<String, String> cafeDetail = MapsActivity.fcm.getCafeDetailMap(key);
+        // check a new marker
+        boolean newMarkerFlag = getIntent().getBooleanExtra("newMarkerFlaf",true);
+        if (!newMarkerFlag) {
+            String key = getIntent().getStringExtra("indexKey"); // latitude + longitude
 
-        nameTextView = (TextView) findViewById(R.id.cafeName);
-        nameTextView.setText(cafeDetail.get("name"));
-        addressTextView = (TextView) findViewById(R.id.cafeAddress);
-        addressTextView.setText(cafeDetail.get("address"));
-        telTextView=(TextView) findViewById(R.id.cafeTel);
-        telTextView.setText(cafeDetail.get("tel"));
-        timeTextView = (TextView) findViewById(R.id.cafeTime);
-        timeTextView.setText(cafeDetail.get("time"));
-        socketTextView = (TextView) findViewById(R.id.cafeSocket);
-        socketTextView.setText("(Socket) " +cafeDetail.get("socket"));
-        wifiTextView = (TextView) findViewById(R.id.cafeWifi);
-        wifiTextView.setText("(Wi-fi) " +cafeDetail.get("wifi"));
+            HashMap<String, String> cafeDetail = MapsActivity.fcm.getCafeDetailMap(key)
+
+            nameTextView = (TextView) findViewById(R.id.cafeName);
+            nameTextView.setText(cafeDetail.get("name"));
+            addressTextView = (TextView) findViewById(R.id.cafeAddress);
+            addressTextView.setText(cafeDetail.get("address"));
+            telTextView=(TextView) findViewById(R.id.cafeTel);
+            telTextView.setText(cafeDetail.get("tel"));
+            timeTextView = (TextView) findViewById(R.id.cafeTime);
+            timeTextView.setText(cafeDetail.get("time"));
+            socketTextView = (TextView) findViewById(R.id.cafeSocket);
+            socketTextView.setText("(Socket) " +cafeDetail.get("socket"));
+            wifiTextView = (TextView) findViewById(R.id.cafeWifi);
+            wifiTextView.setText("(Wi-fi) " +cafeDetail.get("wifi"));
+      }
     }
 
 }
