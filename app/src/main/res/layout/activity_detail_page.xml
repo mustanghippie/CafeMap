@@ -12,6 +12,41 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:background="#F5CC5B">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="24dp"
+                android:layout_margin="16dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:src="@drawable/icon_arrow" />
+
+            <TextView
+                android:id="@+id/cafeName"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:textSize="20dp"
+                android:layout_weight="6"
+                android:gravity="center"
+                />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="27dp"
+                android:layout_gravity="right"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:src="@drawable/icon_edit" />
+            
+            
+        </LinearLayout>
+        
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="200dp"
@@ -30,7 +65,7 @@
                 android:layout_margin="16dp"/>
 
             <TextView
-                android:id="@+id/cafeName"
+                android:id="@+id/cafeAddress"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="22dp"
