@@ -202,7 +202,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onMapClick(LatLng point) {
                     // タップした位置の表示
-                    //Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_SHORT).show();
+                    Log.d("Location ","Latitude + "+ point.latitude+" Longitude + "+point.longitude);
                     // マーカーを追加
                     LatLng latLng = new LatLng(point.latitude, point.longitude);
                     mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
@@ -221,7 +222,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(getApplicationContext(), "GPS取得に失敗", Toast.LENGTH_LONG).show();
 
                 // サンプル用初期位置
-                LatLng home = new LatLng(49.238323199999996, -123.0418275);
+                LatLng home = new LatLng(49.285131, -123.112998);
+
+                MarkerOptions options = new MarkerOptions();
+                options.title("You are here");
+                options.position(home);
+
+                mMap.addMarker(options);
+
                 // カメラ移動
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 17));
 
