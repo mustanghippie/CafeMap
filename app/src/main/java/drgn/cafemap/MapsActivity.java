@@ -3,10 +3,8 @@ package drgn.cafemap;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -17,7 +15,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,16 +33,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
 
@@ -56,14 +43,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest locationRequest;
-    public static FirebaseConnectionModel fcm;
+    public static AsyncTaskMarkerSet atms;
 
     private OnLocationChangedListener onLocationChangedListener = null;
 
     private int priority[] = {LocationRequest.PRIORITY_HIGH_ACCURACY, LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
             LocationRequest.PRIORITY_LOW_POWER, LocationRequest.PRIORITY_NO_POWER};
     private int locationPriority;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,10 +121,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnMyLocationButtonClickListener(this);
 
             // Reads markers from firebase and set markers up
-            fcm = new FirebaseConnectionModel(mMap);
-            fcm.setMarkersOnGoogleMap();
+            // And also prepare images of cafes
+            this.atms = new AsyncTaskMarkerSet(mMap);
+            this.atms.execute("");
 
 
+
+            // マーカータップ時、情報ウィンドウを開く
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
@@ -147,17 +136,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // 画像設定
                     ImageView img = (ImageView) view.findViewById(R.id.badge);
-                    String imgName = marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png";
-
-
-                    try {
-                        InputStream istream = getResources().getAssets().open(imgName);
-                        Bitmap bitmap = BitmapFactory.decodeStream(istream);
-                        img.setImageBitmap(bitmap);
-                        //imageView3.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        Log.d("Assets", "Error");
-                    }
+                    //String imgName = marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png";
+                    Bitmap image = atms.getCafeBitmapMap().get(marker.getTitle().replaceAll(" ", "_").toLowerCase());
+                    img.setImageBitmap(image);
+//                    try {
+//                        InputStream istream = getResources().getAssets().open(imgName);
+//                        Bitmap bitmap = BitmapFactory.decodeStream(istream);
+//                        img.setImageBitmap(image);
+//                        img.setImageBitmap(image);
+//                        imageView3.setImageBitmap(bitmap);
+//                    } catch (IOException e) {
+//                        Log.d("Assets", "Error");
+//                    }
 
                     // タイトル設定
                     String title = marker.getTitle();
@@ -196,6 +186,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Intent intent = new Intent(getApplication(), DetailPageActivity.class);
                     LatLng latlng = marker.getPosition();
 
+                    //new marker flag
+                    boolean newMarkerFlag = false;
+                    if (marker.getTitle().equals("Make a new location")) newMarkerFlag = true;
+
                     intent.putExtra("lat", latlng.latitude);
                     // lat + lon
                     intent.putExtra("indexKey", String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude));
@@ -208,7 +202,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onMapClick(LatLng point) {
                     // タップした位置の表示
-                    Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_SHORT).show();
                     // マーカーを追加
                     LatLng latLng = new LatLng(point.latitude, point.longitude);
                     mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
@@ -232,34 +226,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 17));
 
             }
-
-            // ローカル画像保存
-            try {
-                String s = "hogehogehoge";
-                OutputStream out = openFileOutput("a.txt", MODE_PRIVATE);
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.append(s);
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // ローカル画像読み込み
-            try {
-                InputStream in = openFileInput("a.txt");
-                BufferedReader reader =
-                        new BufferedReader(new InputStreamReader(in,"UTF-8"));
-                String s;
-                String et ="";
-                while((s = reader.readLine()) != null) {
-                    System.out.println("data print out = = =" +s);
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            deleteFile("a.txt");
-
 
         } else {
             Log.d("debug", "permission error");

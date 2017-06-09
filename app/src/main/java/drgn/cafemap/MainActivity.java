@@ -3,13 +3,26 @@ package drgn.cafemap;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -75,7 +88,39 @@ public class MainActivity extends AppCompatActivity {
 
     // Intent でLocation
     private void locationActivity() {
+        //setImageToApp();
         Intent intent = new Intent(getApplication(), MapsActivity.class);
         startActivity(intent);
+    }
+
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private StorageReference imageRef;
+
+    private void setImageToApp(){
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReferenceFromUrl("gs://cafemap-530a2.appspot.com");
+
+        imageRef = storageRef.child("150x150.png");
+
+        try {
+            final File localFile = File.createTempFile("storage01","png");
+
+            imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap sampleBitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
