@@ -157,13 +157,13 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
 //        }
 
 
-        System.out.println("HIDOUKI-------------");
+        //System.out.println("HIDOUKI-------------");
 
         return "hoge";
     }
 
     private void readImagesFromFirebase(final String cafeName){
-        System.out.println("readImagesFromFirebase "+cafeName);
+
         try {
             final File localFile = File.createTempFile(cafeName, "png");
             imageRef = storageRef.child(cafeName+".png");
