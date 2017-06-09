@@ -210,4 +210,8 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
     public Map<String, Bitmap> getCafeBitmapMap() {
         return cafeBitmapMap;
     }
+
+    public Map<String, HashMap<String, String>> getCafeMap() {
+        return cafeMap;
+    }
 }

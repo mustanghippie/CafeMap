@@ -43,7 +43,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest locationRequest;
-    public static FirebaseConnectionModel fcm;
+    public static AsyncTaskMarkerSet atms;
 
     private OnLocationChangedListener onLocationChangedListener = null;
 
@@ -122,8 +122,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // Reads markers from firebase and set markers up
             // And also prepare images of cafes
-            final AsyncTaskMarkerSet atms = new AsyncTaskMarkerSet(mMap);
-            atms.execute("");
+            this.atms = new AsyncTaskMarkerSet(mMap);
+            this.atms.execute("");
 
 
 
@@ -191,7 +191,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (marker.getTitle().equals("Make a new location")) newMarkerFlag = true;
 
                     intent.putExtra("lat", latlng.latitude);
-                    intent.putExtra("newMarkerFlag",newMarkerFlag);
                     // lat + lon
                     intent.putExtra("indexKey", String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude));
                     startActivity(intent);
