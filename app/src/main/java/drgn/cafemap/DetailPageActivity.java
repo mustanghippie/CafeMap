@@ -27,20 +27,16 @@ public class DetailPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_page);
 
-        // check a new marker
         String key = getIntent().getStringExtra("indexKey"); // latitude + longitude
 
         HashMap<String, String> cafeDetail = atms.getCafeMap().get(key);
+        String imageName = MapsActivity.atms.getCafeMap().get(key).get("name").replaceAll(" ", "_").toLowerCase();
+        Bitmap image = atms.getCafeBitmapMap().get(imageName);
 
-
-        View view = getLayoutInflater().inflate(R.layout.activity_detail_page, null);
-
-//        ImageView img = (ImageView) view.findViewById(R.id.badge);
-//        Bitmap image = atms.getCafeBitmapMap().get(marker.getTitle().replaceAll(" ", "_").toLowerCase());
-//        img.setImageBitmap(image);
-//        atms.getCafeBitmap().get("trees_organic_coffee");
-
-
+        // Set image
+        ImageView img = (ImageView) findViewById(R.id.badge);
+        img.setImageBitmap(image);
+        
         nameTextView = (TextView) findViewById(R.id.cafeName);
         nameTextView.setText(cafeDetail.get("name"));
         addressTextView = (TextView) findViewById(R.id.cafeAddress);
