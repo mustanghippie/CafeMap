@@ -36,7 +36,8 @@ public class DetailPageActivity extends AppCompatActivity {
         // Set image
         ImageView img = (ImageView) findViewById(R.id.badge);
         img.setImageBitmap(image);
-        
+
+
         nameTextView = (TextView) findViewById(R.id.cafeName);
         nameTextView.setText(cafeDetail.get("name"));
         addressTextView = (TextView) findViewById(R.id.cafeAddress);
