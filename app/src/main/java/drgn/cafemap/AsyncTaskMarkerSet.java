@@ -78,7 +78,7 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String name, wifi, socket;
+                String name, wifi, socket, time;
                 MarkerOptions options;
                 LatLng location;
                 double lat, lon;
@@ -98,7 +98,8 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
                     options.position(location);
                     wifi = dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class);
                     socket = dataSnapshot.child("location" + String.valueOf(i)).child("socket").getValue(String.class);
-                    options.snippet("Wi-fi: " + wifi + "\n" + "Socket: " + socket);
+                    time = dataSnapshot.child("location" + String.valueOf(i)).child("time").getValue(String.class);
+                    options.snippet("Wi-fi: " + wifi + "\n" + "Socket: " + socket + " " + time);
 
                     // マップにマーカー追加
                     mMap.addMarker(options);
