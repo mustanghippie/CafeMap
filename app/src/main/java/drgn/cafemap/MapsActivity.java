@@ -33,6 +33,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.HashMap;
+
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
 
@@ -131,23 +133,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
-
+                    // Set view
                     View view = getLayoutInflater().inflate(R.layout.info_window, null);
+
+                    // @todo for debug
+                    LatLng latlng = marker.getPosition();
+                    String key = String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude);
+
+                    HashMap<String,String> result = atms.getCafeMap().get(key);
+                    System.out.println("Display result hash map = " + result.get("wifi"));
+                    //- @todo for debug
 
                     // 画像設定
                     ImageView img = (ImageView) view.findViewById(R.id.badge);
                     //String imgName = marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png";
                     Bitmap image = atms.getCafeBitmapMap().get(marker.getTitle().replaceAll(" ", "_").toLowerCase());
                     img.setImageBitmap(image);
-//                    try {
-//                        InputStream istream = getResources().getAssets().open(imgName);
-//                        Bitmap bitmap = BitmapFactory.decodeStream(istream);
-//                        img.setImageBitmap(image);
-//                        img.setImageBitmap(image);
-//                        imageView3.setImageBitmap(bitmap);
-//                    } catch (IOException e) {
-//                        Log.d("Assets", "Error");
-//                    }
 
                     // タイトル設定
                     String title = marker.getTitle();
@@ -190,7 +191,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     boolean newMarkerFlag = false;
                     if (marker.getTitle().equals("Make a new location")) newMarkerFlag = true;
 
-                    intent.putExtra("lat", latlng.latitude);
                     // lat + lon
                     intent.putExtra("indexKey", String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude));
                     startActivity(intent);
