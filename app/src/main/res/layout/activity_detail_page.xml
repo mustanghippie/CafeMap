@@ -54,9 +54,9 @@
         <ImageView
             android:id="@+id/badge"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:adjustViewBounds="true"></ImageView>
-
+            android:layout_height="220dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/trees_organic_coffee" />
 
         <LinearLayout
             android:layout_width="match_parent"
