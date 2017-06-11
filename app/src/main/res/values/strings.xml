@@ -3,4 +3,24 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_edit_page">EditPageActivity</string>
+
+    <string-array name="hour">
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+    </string-array>
+    <string-array name="minute">
+        <item>00</item>
+        <item>30</item>
+    </string-array>
+    <string-array name="ampm">
+        <item>AM</item>
+        <item>PM</item>
+    </string-array>
+    <string-array name="availableOrUnavailable">
+        <item>Available</item>
+        <item>Unavailable</item>
+    </string-array>
+
 </resources>

@@ -33,8 +33,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.HashMap;
-
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
 
@@ -128,7 +126,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             this.atms.execute("");
 
 
-
             // マーカータップ時、情報ウィンドウを開く
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
@@ -137,11 +134,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     View view = getLayoutInflater().inflate(R.layout.info_window, null);
 
                     // @todo for debug
-                    LatLng latlng = marker.getPosition();
-                    String key = String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude);
-
-                    HashMap<String,String> result = atms.getCafeMap().get(key);
-                    System.out.println("Display result hash map = " + result.get("wifi"));
+//                    LatLng latlng = marker.getPosition();
+//                    String key = String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude);
+//
+//                    HashMap<String,String> result = atms.getCafeMap().get(key);
+//                    System.out.println("Display result hash map = " + result.get("wifi"));
                     //- @todo for debug
 
                     // 画像設定
@@ -187,12 +184,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Intent intent = new Intent(getApplication(), DetailPageActivity.class);
                     LatLng latlng = marker.getPosition();
 
-                    //new marker flag
-                    boolean newMarkerFlag = false;
-                    if (marker.getTitle().equals("Make a new location")) newMarkerFlag = true;
+                    // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
+                    int viewMode = 1;
+                    if (marker.getTitle().equals("Make a new location")) viewMode = 0;
 
-                    // lat + lon
-                    intent.putExtra("indexKey", String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude));
+                    intent.putExtra("lat", latlng.latitude);
+                    intent.putExtra("lon", latlng.longitude);
+                    intent.putExtra("viewMode", viewMode);
+
                     startActivity(intent);
                 }
             });
@@ -202,8 +201,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onMapClick(LatLng point) {
                     // タップした位置の表示
-                    Toast.makeText(getApplicationContext(), "タップ位置\n緯度：" + point.latitude + "\n経度:" + point.longitude, Toast.LENGTH_SHORT).show();
-                    Log.d("Location ","Latitude + "+ point.latitude+" Longitude + "+point.longitude);
+                    Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
+                    Log.d("Location ", "Latitude + " + point.latitude + " Longitude + " + point.longitude);
                     // マーカーを追加
                     LatLng latLng = new LatLng(point.latitude, point.longitude);
                     mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
@@ -234,6 +233,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 17));
 
             }
+//              Delete------
+//            GetAddressGeocoder hra = new GetAddressGeocoder(getApplicationContext());
+//            hra.execute();
 
         } else {
             Log.d("debug", "permission error");
@@ -306,5 +308,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void deactivate() {
         this.onLocationChangedListener = null;
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }
