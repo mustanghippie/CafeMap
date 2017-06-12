@@ -13,6 +13,7 @@ import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -183,10 +184,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
                     if (snippet != null) {
                         SpannableString snippetText = new SpannableString(snippet);
-                        if (snippet.equals("Wi-fi: Good"))
-                            snippetText.setSpan(new ForegroundColorSpan(Color.YELLOW), 7, 11, 0);
-                        if (snippet.equals("Wi-fi: Bad"))
-                            snippetText.setSpan(new ForegroundColorSpan(Color.BLUE), 7, 10, 0);
+                        if (snippet.equals("Wi-fi: available"))
+                            snippetText.setSpan(new BackgroundColorSpan(0xFF0000FF), 0, 15, 0);
+                        if (snippet.equals("Wi-fi: unavailable"))
+                            snippetText.setSpan(new BackgroundColorSpan(0x44FF0022), 0, 15, 0);
+//                            snippetText.setSpan(new ForegroundColorSpan(Color.BLUE), 7, 10, 0);
                         snippetUi.setText(snippetText);
 
                     }

@@ -99,7 +99,10 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
                     wifi = dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class);
                     socket = dataSnapshot.child("location" + String.valueOf(i)).child("socket").getValue(String.class);
                     time = dataSnapshot.child("location" + String.valueOf(i)).child("time").getValue(String.class);
-                    options.snippet("Wi-fi: " + wifi + "\n" + "Socket: " + socket + " " + time);
+                    options.snippet(time + "\n" + "Wi-fi: " + wifi + " " + "Socket: " + socket);
+
+
+
 
                     // マップにマーカー追加
                     mMap.addMarker(options);
