@@ -132,35 +132,8 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
         // カフェ名一覧
         for (String cafeName : cafeNameArrayList) {
             readImagesFromFirebase(cafeName);
-            //System.out.println("CafeName = " +cafeName);
         }
-//        try {
-//            final File localFile = File.createTempFile("storage01", "png");
-//
-//            imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-//                    System.out.println("onSuccess-------------------Success");
-//                    sampleBitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-//                    latch.countDown();
-//
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//                    Log.d("404Error possibly ", "File not found");
-//                }
-//            });
-//
-//        } catch (IOException e) {
-//            Log.d("DEBUG:IOException  ", "File localFile");
-//            e.printStackTrace();
-//        }
-
-
-        //System.out.println("HIDOUKI-------------");
-
-        return "hoge";
+        return "";
     }
 
     private void readImagesFromFirebase(final String cafeName){

@@ -30,6 +30,17 @@ public class DetailPageActivity extends AppCompatActivity {
         args.putInt("viewMode",getIntent().getIntExtra("viewMode",1));
         args.putDouble("lat",getIntent().getDoubleExtra("lat",0));
         args.putDouble("lon",getIntent().getDoubleExtra("lon",0));
+        // preview parameters
+        if(getIntent().getIntExtra("viewMode",1) == 2){
+            args.putString("cafeName", getIntent().getStringExtra("cafeName"));
+            args.putString("cafeAddress", getIntent().getStringExtra("cafeAddress"));
+            args.putString("cafeTel", getIntent().getStringExtra("cafeTel"));
+            args.putString("cafeTime", getIntent().getStringExtra("cafeTime"));
+            args.putString("cafeWifi", getIntent().getStringExtra("cafeWifi"));
+            args.putString("cafeSocket", getIntent().getStringExtra("cafeSocket"));
+        }
+
+
         fragment.setArguments(args);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         // メソッドの1つ目の引数は対象のViewGroupのID、2つ目の引数は追加するfragment
