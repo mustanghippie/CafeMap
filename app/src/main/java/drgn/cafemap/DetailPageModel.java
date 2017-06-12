@@ -20,9 +20,12 @@ public class DetailPageModel {
     private String key;
     private Context context;
 
+    private JsonObject jsonObjectUserCafeMap;
+
     public DetailPageModel(Context context, String key) {
         this.key = key;
         this.context = context;
+        this.jsonObjectUserCafeMap = new UserCafeMapModel(context).getUserCafeMapJson();
     }
 
     public Bitmap getImage(String type) {
@@ -46,8 +49,6 @@ public class DetailPageModel {
 
     public HashMap<String,String> getUserCafeMapDetail(){
         HashMap<String,String> cafeDetail = new HashMap<>();
-        UserCafeMapModel ucm = new UserCafeMapModel(context);
-        JsonObject jsonObjectUserCafeMap =ucm.getUserCafeMapJson();
 
         cafeDetail.put("name",jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeName").getAsString());
         cafeDetail.put("address",jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeAddress").getAsString());
@@ -57,5 +58,19 @@ public class DetailPageModel {
         cafeDetail.put("wifi",jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeWifi").getAsString());
 
         return cafeDetail;
+    }
+
+    public boolean checkCafeDetailExist(){
+        boolean fileIsFound = true;
+
+        try {
+            jsonObjectUserCafeMap.get(key).getAsJsonObject();
+        } catch (NullPointerException e) {
+            // File not found
+            fileIsFound = false;
+        }
+
+        return fileIsFound;
+
     }
 }

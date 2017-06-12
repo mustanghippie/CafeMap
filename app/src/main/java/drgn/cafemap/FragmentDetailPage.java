@@ -209,34 +209,6 @@ public class FragmentDetailPage extends Fragment {
                         // wifi
                         String cafeWifi = wifiSpinner.getSelectedItem().toString();
 
-
-//                        FragmentDetailPage fragment = new FragmentDetailPage();
-//                        Bundle args = new Bundle();
-//                        args.putInt("viewMode", 2);
-//                        args.putDouble("lat", lat);
-//                        args.putDouble("lon", lon);
-//                        args.putString("cafeName", cafeName);
-//                        args.putString("cafeAddress", cafeAddress);
-//                        args.putString("cafeTel", cafeTel);
-//                        args.putString("cafeTime", cafeTime);
-//                        args.putString("cafeWifi", cafeWifi);
-//                        args.putString("cafeSocket", cafeSocket);
-//                        args.putSerializable("uploadImage", bs);
-//
-//                        fragment.setArguments(args);
-//
-//                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//                        // メソッドの1つ目の引数は対象のViewGroupのID、2つ目の引数は追加するfragment
-//                        transaction.add(R.id.container, fragment);
-//                        // 最後にcommitを使用することで変更を反映します
-//                        transaction.commit();
-
-                        // upload image, serialize for Bundle
-
-                        //BitmapSerializable bs = new BitmapSerializable(1);
-                        //bs.toByteArray(uploadImageBmp);
-
-
                         Intent intent = new Intent(getContext(), DetailPageActivity.class);
 
                         intent.putExtra("lat", lat);
@@ -276,15 +248,17 @@ public class FragmentDetailPage extends Fragment {
                 break;
             case 1: // Display cafe detail page
                 // check info is made by owner or user
+
+                DetailPageModel dpm = new DetailPageModel(getContext(), key);
+
                 String type;
-                if (MapsActivity.atms.getCafeMap().get(key) != null) {
-                    // from master
-                    type = "master";
-                } else {
+                if (dpm.checkCafeDetailExist()) {
                     //from user
                     type = "user";
+                } else {
+                    // from master
+                    type = "master";
                 }
-                DetailPageModel dpm = new DetailPageModel(getContext(), key);
 
                 // Set image
                 img = (ImageView) view.findViewById(R.id.badge);
