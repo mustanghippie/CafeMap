@@ -169,9 +169,9 @@ public class FragmentDetailPage extends Fragment {
                 timeTextView = (TextView) view.findViewById(R.id.cafeTime);
                 timeTextView.setText(cafeDetail.get("time"));
                 socketTextView = (TextView) view.findViewById(R.id.cafeSocket);
-                socketTextView.setText("(Socket) " + cafeDetail.get("socket"));
+                socketTextView.setText(cafeDetail.get("socket"));
                 wifiTextView = (TextView) view.findViewById(R.id.cafeWifi);
-                wifiTextView.setText("(Wi-fi) " + cafeDetail.get("wifi"));
+                wifiTextView.setText(cafeDetail.get("wifi"));
                 break;
             case 2:
 
