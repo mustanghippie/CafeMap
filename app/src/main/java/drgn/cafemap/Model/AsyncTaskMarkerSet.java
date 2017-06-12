@@ -1,4 +1,4 @@
-package drgn.cafemap;
+package drgn.cafemap.Model;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -78,40 +78,30 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String name, wifi, socket, time;
+                String title, wifi, socket, time;
                 MarkerOptions options;
                 LatLng location;
                 double lat, lon;
-
+                MapsActivityModel mam = new MapsActivityModel();
                 // location start from 1
                 for (int i = 1; ; i++) {
-                    if ((name = dataSnapshot.child("location" + String.valueOf(i)).child("name").getValue(String.class)) == null)
+                    if ((title = dataSnapshot.child("location" + String.valueOf(i)).child("name").getValue(String.class)) == null)
                         break;
-
-                    options = new MarkerOptions();
-                    options.title(name);
-                    // set name to ArrayList for download images
-                    cafeNameArrayList.add(name.replaceAll(" ", "_").toLowerCase());
                     lat = dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class);
                     lon = dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class);
-                    location = new LatLng(lat, lon);
-                    options.position(location);
-                    wifi = dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class);
-                    socket = dataSnapshot.child("location" + String.valueOf(i)).child("socket").getValue(String.class);
                     time = dataSnapshot.child("location" + String.valueOf(i)).child("time").getValue(String.class);
-                    options.snippet(time + "\n" + "Wi-fi: " + wifi + " " + "Socket: " + socket);
+                    socket = dataSnapshot.child("location" + String.valueOf(i)).child("socket").getValue(String.class);
+                    wifi = dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class);
+                    // marker set
+                    mam.setUpMarkers(mMap,title,lat,lon,time,socket,wifi);
 
-
-
-
-                    // マップにマーカー追加
-                    mMap.addMarker(options);
+                    // set name to ArrayList for download images
+                    cafeNameArrayList.add(title.replaceAll(" ", "_").toLowerCase());
 
                     // make hashmap for detail page
                     String key = dataSnapshot.child("location" + String.valueOf(i)).child("lat").getValue(Double.class).toString()
                             + dataSnapshot.child("location" + String.valueOf(i)).child("lon").getValue(Double.class).toString();
                     cafeMap.put(key, cafeDetailMap(dataSnapshot, i));
-
                 }
 
                 latch.countDown();

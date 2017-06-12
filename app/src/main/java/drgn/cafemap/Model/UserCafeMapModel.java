@@ -1,10 +1,7 @@
-package drgn.cafemap;
+package drgn.cafemap.Model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -14,7 +11,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,10 +19,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import drgn.cafemap.Object.Cafe;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -209,31 +206,25 @@ public class UserCafeMapModel {
         }
 
         MarkerOptions options;
+
+        String title, wifi, socket, time;
         double lat, lon;
-        String wifi,socket,time;
-        LatLng location;
+        MapsActivityModel mam = new MapsActivityModel();
+
         // make markers til finished key data
         for (String key : keyList) {
-            options = new MarkerOptions();
-            options.title(jsonUserCafeMap.get(key).getAsJsonObject().get("cafeName").getAsString());
-
+            title = jsonUserCafeMap.get(key).getAsJsonObject().get("cafeName").getAsString();
             lat = jsonUserCafeMap.get(key).getAsJsonObject().get("lat").getAsDouble();
             lon = jsonUserCafeMap.get(key).getAsJsonObject().get("lon").getAsDouble();
-            location = new LatLng(lat, lon);
-            options.position(location);
             time = jsonUserCafeMap.get(key).getAsJsonObject().get("cafeTime").getAsString();
             socket = jsonUserCafeMap.get(key).getAsJsonObject().get("cafeSocket").getAsString();
             wifi = jsonUserCafeMap.get(key).getAsJsonObject().get("cafeWifi").getAsString();
-
-            options.snippet("Wi-fi: " + wifi + "\n" + "Socket: " + socket + " " + time);
-
-            // Add marker on google map
-            mMap.addMarker(options);
-
+            // set
+            mam.setUpMarkers(mMap, title, lat, lon, time, socket, wifi);
         }
     }
 
-    public JsonObject getUserCafeMapJson(){
+    public JsonObject getUserCafeMapJson() {
         String jsonObjStringUserCafeMap = "";
         try {
             InputStream in = context.openFileInput("UserCafeMap.json");

@@ -1,4 +1,4 @@
-package drgn.cafemap;
+package drgn.cafemap.Model;
 
 import android.content.Context;
 import android.location.Address;

@@ -1,4 +1,4 @@
-package drgn.cafemap;
+package drgn.cafemap.Model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-import static drgn.cafemap.MapsActivity.atms;
+import static drgn.cafemap.Controller.MapsActivity.atms;
 
 /**
  * Created by Nobu on 2017/06/11.
