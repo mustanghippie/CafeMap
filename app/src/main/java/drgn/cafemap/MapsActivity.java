@@ -3,6 +3,7 @@ package drgn.cafemap;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
@@ -34,7 +35,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static java.security.AccessController.getContext;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -51,11 +56,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int priority[] = {LocationRequest.PRIORITY_HIGH_ACCURACY, LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
             LocationRequest.PRIORITY_LOW_POWER, LocationRequest.PRIORITY_NO_POWER};
     private int locationPriority;
+    private double defaultPosLat;
+    private double defaultPosLon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        // get default location after user cafe info set
+        this.defaultPosLat = getIntent().getDoubleExtra("defaultPosLat", 0.0);
+        this.defaultPosLon = getIntent().getDoubleExtra("defaultPosLon", 0.0);
 
         // LocationRequest を生成して精度、インターバルを設定
         locationRequest = LocationRequest.create();
@@ -125,7 +136,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // And also prepare images of cafes
             this.atms = new AsyncTaskMarkerSet(mMap);
             this.atms.execute("");
-
+            // Reads markers from UserMapCafe.json and set markers up
+            UserCafeMapModel ucmm = new UserCafeMapModel(getApplicationContext());
+            ucmm.setUserCafeMapMarkers(mMap);
 
             // マーカータップ時、情報ウィンドウを開く
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -145,7 +158,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // 画像設定
                     ImageView img = (ImageView) view.findViewById(R.id.badge);
                     //String imgName = marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png";
-                    Bitmap image = atms.getCafeBitmapMap().get(marker.getTitle().replaceAll(" ", "_").toLowerCase());
+                    Bitmap image = atms.getCafeBitmapMap().get(marker.getTitle().replaceAll(" ", "_").toLowerCase()); // from owner data
+                    if (image == null) {
+                        // in user marker case
+                        String imageName = String.valueOf(marker.getPosition().latitude) + String.valueOf(marker.getPosition().longitude);
+                        try {
+                            InputStream in = getApplicationContext().openFileInput(imageName + ".png"); // from local data
+                            image = BitmapFactory.decodeStream(in);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
                     img.setImageBitmap(image);
 
                     // タイトル設定
@@ -212,32 +236,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
 
 
-            //LocationManagerの取得(初回のマップ移動)
-            LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            //GPSから現在地の情報を取得
-            Location myLocate = locationManager.getLastKnownLocation("gps");
-            if (myLocate != null) {
-                LatLng currentLocation = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+            if (defaultPosLat != 0.0 && defaultPosLon != 0.0) { // From detail page after set user map cafe
+                LatLng position = new LatLng(defaultPosLat, defaultPosLon);
+
+                // move camera
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
             } else {
-                Toast.makeText(getApplicationContext(), "GPS取得に失敗", Toast.LENGTH_LONG).show();
+                //LocationManagerの取得(初回のマップ移動)
+                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                // get position from gps
+                Location myLocate = locationManager.getLastKnownLocation("gps");
+                if (myLocate != null) {
+                    LatLng currentLocation = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to connect gps", Toast.LENGTH_LONG).show();
 
-                // サンプル用初期位置
-                LatLng home = new LatLng(49.285131, -123.112998);
+                    // サンプル用初期位置
+                    LatLng position = new LatLng(49.285131, -123.112998);
 
-                MarkerOptions options = new MarkerOptions();
-                options.title("You are here");
-                options.position(home);
+                    MarkerOptions options = new MarkerOptions();
+                    options.title("You are here");
+                    options.position(position);
 
-                mMap.addMarker(options);
+                    mMap.addMarker(options);
 
-                // カメラ移動
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(home, 17));
-
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+                }
             }
-//              Delete------
-//            GetAddressGeocoder hra = new GetAddressGeocoder(getApplicationContext());
-//            hra.execute();
 
         } else {
             Log.d("debug", "permission error");
