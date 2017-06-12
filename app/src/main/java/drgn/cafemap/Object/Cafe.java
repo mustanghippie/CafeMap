@@ -1,4 +1,4 @@
-package drgn.cafemap;
+package drgn.cafemap.Object;
 
 /**
  * Created by Nobu on 2017/06/10.

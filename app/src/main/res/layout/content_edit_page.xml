@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="drgn.cafemap.DetailPageActivity"
+    tools:context="drgn.cafemap.Controller.DetailPageActivity"
     tools:showIn="@layout/activity_detail_page">
 
 </android.support.constraint.ConstraintLayout>

@@ -1,4 +1,4 @@
-package drgn.cafemap;
+package drgn.cafemap.Controller;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -38,8 +39,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.io.InputStream;
 
+import drgn.cafemap.Model.AsyncTaskMarkerSet;
+import drgn.cafemap.R;
+import drgn.cafemap.Model.UserCafeMapModel;
+
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
-import static java.security.AccessController.getContext;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -183,13 +187,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     String snippet = marker.getSnippet();
                     TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
                     if (snippet != null) {
-                        SpannableString snippetText = new SpannableString(snippet);
-                        if (snippet.equals("Wi-fi: available"))
-                            snippetText.setSpan(new BackgroundColorSpan(0xFF0000FF), 0, 15, 0);
-                        if (snippet.equals("Wi-fi: unavailable"))
-                            snippetText.setSpan(new BackgroundColorSpan(0x44FF0022), 0, 15, 0);
-//                            snippetText.setSpan(new ForegroundColorSpan(Color.BLUE), 7, 10, 0);
-                        snippetUi.setText(snippetText);
+                        String[] snippetArray = snippet.split("\n");
+
+                        SpannableString time = new SpannableString(snippetArray[0]);
+                        SpannableString wifi = new SpannableString(" Wi-fi ");
+                        SpannableString socket = new SpannableString(" Socket ");
+                        SpannableStringBuilder snippetSpannable = new SpannableStringBuilder();
+
+                        // Text color
+                        wifi.setSpan(new ForegroundColorSpan(Color.WHITE), 0, wifi.length(), 0);
+                        socket.setSpan(new ForegroundColorSpan(Color.WHITE), 0, socket.length(), 0);
+
+                        if (snippetArray[1].equals("Wi-fi: Available")) {
+                            wifi.setSpan(new BackgroundColorSpan(0xFF0000FF), 0, wifi.length(), 0);
+                        } else {
+                            wifi.setSpan(new BackgroundColorSpan(0x44FF0022), 0, wifi.length(), 0);
+                        }
+
+                        if (snippetArray[2].equals("Socket: Available")) {
+                            socket.setSpan(new BackgroundColorSpan(0xFF0000FF), 0, socket.length(), 0);
+                        } else {
+                            socket.setSpan(new BackgroundColorSpan(0x44FF0022), 0, socket.length(), 0);
+                        }
+
+                        snippetSpannable.append(time + "\n");
+                        snippetSpannable.append(wifi);
+                        snippetSpannable.append(" ");
+                        snippetSpannable.append(socket);
+
+                        snippetUi.setText(snippetSpannable);
 
                     }
 

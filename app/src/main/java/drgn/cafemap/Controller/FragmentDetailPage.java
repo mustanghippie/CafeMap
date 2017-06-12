@@ -1,4 +1,4 @@
-package drgn.cafemap;
+package drgn.cafemap.Controller;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,6 +22,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+
+import drgn.cafemap.Object.Cafe;
+import drgn.cafemap.Model.GetAddressGeocoder;
+import drgn.cafemap.Model.AsyncTaskMarkerSet;
+import drgn.cafemap.Model.DetailPageModel;
+import drgn.cafemap.Model.UserCafeMapModel;
+import drgn.cafemap.R;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
@@ -329,7 +336,7 @@ public class FragmentDetailPage extends Fragment {
                         ucmm.saveUserCafeMapImage(uploadImageBmp, key);
 
                         Intent intent = new Intent(getContext(), MapsActivity.class);
-                        System.out.println("Detail page ---- lat "+lat);
+
                         intent.putExtra("defaultPosLat", lat);
                         intent.putExtra("defaultPosLon", lon);
                         startActivity(intent);
