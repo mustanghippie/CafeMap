@@ -32,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -251,11 +252,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onMapClick(LatLng point) {
                     if (!disableClickEvent) {
                         // タップした位置の表示
-                        Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
                         //Log.d("Location ", "Latitude + " + point.latitude + " Longitude + " + point.longitude);
                         // マーカーを追加
                         LatLng latLng = new LatLng(point.latitude, point.longitude);
                         mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
+                        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+                        CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(17).build();
+                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
                     }else{
                         disableClickEvent = false;
                     }
