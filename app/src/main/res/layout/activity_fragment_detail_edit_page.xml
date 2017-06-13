@@ -90,12 +90,13 @@
                 android:layout_margin="16dp"
                 android:src="@drawable/icon_location" />
 
-            <TextView
+            <EditText
                 android:id="@+id/cafeAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:gravity="left"
+                android:inputType="text"
                 android:textSize="14sp" />
 
         </LinearLayout>

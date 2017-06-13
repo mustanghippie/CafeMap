@@ -151,15 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // Set view
                     View view = getLayoutInflater().inflate(R.layout.info_window, null);
 
-                    // @todo for debug
-//                    LatLng latlng = marker.getPosition();
-//                    String key = String.valueOf(latlng.latitude) + String.valueOf(latlng.longitude);
-//
-//                    HashMap<String,String> result = atms.getCafeMap().get(key);
-//                    System.out.println("Display result hash map = " + result.get("wifi"));
-                    //- @todo for debug
-
-                    // 画像設定
+                    // set up image
                     ImageView img = (ImageView) view.findViewById(R.id.badge);
                     //String imgName = marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png";
                     Bitmap image = atms.getCafeBitmapMap().get(marker.getTitle().replaceAll(" ", "_").toLowerCase()); // from owner data
