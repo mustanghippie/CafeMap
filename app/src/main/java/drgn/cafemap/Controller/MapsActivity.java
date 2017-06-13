@@ -36,6 +36,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -62,6 +64,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int locationPriority;
     private double defaultPosLat;
     private double defaultPosLon;
+    // don't set a marker during opening cafe info
+    private boolean disableClickEvent = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
+                    disableClickEvent = true;
                     // Set view
                     View view = getLayoutInflater().inflate(R.layout.info_window, null);
 
@@ -161,8 +166,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         try {
                             InputStream in = getApplicationContext().openFileInput(imageName + ".png"); // from local data
                             image = BitmapFactory.decodeStream(in);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        } catch (FileNotFoundException e) {
+                            System.out.println("FileNotFound@MapsActivity "+imageName+".png");
                         }
 
                     }
@@ -244,12 +249,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng point) {
-                    // タップした位置の表示
-                    Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
-                    Log.d("Location ", "Latitude + " + point.latitude + " Longitude + " + point.longitude);
-                    // マーカーを追加
-                    LatLng latLng = new LatLng(point.latitude, point.longitude);
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
+                    if (!disableClickEvent) {
+                        // タップした位置の表示
+                        Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
+                        //Log.d("Location ", "Latitude + " + point.latitude + " Longitude + " + point.longitude);
+                        // マーカーを追加
+                        LatLng latLng = new LatLng(point.latitude, point.longitude);
+                        mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
+                    }else{
+                        disableClickEvent = false;
+                    }
                 }
             });
 
