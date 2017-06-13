@@ -58,7 +58,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_weight="1"
             android:orientation="horizontal">
 
             <ImageView
@@ -71,7 +70,8 @@
                 android:id="@+id/cafeName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginRight="20dp"
                 android:gravity="left"
                 android:hint="Cafe name"
                 android:inputType="text"
@@ -94,7 +94,8 @@
                 android:id="@+id/cafeAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginRight="20dp"
                 android:gravity="left"
                 android:inputType="text"
                 android:textSize="14sp" />
@@ -116,6 +117,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="14dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -227,7 +229,7 @@
                 android:id="@+id/cafeTel"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="14dp"
                 android:layout_marginRight="20dp"
                 android:layout_weight="0.91"
                 android:gravity="left"
