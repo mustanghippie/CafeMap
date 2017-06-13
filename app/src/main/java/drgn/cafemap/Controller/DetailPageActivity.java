@@ -22,7 +22,7 @@ public class DetailPageActivity extends AppCompatActivity {
         args.putDouble("lat",getIntent().getDoubleExtra("lat",0));
         args.putDouble("lon",getIntent().getDoubleExtra("lon",0));
         // preview parameters
-        if(getIntent().getIntExtra("viewMode",1) == 2){
+        if(getIntent().getIntExtra("viewMode",1) == 2 || getIntent().getIntExtra("viewMode",1) == 3){
             args.putString("cafeName", getIntent().getStringExtra("cafeName"));
             args.putString("cafeAddress", getIntent().getStringExtra("cafeAddress"));
             args.putString("cafeTel", getIntent().getStringExtra("cafeTel"));
