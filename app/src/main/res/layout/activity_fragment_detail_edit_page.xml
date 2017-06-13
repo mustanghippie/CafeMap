@@ -317,24 +317,66 @@
                 app:srcCompat="@android:color/transparent" />
         </LinearLayout>
 
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:weightSum="1">
+            android:layout_marginBottom="40dp"
+            >
+
 
             <Button
-                android:id="@+id/previewButton"
-                android:layout_width="240dp"
-                android:layout_height="60dp"
-                android:layout_marginBottom="40dp"
-                android:background="@color/colorAccent"
-                android:text="preview"
+                android:id="@+id/deleteButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@color/common_google_signin_btn_text_dark_disabled"
+                android:text="delete"
                 android:textAlignment="center"
                 android:textColor="@color/common_google_signin_btn_text_dark_default"
                 android:textSize="20sp" />
+
+
+            <Button
+                android:id="@+id/previewButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/colorAccent"
+                android:text="preview"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="20dp"
+                android:textAlignment="center"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="20sp" />
+
+
+
         </LinearLayout>
+
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:orientation="vertical"-->
+            <!--android:gravity="center"-->
+            <!--android:weightSum="1">-->
+
+            <!--<Button-->
+                <!--android:id="@+id/previewButton"-->
+                <!--android:layout_width="240dp"-->
+                <!--android:layout_height="60dp"-->
+                <!--android:layout_marginBottom="40dp"-->
+                <!--android:background="@color/colorAccent"-->
+                <!--android:text="preview"-->
+                <!--android:textAlignment="center"-->
+                <!--android:textColor="@color/common_google_signin_btn_text_dark_default"-->
+                <!--android:textSize="20sp" />-->
+        <!--</LinearLayout>-->
 
 
     </LinearLayout>
