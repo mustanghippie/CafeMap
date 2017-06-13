@@ -128,7 +128,6 @@ public class FragmentDetailPage extends Fragment {
 
                 // Initialize view component
                 uploadImage = (ImageView) view.findViewById(R.id.uploadImage);
-                saveButton = (Button) view.findViewById(R.id.saveButton);
                 uploadImageButton = (Button) view.findViewById(R.id.uploadImageButton);
                 previewButton = (Button) view.findViewById(R.id.previewButton);
                 //
@@ -155,42 +154,6 @@ public class FragmentDetailPage extends Fragment {
                 });
 
 
-                // save action
-                saveButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        String cafeName = nameTextView.getText().toString();
-                        String cafeAddress = addressTextView.getText().toString();
-
-                        // cafe time
-                        String startHour = startHourSpinner.getSelectedItem().toString();
-                        String startMinute = startMinuteSpinner.getSelectedItem().toString();
-                        String startAmPm = startAmPmSpinner.getSelectedItem().toString();
-                        String endHour = endHourSpinner.getSelectedItem().toString();
-                        String endMinute = endMinuteSpinner.getSelectedItem().toString();
-                        String endAmPm = endAmPmSpinner.getSelectedItem().toString();
-                        String cafeTime = startHour + ":" + startMinute + startAmPm + " - " + endHour + ":" + endMinute + endAmPm;
-                        // cafe tel
-                        String cafeTel = telTextView.getText().toString();
-                        // socket
-                        String cafeSocket = socketSpinner.getSelectedItem().toString();
-                        // wifi
-                        String cafeWifi = wifiSpinner.getSelectedItem().toString();
-
-                        UserCafeMapModel ucmm = new UserCafeMapModel(getContext());
-                        // save image
-                        ucmm.saveUserCafeMapImage(uploadImageBmp, key);
-                        // save cafe information
-                        Cafe cafe = new Cafe(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeSocket, cafeWifi);
-                        ucmm.saveUserCafeMap(key, cafe);
-
-                        Intent intent = new Intent(getContext(), MapsActivity.class);
-                        startActivity(intent);
-
-
-                    }
-                });
 
                 // preview
                 previewButton.setOnClickListener(new View.OnClickListener() {
