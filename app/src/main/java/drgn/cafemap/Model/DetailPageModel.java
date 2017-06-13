@@ -63,6 +63,7 @@ public class DetailPageModel {
     private Spinner endAmPmSpinner;
     private Spinner socketSpinner;
     private Spinner wifiSpinner;
+    private Button deleteButton;
     // Detail page view
     private ImageView cafeScreenshot;
     private TextView timeTextView;
@@ -97,6 +98,7 @@ public class DetailPageModel {
                 this.endAmPmSpinner = (Spinner) view.findViewById(R.id.endAmPm);
                 this.socketSpinner = (Spinner) view.findViewById(R.id.cafeSocket);
                 this.wifiSpinner = (Spinner) view.findViewById(R.id.cafeWifi);
+                this.deleteButton = (Button) view.findViewById(R.id.deleteButton);
 
                 break;
             case 1:
@@ -155,6 +157,7 @@ public class DetailPageModel {
         socketTextView.setText(temporaryCafeData.get("cafeSocket"));
         wifiTextView.setText(temporaryCafeData.get("cafeWifi"));
 
+        // Save
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,14 +180,12 @@ public class DetailPageModel {
                 activity.startActivity(intent);
             }
         });
-
-
     }
 
     /**
      * Displays edit page
      * View mode 0 or 3
-     *
+     * From making a new data
      * @param fa
      * @param re
      * @param v
@@ -259,20 +260,9 @@ public class DetailPageModel {
 
             }
         });
-    }
 
-    private void setSpinnerData(Spinner timeSpinner, String time) {
-        Adapter adp = (ArrayAdapter<String>) timeSpinner.getAdapter();
-        int index = 0;
-        for (int i = 0; i < adp.getCount(); i++) {
-            if (adp.getItem(i).equals(time)) {
-                index = i;
-                break;
-            }
-        }
-        timeSpinner.setSelection(index);
     }
-
+    // From existing data
     public void displayEditPage(FragmentActivity fa, Resources re, View v, int viewMode, double latitude, double longitude, Map<String, String> cafeData, String key) {
         prepareViewContents(v, viewMode);
         final FragmentActivity activity = fa;
@@ -306,6 +296,19 @@ public class DetailPageModel {
             is.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        // 既に情報が存在する場合かつユーザーデータの場合
+        // Delete only existing cafe info
+        if (checkCafeDetailExist() == true) {
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    System.out.println("OnClick delete cafe info ");
+                }
+            });
+        }else{
+            deleteButton.setVisibility(View.INVISIBLE);
         }
 
         // preview
@@ -455,11 +458,28 @@ public class DetailPageModel {
         return cafeDetail;
     }
 
+    private void setSpinnerData(Spinner timeSpinner, String time) {
+        Adapter adp = (ArrayAdapter<String>) timeSpinner.getAdapter();
+        int index = 0;
+        for (int i = 0; i < adp.getCount(); i++) {
+            if (adp.getItem(i).equals(time)) {
+                index = i;
+                break;
+            }
+        }
+        timeSpinner.setSelection(index);
+    }
+
+    /**
+     * Checks cafe data that exists in json file.
+     *
+     * @return boolean
+     */
     public boolean checkCafeDetailExist() {
         boolean fileIsFound = true;
 
         try {
-            jsonObjectUserCafeMap.get(key).getAsJsonObject();
+            this.jsonObjectUserCafeMap.get(key).getAsJsonObject();
         } catch (NullPointerException e) {
             // File not found
             fileIsFound = false;
