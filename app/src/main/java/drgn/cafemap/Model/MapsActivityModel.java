@@ -4,6 +4,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import drgn.cafemap.R;
+
+
 
 /**
  * Created by musta on 2017/06/11.
@@ -24,9 +27,9 @@ public class MapsActivityModel {
 
         options.snippet(time + "\n" + "Wi-fi: " + wifi + "\nSocket: " + socket + " ");
         if (iconType.equals("owner"))
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_operator));
         if ((iconType.equals("user")))
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_user));
 
         // Add marker on google map
         mMap.addMarker(options);
