@@ -197,13 +197,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         wifi.setSpan(new ForegroundColorSpan(Color.WHITE), 0, wifi.length(), 0);
                         socket.setSpan(new ForegroundColorSpan(Color.WHITE), 0, socket.length(), 0);
 
-                        if (snippetArray[1].equals("Wi-fi: available")) {
+                        if (snippetArray[1].equals("Wi-fi: Available")) {
                             wifi.setSpan(new BackgroundColorSpan(0xFFF5CC5B), 0, wifi.length(), 0);
                         } else {
                             wifi.setSpan(new BackgroundColorSpan(0xFFD3D3D3), 0, wifi.length(), 0);
                         }
 
-                        if (snippetArray[2].equals("Socket: available ")) {
+                        if (snippetArray[2].equals("Socket: Available ")) {
                             socket.setSpan(new BackgroundColorSpan(0xFFF5CC5B), 0, socket.length(), 0);
                         } else {
                             socket.setSpan(new BackgroundColorSpan(0xFFD3D3D3), 0, socket.length(), 0);
