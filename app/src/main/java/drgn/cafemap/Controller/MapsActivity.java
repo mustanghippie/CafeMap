@@ -57,6 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest locationRequest;
     public static AsyncTaskMarkerSet atms;
+    private Marker currentMarker = null;
 
     private OnLocationChangedListener onLocationChangedListener = null;
 
@@ -169,7 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             InputStream in = getApplicationContext().openFileInput(imageName + ".png"); // from local data
                             image = BitmapFactory.decodeStream(in);
                         } catch (FileNotFoundException e) {
-                            System.out.println("FileNotFound@MapsActivity "+imageName+".png");
+                            System.out.println("FileNotFound@MapsActivity " + imageName + ".png");
                         }
 
                     }
@@ -255,14 +256,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // タップした位置の表示
                         //Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
                         //Log.d("Location ", "Latitude + " + point.latitude + " Longitude + " + point.longitude);
+                        // A marker can exist only one
+                        if (currentMarker != null) currentMarker.remove();
                         // マーカーを追加
                         LatLng latLng = new LatLng(point.latitude, point.longitude);
-                        mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
+                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
                         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                         CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(17).build();
                         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-                    }else{
+                    } else {
                         disableClickEvent = false;
                     }
                 }

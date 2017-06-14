@@ -5,6 +5,8 @@
     <string name="title_activity_edit_page">EditPageActivity</string>
 
     <string-array name="hour">
+        <item>6</item>
+        <item>7</item>
         <item>8</item>
         <item>9</item>
         <item>10</item>
@@ -15,8 +17,6 @@
         <item>3</item>
         <item>4</item>
         <item>5</item>
-        <item>6</item>
-        <item>7</item>
     </string-array>
     <string-array name="minute">
         <item>00</item>
