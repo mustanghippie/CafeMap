@@ -434,6 +434,8 @@ public class DetailPageModel {
         socketTextView.setText(cafeDetail.get("socket"));
         wifiTextView.setText(cafeDetail.get("wifi"));
 
+        if (type.equals("master")) editButton.setVisibility(View.INVISIBLE);
+
         // go to edit page
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
