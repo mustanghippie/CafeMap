@@ -168,6 +168,7 @@
 
         </LinearLayout>
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -175,17 +176,16 @@
             android:gravity="center"
             android:weightSum="1">
 
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="240dp"
-            android:layout_height="60dp"
-            android:layout_marginBottom="20dp"
-            android:background="@color/colorAccent"
-            android:text="save"
-            android:textAlignment="center"
-            android:textColor="@color/common_google_signin_btn_text_dark_default"
-            android:textSize="20sp"  />
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="20dp"
+                android:background="@color/colorAccent"
+                android:text="save"
+                android:textAlignment="center"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="20sp"  />
 
         </LinearLayout>
 
