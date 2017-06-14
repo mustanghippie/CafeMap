@@ -14,7 +14,7 @@ public class DetailPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_page);
 
         // make fragment
-        FragmentDetailPage fragment = new FragmentDetailPage();
+        DetailPageFragment fragment = new DetailPageFragment();
         // Fragmentの追加や削除といった変更を行う際は、Transactionを利用します
         // Bundle for Fragment to send parameter
         Bundle args = new Bundle();

@@ -1,12 +1,18 @@
 package drgn.cafemap.Model;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -41,6 +47,7 @@ public class DetailPageModel {
     // Base param
     private String key;
     private Context context;
+    private UserCafeMapModel ucm;
     // Json
     private JsonObject jsonObjectUserCafeMap;
     // Common View
@@ -75,7 +82,8 @@ public class DetailPageModel {
     public DetailPageModel(Context context, String key) {
         this.key = key;
         this.context = context;
-        this.jsonObjectUserCafeMap = new UserCafeMapModel(context).getUserCafeMapJson();
+        this.ucm = new UserCafeMapModel(context);
+        this.jsonObjectUserCafeMap = this.ucm.getUserCafeMapJson();
     }
 
     private void prepareViewContents(View view, int viewMode) {
@@ -186,6 +194,7 @@ public class DetailPageModel {
      * Displays edit page
      * View mode 0 or 3
      * From making a new data
+     *
      * @param fa
      * @param re
      * @param v
@@ -262,8 +271,9 @@ public class DetailPageModel {
         });
 
     }
+
     // From existing data
-    public void displayEditPage(FragmentActivity fa, Resources re, View v, int viewMode, double latitude, double longitude, Map<String, String> cafeData, String key) {
+    public void displayEditPage(FragmentActivity fa, Resources re, View v, int viewMode, double latitude, double longitude, Map<String, String> cafeData) {
         prepareViewContents(v, viewMode);
         final FragmentActivity activity = fa;
         final Resources resources = re;
@@ -298,17 +308,35 @@ public class DetailPageModel {
             e.printStackTrace();
         }
 
-        // 既に情報が存在する場合かつユーザーデータの場合
         // Delete only existing cafe info
         if (checkCafeDetailExist() == true) {
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    System.out.println("OnClick delete cafe info ");
+
+                    new AlertDialog.Builder(activity)
+                            .setTitle("Delete cafe information")
+                            .setMessage("Are you sure you want to permanently delete this cafe info ?")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // OK button pressed
+                                    ucm.deleteUserCafeMap(jsonObjectUserCafeMap, key);
+
+                                    Intent intent = new Intent(context, MapsActivity.class);
+
+                                    intent.putExtra("defaultPosLat", lat);
+                                    intent.putExtra("defaultPosLon", lon);
+                                    activity.startActivity(intent);
+                                }
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
                 }
             });
-        }else{
-            deleteButton.setVisibility(View.INVISIBLE);
+        } else {
+            //deleteButton.setVisibility(View.INVISIBLE);
         }
 
         // preview
@@ -492,5 +520,4 @@ public class DetailPageModel {
         this.uploadImage.setImageBitmap(uploadImageBmp);
         this.uploadImageBmp = uploadImageBmp;
     }
-
 }
