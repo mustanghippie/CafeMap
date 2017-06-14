@@ -49,7 +49,7 @@
             android:name=".Controller.DetailPageActivity"
             android:label="@string/title_activity_edit_page"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Controller.FragmentDetailPage"></activity>
+        <activity android:name=".Controller.DetailPageFragment"></activity>
     </application>
 
 </manifest>

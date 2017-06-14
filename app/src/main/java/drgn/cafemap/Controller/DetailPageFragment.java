@@ -1,5 +1,8 @@
 package drgn.cafemap.Controller;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,7 +30,7 @@ import drgn.cafemap.R;
 
 import static android.app.Activity.RESULT_OK;
 
-public class FragmentDetailPage extends Fragment {
+public class DetailPageFragment extends Fragment {
 
     private String key;
     private int viewMode; // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
@@ -138,7 +141,7 @@ public class FragmentDetailPage extends Fragment {
 
                 break;
             case 3: // Display edit page from "existing cafe info"
-                dpm.displayEditPage(getActivity(), getResources(), view, viewMode, lat, lon, temporaryCafeData, key);
+                dpm.displayEditPage(getActivity(), getResources(), view, viewMode, lat, lon, temporaryCafeData);
 
                 // Upload image
                 uploadImageButton = (Button) view.findViewById(R.id.uploadImageButton);
@@ -194,4 +197,5 @@ public class FragmentDetailPage extends Fragment {
         parcelFileDescriptor.close();
         return image;
     }
+
 }

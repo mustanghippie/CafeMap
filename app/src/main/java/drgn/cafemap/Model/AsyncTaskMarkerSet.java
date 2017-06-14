@@ -53,7 +53,7 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
     // Cafe names list to get images of cafes
     private ArrayList<String> cafeNameArrayList = new ArrayList<>();
     // Cafe image list
-    private Map<String,Bitmap> cafeBitmapMap = new HashMap<>();
+    private Map<String, Bitmap> cafeBitmapMap = new HashMap<>();
 
     public AsyncTaskMarkerSet(GoogleMap mMap) {
         // Google Map
@@ -93,7 +93,7 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
                     socket = dataSnapshot.child("location" + String.valueOf(i)).child("socket").getValue(String.class);
                     wifi = dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class);
                     // marker set
-                    mam.setUpMarkers(mMap,title,lat,lon,time,socket,wifi);
+                    mam.setUpMarkers(mMap, title, lat, lon, time, socket, wifi, "owner");
 
                     // set name to ArrayList for download images
                     cafeNameArrayList.add(title.replaceAll(" ", "_").toLowerCase());
@@ -129,11 +129,11 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
         return "";
     }
 
-    private void readImagesFromFirebase(final String cafeName){
+    private void readImagesFromFirebase(final String cafeName) {
 
         try {
             final File localFile = File.createTempFile(cafeName, "png");
-            imageRef = storageRef.child(cafeName+".png");
+            imageRef = storageRef.child(cafeName + ".png");
 
             imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
 
@@ -141,7 +141,7 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    cafeBitmapMap.put(cafeName,bitmap);
+                    cafeBitmapMap.put(cafeName, bitmap);
                     //latch.countDown();
 
                 }

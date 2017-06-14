@@ -1,7 +1,11 @@
 package drgn.cafemap.Model;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -9,6 +13,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,95 +53,36 @@ public class UserCafeMapModel {
         Gson gson = new Gson();
         String cafeJson = new Gson().toJson(cafe);
 
-        // delete for debug
+        // @todo delete for debug
 //        context.deleteFile("UserCafeMap.json");
 //        context.deleteFile("UserCafeMapKey.json");
 
-        // json file exists or not
-        File file = context.getFileStreamPath("UserCafeMap.json");
-        boolean isExists = file.exists();
-        if (!isExists) {
-            // make an empty json file fot the first time
-            try {
-                OutputStream out = context.openFileOutput("UserCafeMap.json", MODE_PRIVATE);
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
+        JsonObject jsonUserCafeMap = getUserCafeMapJson();
+        JsonObject jsonUserCafeMapKey = getUserCafeMapKeyJson();
 
-                writer.append("{}");
-                writer.close();
-
-                out = context.openFileOutput("UserCafeMapKey.json", MODE_PRIVATE);
-                writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
-
-                writer.append("{\"data_count\":\"0\"}");
-                writer.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        // If UserCafeMap.json doesn't exist, make empty UserCafeMap.json and reload
+        if (jsonUserCafeMap == null) {
+            makeEmptyUserCafeMapJson();
+            jsonUserCafeMap = getUserCafeMapJson();
         }
 
-        // read json file
-        String jsonObjStringUserCafeMap = "";
-        String jsonObjStringUserCafeMapKey = "";
-        try {
-            InputStream in = context.openFileInput("UserCafeMap.json");
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String s;
-            while ((s = reader.readLine()) != null) {
-                jsonObjStringUserCafeMap += s;
-            }
-            reader.close();
-
-            in = context.openFileInput("UserCafeMapKey.json");
-            reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            s = "";
-            while ((s = reader.readLine()) != null) {
-                jsonObjStringUserCafeMapKey += s;
-            }
-            reader.close();
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (jsonUserCafeMapKey == null) {
+            makeEmptyUserCafeMapJsonKey();
+            jsonUserCafeMapKey = getUserCafeMapKeyJson();
         }
 
         // Add user cafe info to UserCafeMap
-        JsonObject jsonUserCafeMap = gson.fromJson(jsonObjStringUserCafeMap, JsonObject.class); // master data
         JsonObject jsonAddData = gson.fromJson(cafeJson, JsonObject.class);
         jsonUserCafeMap.add(key, jsonAddData);
 
         // Add key
-        JsonObject jsonUserCafeMapKey = gson.fromJson(jsonObjStringUserCafeMapKey, JsonObject.class); // key data
         int dataCount = jsonUserCafeMapKey.get("data_count").getAsInt();
         jsonUserCafeMapKey.addProperty("data_count", dataCount + 1); // data count up
         jsonUserCafeMapKey.addProperty("data_" + String.valueOf(dataCount), key);
 
         //save a json file
-        String updateJsonUserCafeMap = gson.toJson(jsonUserCafeMap);
-        String updateJsonUserCafeMapKey = gson.toJson(jsonUserCafeMapKey);
-        try {
-            OutputStream out = context.openFileOutput("UserCafeMap.json", MODE_PRIVATE);
-            PrintWriter writer =
-                    new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
-
-            writer.write(updateJsonUserCafeMap);
-            writer.close();
-
-            out = context.openFileOutput("UserCafeMapKey.json", MODE_PRIVATE);
-            writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
-
-            writer.write(updateJsonUserCafeMapKey);
-            writer.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        saveUserCafeMapJson(jsonUserCafeMap);
+        saveUserCafeMapKeyJson(jsonUserCafeMapKey);
 
 //        System.out.println("Json master data = " + updateJsonUserCafeMap);
 //        System.out.println("Json key data = " + updateJsonUserCafeMapKey);
@@ -160,43 +107,12 @@ public class UserCafeMapModel {
     }
 
     public void setUserCafeMapMarkers(GoogleMap mMap) {
-        // Read UserCafeMap.json
-        File file = context.getFileStreamPath("UserCafeMap.json");
-        boolean isExists = file.exists();
-        if (!isExists) return;
+        // Read json
+        JsonObject jsonUserCafeMap = getUserCafeMapJson();
+        JsonObject jsonUserCafeMapKey = getUserCafeMapKeyJson();
 
-        // read json file
-        String jsonObjStringUserCafeMap = "";
-        String jsonObjStringUserCafeMapKey = "";
-        try {
-            InputStream in = context.openFileInput("UserCafeMap.json");
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String s;
-            while ((s = reader.readLine()) != null) {
-                jsonObjStringUserCafeMap += s;
-            }
-            reader.close();
+        if (jsonUserCafeMap == null || jsonUserCafeMapKey == null) return;
 
-            in = context.openFileInput("UserCafeMapKey.json");
-            reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            s = "";
-            while ((s = reader.readLine()) != null) {
-                jsonObjStringUserCafeMapKey += s;
-            }
-            reader.close();
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //System.out.println("setUserCafeMapMarkers " + jsonObjString);
-        // Add user cafe info to the json file
-        Gson gson = new Gson();
-        JsonObject jsonUserCafeMap = gson.fromJson(jsonObjStringUserCafeMap, JsonObject.class); // master data
-        JsonObject jsonUserCafeMapKey = gson.fromJson(jsonObjStringUserCafeMapKey, JsonObject.class); // key data
         // get data count
         int dataCount = jsonUserCafeMapKey.get("data_count").getAsInt();
         List<String> keyList = new ArrayList<>();
@@ -205,14 +121,13 @@ public class UserCafeMapModel {
             keyList.add(jsonUserCafeMapKey.get("data_" + String.valueOf(i)).getAsString());
         }
 
-        MarkerOptions options;
-
         String title, wifi, socket, time;
         double lat, lon;
         MapsActivityModel mam = new MapsActivityModel();
 
         // make markers til finished key data
         for (String key : keyList) {
+            if (key.equals("")) continue;
             title = jsonUserCafeMap.get(key).getAsJsonObject().get("cafeName").getAsString();
             lat = jsonUserCafeMap.get(key).getAsJsonObject().get("lat").getAsDouble();
             lon = jsonUserCafeMap.get(key).getAsJsonObject().get("lon").getAsDouble();
@@ -220,7 +135,70 @@ public class UserCafeMapModel {
             socket = jsonUserCafeMap.get(key).getAsJsonObject().get("cafeSocket").getAsString();
             wifi = jsonUserCafeMap.get(key).getAsJsonObject().get("cafeWifi").getAsString();
             // set
-            mam.setUpMarkers(mMap, title, lat, lon, time, socket, wifi);
+            mam.setUpMarkers(mMap, title, lat, lon, time, socket, wifi, "user");
+        }
+    }
+
+    private void saveUserCafeMapJson(JsonObject userCafeMapJson) {
+        String updateJsonUserCafeMap = new Gson().toJson(userCafeMapJson);
+        try {
+            OutputStream out = context.openFileOutput("UserCafeMap.json", MODE_PRIVATE);
+            PrintWriter writer =
+                    new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
+
+            writer.write(updateJsonUserCafeMap);
+            writer.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveUserCafeMapKeyJson(JsonObject userCafeMapKeyJson) {
+        String updateJsonUserCafeMapKey = new Gson().toJson(userCafeMapKeyJson);
+        try {
+            OutputStream out = context.openFileOutput("UserCafeMapKey.json", MODE_PRIVATE);
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
+
+            writer.write(updateJsonUserCafeMapKey);
+            writer.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void makeEmptyUserCafeMapJson() {
+        try {
+            OutputStream out = context.openFileOutput("UserCafeMap.json", MODE_PRIVATE);
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
+
+            writer.append("{}");
+            writer.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void makeEmptyUserCafeMapJsonKey() {
+        try {
+            OutputStream out = context.openFileOutput("UserCafeMapKey.json", MODE_PRIVATE);
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
+
+            writer.append("{\"data_count\":\"0\"}");
+            writer.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
     }
 
@@ -238,10 +216,64 @@ public class UserCafeMapModel {
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            System.out.println("[Debug] UserCafeMap.json Not Found");
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
         }
         JsonObject jsonUserCafeMap = new Gson().fromJson(jsonObjStringUserCafeMap, JsonObject.class);
         return jsonUserCafeMap;
     }
+
+    private JsonObject getUserCafeMapKeyJson() {
+        String jsonObjStringUserCafeMapKey = "";
+        try {
+            InputStream in = context.openFileInput("UserCafeMapKey.json");
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            String s;
+            while ((s = reader.readLine()) != null) {
+                jsonObjStringUserCafeMapKey += s;
+            }
+            reader.close();
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            System.out.println("[Debug] UserCafeMapKey.json Not Found");
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JsonObject jsonUserCafeMap = new Gson().fromJson(jsonObjStringUserCafeMapKey, JsonObject.class);
+        return jsonUserCafeMap;
+    }
+
+    public void deleteUserCafeMap(JsonObject jsonObjectUserCafeMap, String key) {
+        System.out.println("key = " + key);
+        String jsonString = new Gson().toJson(jsonObjectUserCafeMap);
+        //System.out.println(jsonString);
+        jsonObjectUserCafeMap.remove(key);
+        saveUserCafeMapJson(jsonObjectUserCafeMap);
+        String jsonString2 = new Gson().toJson(jsonObjectUserCafeMap);
+        //System.out.println(jsonString2);
+        String keyMap = new Gson().toJson(getUserCafeMapKeyJson());
+        System.out.println(keyMap);
+        deleteUSerCafeMapKey(key);
+    }
+
+    private void deleteUSerCafeMapKey(String key) {
+        JsonObject userCafeMapKeyJson = getUserCafeMapKeyJson();
+        int count = userCafeMapKeyJson.get("data_count").getAsInt();
+        for (int i = 0; i < count; i++) {
+            if (key.equals(userCafeMapKeyJson.get("data_" + String.valueOf(i)).getAsString())) {
+                //userCafeMapKeyJson.remove("data_"+String.valueOf(i));
+                userCafeMapKeyJson.addProperty("data_" + String.valueOf(i), "");
+                saveUserCafeMapKeyJson(userCafeMapKeyJson);
+            }
+        }
+
+    }
+
 }
