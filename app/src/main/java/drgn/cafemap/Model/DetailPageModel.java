@@ -209,6 +209,9 @@ public class DetailPageModel {
         final double lat = latitude;
         final double lon = longitude;
 
+        // Invisible
+        deleteButton.setVisibility(View.INVISIBLE);
+
         // preview
         previewButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -264,7 +267,6 @@ public class DetailPageModel {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 activity.startActivity(intent);
 
             }
