@@ -59,7 +59,6 @@
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:adjustViewBounds="true"/>
-        //android:src="@drawable/trees_organic_coffee" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -165,7 +164,6 @@
                 android:textSize="14sp" />
 
         </LinearLayout>
-
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
