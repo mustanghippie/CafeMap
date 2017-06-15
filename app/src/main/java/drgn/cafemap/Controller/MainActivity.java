@@ -103,19 +103,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 });
     }
 
-    // 位置情報許可の確認
+    // checking a user allow using GPS or not
     public void checkPermission() {
-        // 既に許可している
+        // App has got permission to use GPS from a user
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
             //locationActivity();
         }
-        // 拒否していた場合
+        // A user has refused to use GPS
         else{
             requestLocationPermission();
         }
     }
 
-    // 許可を求める
+    // asks for permission to use GPS
     private void requestLocationPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    // 結果の受け取り
+    // Get result
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_PERMISSION) {
