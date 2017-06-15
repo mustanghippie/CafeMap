@@ -76,10 +76,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.defaultPosLat = getIntent().getDoubleExtra("defaultPosLat", 0.0);
         this.defaultPosLon = getIntent().getDoubleExtra("defaultPosLon", 0.0);
 
-        // LocationRequest を生成して精度、インターバルを設定
+        // Create LocationRequest and set interval定
         locationRequest = LocationRequest.create();
 
-        // 測位の精度、消費電力の優先度
+        // positioning precision and battery priority
         locationPriority = priority[1];
 
         if (locationPriority == priority[0]) {
@@ -113,14 +113,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    // onResumeフェーズに入ったら接続
     @Override
     protected void onResume() {
         super.onResume();
         mGoogleApiClient.connect();
     }
 
-    // onPauseで切断
     @Override
     public void onPause() {
         super.onPause();
@@ -129,6 +127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        // For debug to delete json files
 //        getApplicationContext().deleteFile("UserCafeMap.json");
 //        getApplicationContext().deleteFile("UserCafeMapKey.json");
         // check permission
@@ -149,7 +148,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             UserCafeMapModel ucmm = new UserCafeMapModel(getApplicationContext());
             ucmm.setUserCafeMapMarkers(mMap);
 
-            // マーカータップ時、情報ウィンドウを開く
+            // open cafe information when a user tap a marker
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
@@ -184,7 +183,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     img.setImageBitmap(image);
 
-                    // タイトル設定
+                    // set title
                     String title = marker.getTitle();
                     TextView titleUi = (TextView) view.findViewById(R.id.title);
                     // Spannable string allows us to edit the formatting of the text.
@@ -236,7 +235,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-            // 情報ウィンドウクリック時のアクション
+            // 情報ウィンドウクリック時のアクション action when a user click cafe information window
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
@@ -256,7 +255,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-            // マーカー追加処理
+            // Add a marker process
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng point) {
@@ -296,7 +295,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to connect gps", Toast.LENGTH_LONG).show();
 
-                    // サンプル用初期位置
+                    // default position
                     LatLng position = new LatLng(49.285131, -123.112998);
 
 //                    MarkerOptions options = new MarkerOptions();
@@ -317,10 +316,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-        // 現在地へ
+        // go to you're here
         Log.d("debug", "onLocationChanged");
         if (onLocationChangedListener != null) {
-            // GPSのマークを表示する
+            // display GPS mark
             onLocationChangedListener.onLocationChanged(location);
 
             double lat = location.getLatitude();
