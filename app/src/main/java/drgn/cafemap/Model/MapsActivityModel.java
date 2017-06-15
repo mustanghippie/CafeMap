@@ -6,8 +6,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import drgn.cafemap.R;
 
-
-
 /**
  * Created by musta on 2017/06/11.
  */
