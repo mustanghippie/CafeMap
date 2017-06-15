@@ -52,6 +52,7 @@
                     android:layout_weight="1"
                     android:adjustViewBounds="true"
                     android:elevation="0dp"
+                    android:background="@null"
                     android:src="@drawable/icon_edit" />
 
 
