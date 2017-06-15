@@ -369,44 +369,6 @@
             </LinearLayout>
 
 
-            <!--HORIZONTAL LAYOUT-->
-
-            <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="60dp"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:gravity="center"-->
-                <!--android:layout_marginBottom="40dp"-->
-                <!--&gt;-->
-
-                <!--<Button-->
-                    <!--android:id="@+id/deleteButton"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_marginLeft="20dp"-->
-                    <!--android:layout_marginRight="5dp"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:background="@color/common_google_signin_btn_text_dark_disabled"-->
-                    <!--android:text="delete"-->
-                    <!--android:textAlignment="center"-->
-                    <!--android:textColor="@color/common_google_signin_btn_text_dark_default"-->
-                    <!--android:textSize="20sp" />-->
-
-                <!--<Button-->
-                    <!--android:id="@+id/previewButton"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:background="@color/colorAccent"-->
-                    <!--android:text="preview"-->
-                    <!--android:layout_marginLeft="5dp"-->
-                    <!--android:layout_marginRight="20dp"-->
-                    <!--android:textAlignment="center"-->
-                    <!--android:textColor="@color/common_google_signin_btn_text_dark_default"-->
-                    <!--android:textSize="20sp" />-->
-
-            <!--</LinearLayout>-->
-
         </LinearLayout>
 
     </ScrollView>
