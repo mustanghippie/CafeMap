@@ -156,6 +156,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public View getInfoWindow(Marker marker) {
                     disableClickEvent = true;
+
+                    if (marker.getTitle().equals("Add your cafe")){
+                        View view = getLayoutInflater().inflate(R.layout.info_window_new, null);
+                        String title = marker.getTitle();
+                        System.out.println(title);
+                        TextView titleUi = (TextView) view.findViewById(R.id.title);
+                        titleUi.setText(title);
+                        return view;
+                    }
+
                     // Set view
                     View view = getLayoutInflater().inflate(R.layout.info_window, null);
 
@@ -238,7 +248,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
                     int viewMode = 1;
-                    if (marker.getTitle().equals("Make a new location")) viewMode = 0;
+                    if (marker.getTitle().equals("Add your cafe")) viewMode = 0;
 
                     intent.putExtra("lat", latlng.latitude);
                     intent.putExtra("lon", latlng.longitude);
@@ -260,7 +270,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (currentMarker != null) currentMarker.remove();
                         // マーカーを追加
                         LatLng latLng = new LatLng(point.latitude, point.longitude);
-                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Make a new location"));
+                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Add your cafe"));
                         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                         CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(17).build();
                         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -291,11 +301,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // サンプル用初期位置
                     LatLng position = new LatLng(49.285131, -123.112998);
 
-                    MarkerOptions options = new MarkerOptions();
-                    options.title("You are here");
-                    options.position(position);
-
-                    mMap.addMarker(options);
+//                    MarkerOptions options = new MarkerOptions();
+//                    options.title("You are here");
+//                    options.position(position);
+//
+//                    mMap.addMarker(options);
 
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
                 }
