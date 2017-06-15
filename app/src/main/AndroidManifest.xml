@@ -34,7 +34,7 @@
 
         <activity
             android:name=".Controller.MainActivity"
-            android:label="@string/title_activity_maps">
+            android:label="CafeMap">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,7 +49,7 @@
             android:name=".Controller.DetailPageActivity"
             android:label="@string/title_activity_edit_page"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Controller.DetailPageFragment"></activity>
+        <activity android:name=".Controller.DetailPageFragment" />
     </application>
 
 </manifest>
