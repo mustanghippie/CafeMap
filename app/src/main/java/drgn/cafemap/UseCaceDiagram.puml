@@ -1,0 +1,17 @@
+@startuml
+
+actor User
+actor CafeMap
+
+left to right direction
+
+rectangle App{
+    User -> (Get nearly cafe info)
+    User -> (location *GPS)
+    User -> (GoogleMap)
+    CafeMap -left-> (GoogleMap)
+    CafeMap -left-> (Set nearly cafe info)
+
+}
+
+@enduml

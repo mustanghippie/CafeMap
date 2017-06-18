@@ -30,7 +30,7 @@ import java.util.concurrent.CountDownLatch;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by musta on 2017/06/08.
+ * Created by Nobu on 2017/06/08.
  */
 
 public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {

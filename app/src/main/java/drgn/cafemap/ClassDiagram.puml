@@ -1,0 +1,101 @@
+@startuml
+
+class MainActivity{
+    -REQUEST_PERMISSION
+    -REQUEST_PERMISSION
+    -RC_SIGN_IN = 9001
+    -FirebaseAuth mAuth
+    -GoogleApiClient
+    #onCreate()
+    +checkPermission()
+    -requestLocationPermission()
+    +onRequestPermissionsResult()
+    -firebaseAuthWithGoogle()
+    +onConnectionFailed()
+    +onActivityResult()
+    -changeActivity()
+}
+
+class MapsActivity{
+    -GoogleMap
+    -GoogleApiClient
+    -LocationRequest
+    -OnLocationChangedListener
+    -priority[]
+    -locationPriority
+    #onCreate()
+    #onResume()
+    +onPause()
+    +onMapReady()
+    +onLocationChanged()
+    +onConnected()
+    -createLocationRequest()
+    +onConnectionSuspended()
+    +onConnectionFailed()
+    +onMyLocationButtonClick()
+    +activate()
+    +deactivate()
+}
+
+class DetailPageFragment{
+    -String key;
+    -int viewMode; // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
+    -AsyncTaskMarkerSet atms
+    -ImageView uploadImage
+    -Bitmap uploadImageBmp
+    -double lat, lon
+    -DetailPageModel dpm
+    +onCreate()
+    +onViewCreated()
+    -setParamsInView()
+    +onActivityResult()
+    -getBitmapFromUri()
+}
+
+class AsyncTaskMarkerSet{
+    -CountDownLatch latch
+    -DatabaseReference mDatabase
+    -FirebaseStorage storage
+    -StorageReference storageRef
+    -StorageReference imageRef
+    -Bitmap bitmap
+    -GoogleMap mMap
+    -Map<String, HashMap<String, String>> cafeMap
+    -ArrayList<String> cafeNameArrayList
+    -Map<String, Bitmap> cafeBitmapMap
+
+    +AsyncTaskMarkerSet()
+    #doInBackground()
+    +readImagesFromFirebase()
+    #onPostExecute()
+    +getCafeBitmapMap()
+    +getCafeMap()
+
+}
+
+class MapsActivityModel{
+    +setUpMarkers()
+}
+
+class UserCafeMapModel{
+    -Context context
+    +UserCafeMapModel()
+    +saveUserCafeMap()
+    +saveUserCafeMapImage()
+    +setUserCafeMapMarkers()
+    -saveUserCafeMapJson()
+    -saveUserCafeMapKeyJson()
+    -makeEmptyUserCafeMapJson()
+    -makeEmptyUserCafeMapJsonKey()
+    +getUserCafeMapJson()
+    -getUserCafeMapKeyJson()
+    +deleteUserCafeMap()
+    -deleteUSerCafeMapKey()
+}
+
+MainActivity -- MapsActivity
+MapsActivity -- DetailPageFragment
+MapsActivity -- AsyncTaskMarkerSet
+MapsActivity -- MapsActivityModel
+DetailPageFragment -- UserCafeMapModel
+@enduml
