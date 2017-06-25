@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,11 +28,9 @@ import java.util.Map;
 
 import drgn.cafemap.Controller.DetailPageActivity;
 import drgn.cafemap.Controller.MapsActivity;
-import drgn.cafemap.Object.Cafe;
 import drgn.cafemap.R;
 
 import static android.content.Context.MODE_PRIVATE;
-import static drgn.cafemap.Controller.MapsActivity.atms;
 
 /**
  * Created by Nobu on 2017/06/11.
@@ -41,7 +38,8 @@ import static drgn.cafemap.Controller.MapsActivity.atms;
 
 public class DetailPageModel {
     // Base param
-    private String key;
+    private double lat;
+    private double lon;
     private Context context;
     private UserCafeMapModel ucm;
     // Json
@@ -75,8 +73,9 @@ public class DetailPageModel {
     private ImageButton editButton;
 
 
-    public DetailPageModel(Context context, String key) {
-        this.key = key;
+    public DetailPageModel(Context context, double lat, double lon) {
+        this.lat = lat;
+        this.lon = lon;
         this.context = context;
         this.ucm = new UserCafeMapModel(context);
         this.jsonObjectUserCafeMap = this.ucm.getUserCafeMapJson();
@@ -166,16 +165,18 @@ public class DetailPageModel {
             @Override
             public void onClick(View v) {
 
-                // Delete preview image
-                //getContext().deleteFile("preview.png");
-
                 UserCafeMapModel ucmm = new UserCafeMapModel(context);
-                Cafe cafe = new Cafe(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
-                        temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
-                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"));
+//                Cafe cafe = new Cafe(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
+//                        temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
+//                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"));
+//
+//                ucmm.saveUserCafeMap(key, cafe);
+//                ucmm.saveUserCafeMapImage(uploadImageBmp, key);
 
-                ucmm.saveUserCafeMap(key, cafe);
-                ucmm.saveUserCafeMapImage(uploadImageBmp, key);
+                ucmm.saveUserCafeMap(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
+                        temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
+                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), uploadImageBmp);
+
 
                 Intent intent = new Intent(context, MapsActivity.class);
 
@@ -298,13 +299,13 @@ public class DetailPageModel {
         setSpinnerData(wifiSpinner, previousCafeData.get("cafeWifi"));
 
         // set previous image
-        try {
-            FileInputStream is = context.openFileInput(key + ".png");
-            setUploadImageBmp(BitmapFactory.decodeStream(is));
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            FileInputStream is = context.openFileInput(key + ".png");
+//            setUploadImageBmp(BitmapFactory.decodeStream(is));
+//            is.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         // Delete only existing cafe info
         if (checkCafeDetailExist() == true) {
@@ -320,7 +321,7 @@ public class DetailPageModel {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     // OK button pressed
-                                    ucm.deleteUserCafeMap(jsonObjectUserCafeMap, key);
+                                    //ucm.deleteUserCafeMap(jsonObjectUserCafeMap, key);
 
                                     Intent intent = new Intent(context, MapsActivity.class);
 
@@ -412,23 +413,28 @@ public class DetailPageModel {
         final double lat = latitude;
         final double lon = longitude;
 
+        // image in cafe_user_tbl exits or not
+        byte[] result = new CafeUserTblHelper(context).executeSelect(lat, lon, "image");
+
         String type;
-        if (checkCafeDetailExist()) type = "user"; // get data from user data
+        if (result != null) type = "user"; // get data from user data
         else type = "master";// det data from master data
 
         // Set image
-        cafeScreenshot.setImageBitmap(getImage(type));
 
-        final HashMap<String, String> cafeDetail;
-        if (type.equals("master")) cafeDetail = MapsActivity.atms.getCafeMap().get(key);
-        else cafeDetail = getUserCafeMapDetail();
+        final Map<String, Object> cafeDetail;
 
-        nameTextView.setText(cafeDetail.get("name"));
-        addressTextView.setText(cafeDetail.get("address"));
-        telTextView.setText(cafeDetail.get("tel"));
-        timeTextView.setText(cafeDetail.get("time"));
-        socketTextView.setText(cafeDetail.get("socket"));
-        wifiTextView.setText(cafeDetail.get("wifi"));
+        if (type.equals("master")) cafeDetail = getUserCafeMapDetail(lat, lon);
+        else cafeDetail = getUserCafeMapDetail(lat, lon);
+
+        nameTextView.setText(cafeDetail.get("cafeName").toString());
+        addressTextView.setText(cafeDetail.get("cafeAddress").toString());
+        telTextView.setText(cafeDetail.get("cafeTel").toString());
+        timeTextView.setText(cafeDetail.get("cafeTime").toString());
+        socketTextView.setText(cafeDetail.get("cafeSocket").toString());
+        wifiTextView.setText(cafeDetail.get("cafeWifi").toString());
+        byte[] imageByte = (byte[]) cafeDetail.get("cafeImage");
+        cafeScreenshot.setImageBitmap(ucm.convertByteToBitmap(imageByte));
 
         if (type.equals("master")) editButton.setVisibility(View.INVISIBLE);
 
@@ -440,12 +446,12 @@ public class DetailPageModel {
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
                 intent.putExtra("viewMode", 3);
-                intent.putExtra("cafeName", cafeDetail.get("name"));
-                intent.putExtra("cafeAddress", cafeDetail.get("address"));
-                intent.putExtra("cafeTel", cafeDetail.get("tel"));
-                intent.putExtra("cafeTime", cafeDetail.get("time"));
-                intent.putExtra("cafeSocket", cafeDetail.get("socket"));
-                intent.putExtra("cafeWifi", cafeDetail.get("wifi"));
+                intent.putExtra("cafeName", cafeDetail.get("cafeName").toString());
+                intent.putExtra("cafeAddress", cafeDetail.get("cafeAddress").toString());
+                intent.putExtra("cafeTel", cafeDetail.get("cafeTel").toString());
+                intent.putExtra("cafeTime", cafeDetail.get("cafeTime").toString());
+                intent.putExtra("cafeSocket", cafeDetail.get("cafeSocket").toString());
+                intent.putExtra("cafeWifi", cafeDetail.get("cafeWifi").toString());
 
                 activity.startActivity(intent);
 
@@ -454,38 +460,15 @@ public class DetailPageModel {
 
     }
 
-    public Bitmap getImage(String type) {
-        Bitmap image;
-        if (type.equals("master")) {
-            String imageName = atms.getCafeMap().get(key).get("name").replaceAll(" ", "_").toLowerCase();
-            image = atms.getCafeBitmapMap().get(imageName);
-            return image;
-        } else {
-            try {
-                InputStream is = context.openFileInput(key + ".png");
-                image = BitmapFactory.decodeStream(is);
-                return image;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+    public Map<String, Object> getUserCafeMapDetail(double lat, double lon) {
+        Map<String, Object> cafeDetail = new HashMap<>();
 
-        }
-        return null;
-    }
-
-    public HashMap<String, String> getUserCafeMapDetail() {
-        HashMap<String, String> cafeDetail = new HashMap<>();
-
-        cafeDetail.put("name", jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeName").getAsString());
-        cafeDetail.put("address", jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeAddress").getAsString());
-        cafeDetail.put("tel", jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeTel").getAsString());
-        cafeDetail.put("time", jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeTime").getAsString());
-        cafeDetail.put("socket", jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeSocket").getAsString());
-        cafeDetail.put("wifi", jsonObjectUserCafeMap.get(key).getAsJsonObject().get("cafeWifi").getAsString());
+        CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
+        cafeDetail = cafeUserTblHelper.executeSelect(lat, lon);
 
         return cafeDetail;
     }
-
+    
     private void setSpinnerData(Spinner timeSpinner, String time) {
         Adapter adp = (ArrayAdapter<String>) timeSpinner.getAdapter();
         int index = 0;
@@ -507,7 +490,7 @@ public class DetailPageModel {
         boolean fileIsFound = true;
 
         try {
-            this.jsonObjectUserCafeMap.get(key).getAsJsonObject();
+            //this.jsonObjectUserCafeMap.get(key).getAsJsonObject();
         } catch (NullPointerException e) {
             // File not found
             fileIsFound = false;

@@ -50,6 +50,8 @@
             android:label="@string/title_activity_edit_page"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Controller.DetailPageFragment" />
+        <activity android:name=".util.ConvertFirebaseToSQL" />
+        <activity android:name=".util.ConvertJsonToSQL"></activity>
     </application>
 
 </manifest>
