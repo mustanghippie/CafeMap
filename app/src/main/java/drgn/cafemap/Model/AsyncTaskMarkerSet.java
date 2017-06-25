@@ -1,5 +1,6 @@
 package drgn.cafemap.Model;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ import static android.content.ContentValues.TAG;
  */
 
 public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
+    private Context context;
     // Sync
     private CountDownLatch latch;
     // Firebase realtime database
@@ -53,7 +55,8 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
     // Cafe image list
     private Map<String, Bitmap> cafeBitmapMap = new HashMap<>();
 
-    public AsyncTaskMarkerSet(GoogleMap mMap) {
+    public AsyncTaskMarkerSet(GoogleMap mMap, Context context) {
+        this.context = context;
         // Google Map
         this.mMap = mMap;
 
@@ -77,10 +80,9 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 String title, wifi, socket, time;
-                MarkerOptions options;
-                LatLng location;
                 double lat, lon;
-                MapsActivityModel mam = new MapsActivityModel();
+
+                UserCafeMapModel ucm = new UserCafeMapModel(context);
                 // location start from 1
                 for (int i = 1; ; i++) {
                     if ((title = dataSnapshot.child("location" + String.valueOf(i)).child("name").getValue(String.class)) == null)
@@ -91,7 +93,7 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
                     socket = dataSnapshot.child("location" + String.valueOf(i)).child("socket").getValue(String.class);
                     wifi = dataSnapshot.child("location" + String.valueOf(i)).child("wifi").getValue(String.class);
                     // marker set
-                    mam.setUpMarkers(mMap, title, lat, lon, time, socket, wifi, "owner");
+                    //ucm.setUpMarkers(mMap, lat, lon, title, time, wifi, socket, "owner");
 
                     // set name to ArrayList for download images
                     cafeNameArrayList.add(title.replaceAll(" ", "_").toLowerCase());

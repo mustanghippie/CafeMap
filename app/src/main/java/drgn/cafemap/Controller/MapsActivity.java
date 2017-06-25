@@ -37,12 +37,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.FileNotFoundException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import drgn.cafemap.Model.AsyncTaskMarkerSet;
+import drgn.cafemap.Model.CafeUserTblHelper;
 import drgn.cafemap.R;
 import drgn.cafemap.Model.UserCafeMapModel;
+import drgn.cafemap.util.DBHelper;
 
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
@@ -56,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationRequest locationRequest;
     public static AsyncTaskMarkerSet atms;
     private Marker currentMarker = null;
+    private UserCafeMapModel userCafeMapModel;
 
     private OnLocationChangedListener onLocationChangedListener = null;
 
@@ -75,7 +79,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // get default location after user cafe info set
         this.defaultPosLat = getIntent().getDoubleExtra("defaultPosLat", 0.0);
         this.defaultPosLon = getIntent().getDoubleExtra("defaultPosLon", 0.0);
-
         // Create LocationRequest and set interval定
         locationRequest = LocationRequest.create();
 
@@ -109,7 +112,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-
+        // Initialize
+        this.userCafeMapModel = new UserCafeMapModel(getApplicationContext());
+        // Create database
+        DBHelper dbHelper = new DBHelper(getApplicationContext());
 
     }
 
@@ -127,26 +133,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        // For debug to delete json files
-//        getApplicationContext().deleteFile("UserCafeMap.json");
-//        getApplicationContext().deleteFile("UserCafeMapKey.json");
         // check permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            mMap = googleMap;
-            // default の LocationSource から自前のsourceに変更する
+            // Initialize
+            this.mMap = googleMap;
             mMap.setLocationSource(this);
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
 
-            // Reads markers from firebase and set markers up
-            // And also prepare images of cafes
-            this.atms = new AsyncTaskMarkerSet(mMap);
-            this.atms.execute("");
-            // Reads markers from UserMapCafe.json and set markers up
-            UserCafeMapModel ucmm = new UserCafeMapModel(getApplicationContext());
-            ucmm.setUserCafeMapMarkers(mMap);
+            // Sets markers and reads data from cafe_user_tbl and cafe_master_tbl
+            this.userCafeMapModel.setCafeMapMarkers(mMap);
 
             // open cafe information when a user tap a marker
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -154,10 +152,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public View getInfoWindow(Marker marker) {
                     disableClickEvent = true;
 
-                    if (marker.getTitle().equals("Add your cafe")){
+                    // Making a new cafe data
+                    if (marker.getTitle().equals("Add your cafe")) {
                         View view = getLayoutInflater().inflate(R.layout.info_window_new, null);
                         String title = marker.getTitle();
-                        System.out.println(title);
+
                         TextView titleUi = (TextView) view.findViewById(R.id.title);
                         titleUi.setText(title);
                         return view;
@@ -165,21 +164,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // Set view
                     View view = getLayoutInflater().inflate(R.layout.info_window, null);
-
                     // set up image
                     ImageView img = (ImageView) view.findViewById(R.id.badge);
-                    //String imgName = marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png";
-                    Bitmap image = atms.getCafeBitmapMap().get(marker.getTitle().replaceAll(" ", "_").toLowerCase()); // from owner data
-                    if (image == null) {
-                        // in user marker case
-                        String imageName = String.valueOf(marker.getPosition().latitude) + String.valueOf(marker.getPosition().longitude);
+                    // get cafe image
+                    Bitmap image = null;
+                    if (marker.getTag().toString().equals("user")) {
+                        image = userCafeMapModel.getCafeImage(marker.getPosition().latitude, marker.getPosition().longitude);
+                    } else { // in owner case
                         try {
-                            InputStream in = getApplicationContext().openFileInput(imageName + ".png"); // from local data
-                            image = BitmapFactory.decodeStream(in);
-                        } catch (FileNotFoundException e) {
-                            System.out.println("FileNotFound@MapsActivity " + imageName + ".png");
+                            InputStream inputStream = getResources().getAssets().open(marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png");
+                            image = BitmapFactory.decodeStream(inputStream);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-
                     }
                     img.setImageBitmap(image);
 
@@ -235,7 +232,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-            // 情報ウィンドウクリック時のアクション action when a user click cafe information window
+            // action when a user click cafe information window
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
@@ -260,14 +257,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onMapClick(LatLng point) {
                     if (!disableClickEvent) {
-                        // タップした位置の表示
-                        //Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
-                        //Log.d("Location ", "Latitude + " + point.latitude + " Longitude + " + point.longitude);
+                        // display marker's location for debug
+                        // Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
+                        // Log.d("Location ", "Latitude + " + point.latitude + " Longitude + " + point.longitude);
                         // A marker can exist only one
                         if (currentMarker != null) currentMarker.remove();
-                        // マーカーを追加
+                        // Location
                         LatLng latLng = new LatLng(point.latitude, point.longitude);
-                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Add your cafe"));
+                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Add your cafe").draggable(true)); // add the marker
                         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                         CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(17).build();
                         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -297,12 +294,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // default position
                     LatLng position = new LatLng(49.285131, -123.112998);
-
-//                    MarkerOptions options = new MarkerOptions();
-//                    options.title("You are here");
-//                    options.position(position);
-//
-//                    mMap.addMarker(options);
 
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
                 }

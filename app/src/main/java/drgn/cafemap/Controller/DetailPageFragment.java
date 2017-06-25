@@ -102,7 +102,7 @@ public class DetailPageFragment extends Fragment {
      */
     private void setParamsInView(final View view) {
 
-        dpm = new DetailPageModel(getContext(), key);
+        dpm = new DetailPageModel(getContext(), lat, lon);
 
         switch (viewMode) {
             case 0: // Display edit page from "make a new"
@@ -113,6 +113,7 @@ public class DetailPageFragment extends Fragment {
                 GetAddressGeocoder coder = new GetAddressGeocoder(getContext(), addressTextView, lat, lon);
                 coder.execute();
 
+                // make edit page
                 dpm.displayEditPage(getActivity(), getResources(), view, 0, lat, lon);
 
                 // Upload image
