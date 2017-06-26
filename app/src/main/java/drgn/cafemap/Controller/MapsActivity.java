@@ -247,6 +247,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     intent.putExtra("lat", latlng.latitude);
                     intent.putExtra("lon", latlng.longitude);
                     intent.putExtra("viewMode", viewMode);
+                    if (marker.getTag().toString().equals("owner")) intent.putExtra("ownerFlag", true);
+                    else intent.putExtra("ownerFlag", false);
 
                     startActivity(intent);
                 }
@@ -265,6 +267,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // Location
                         LatLng latLng = new LatLng(point.latitude, point.longitude);
                         currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Add your cafe").draggable(true)); // add the marker
+                        currentMarker.setTag("user");
                         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                         CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(17).build();
                         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));

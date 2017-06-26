@@ -29,12 +29,11 @@ import static android.app.Activity.RESULT_OK;
 
 public class DetailPageFragment extends Fragment {
 
-    private String key;
     private int viewMode; // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
-    private AsyncTaskMarkerSet atms;
     private ImageView uploadImage;
     private Bitmap uploadImageBmp;
     private double lat, lon;
+    private boolean ownerFlag;
     private DetailPageModel dpm;
 
     // For preview page
@@ -47,10 +46,10 @@ public class DetailPageFragment extends Fragment {
         // must get params of bundle in onCreate method
         Bundle args = getArguments();
         // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
-        viewMode = args.getInt("viewMode");
-        lat = args.getDouble("lat");
-        lon = args.getDouble("lon");
-        key = String.valueOf(args.getDouble("lat")) + String.valueOf(args.getDouble("lon"));
+        this.viewMode = args.getInt("viewMode");
+        this.lat = args.getDouble("lat");
+        this.lon = args.getDouble("lon");
+        this.ownerFlag = args.getBoolean("ownerFlag");
 
         int layoutId = 0;
 
@@ -94,15 +93,12 @@ public class DetailPageFragment extends Fragment {
     }
 
     /**
-     * Makes detail page layout or edit page layout by newMarkerFlag
-     * if newMarkerFlag is true, user make cafe information.
-     *
      * @param view
      * @return int R.layout ID
      */
     private void setParamsInView(final View view) {
 
-        dpm = new DetailPageModel(getContext(), lat, lon);
+        dpm = new DetailPageModel(getContext(), view, getActivity(), getResources(), lat, lon);
 
         switch (viewMode) {
             case 0: // Display edit page from "make a new"
@@ -114,7 +110,7 @@ public class DetailPageFragment extends Fragment {
                 coder.execute();
 
                 // make edit page
-                dpm.displayEditPage(getActivity(), getResources(), view, 0, lat, lon);
+                dpm.displayEditPage(0);
 
                 // Upload image
                 Button uploadImageButton = (Button) view.findViewById(R.id.uploadImageButton);
@@ -131,15 +127,15 @@ public class DetailPageFragment extends Fragment {
 
                 break;
             case 1: // Display cafe detail page
-                dpm.displayDetailPage(getActivity(), view, viewMode, lat, lon);
+                dpm.displayDetailPage(viewMode, ownerFlag);
 
                 break;
             case 2: // preview page
-                dpm.displayPreviewPage(getActivity(), view, viewMode, temporaryCafeData, lat, lon);
+                dpm.displayPreviewPage(viewMode, temporaryCafeData);
 
                 break;
             case 3: // Display edit page from "existing cafe info"
-                dpm.displayEditPage(getActivity(), getResources(), view, viewMode, lat, lon, temporaryCafeData);
+                dpm.displayEditPage(viewMode, temporaryCafeData, ownerFlag);
 
                 // Upload image
                 uploadImageButton = (Button) view.findViewById(R.id.uploadImageButton);
@@ -161,6 +157,13 @@ public class DetailPageFragment extends Fragment {
 
     }
 
+    /**
+     * Read image from user's device.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param resultData
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         if (requestCode == 1000 && resultCode == RESULT_OK) {
@@ -171,15 +174,6 @@ public class DetailPageFragment extends Fragment {
                 try {
                     uploadImageBmp = getBitmapFromUri(uri);
                     dpm.setUploadImageBmp(uploadImageBmp);
-
-                    //uploadImage.setImageBitmap(uploadImageBmp);
-
-//                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                    bmp.compress(Bitmap.CompressFormat.PNG, 100, baos);
-//                    imageBytes = baos.toByteArray();
-
-                    // decode
-//                    bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

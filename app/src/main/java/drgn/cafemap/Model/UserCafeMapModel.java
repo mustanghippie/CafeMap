@@ -141,8 +141,10 @@ public class UserCafeMapModel {
         options.snippet(cafeTime + "\n" + "Wi-fi: " + cafeWifi + "\nSocket: " + cafeSocket + " ");
         if (iconType.equals("owner"))
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_operator));
-        if ((iconType.equals("user")))
+        if ((iconType.equals("user"))) {
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_user));
+            options.zIndex(1.0f);
+        }
 
         // Add marker on google map
         marker = mMap.addMarker(options);
@@ -158,7 +160,7 @@ public class UserCafeMapModel {
      * @param bitmap
      * @return byte[]
      */
-    private byte[] convertBitmapToByte(Bitmap bitmap) {
+    protected byte[] convertBitmapToByte(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         //PNG quality 100%

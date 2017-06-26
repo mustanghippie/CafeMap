@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import drgn.cafemap.Controller.DetailPageActivity;
@@ -42,10 +41,12 @@ public class DetailPageModel {
     private double lon;
     private Context context;
     private UserCafeMapModel ucm;
+    private FragmentActivity fragmentActivity;
+    private View view;
+    private Resources resources;
     // Json
     private JsonObject jsonObjectUserCafeMap;
     // Common View
-    private View view;
     private TextView nameTextView;
     private TextView addressTextView;
     private TextView telTextView;
@@ -73,16 +74,19 @@ public class DetailPageModel {
     private ImageButton editButton;
 
 
-    public DetailPageModel(Context context, double lat, double lon) {
+    public DetailPageModel(Context context, View view, FragmentActivity fragmentActivity, Resources resources, double lat, double lon) {
+        this.context = context;
+        this.view = view;
+        this.fragmentActivity = fragmentActivity;
+        this.resources = resources;
         this.lat = lat;
         this.lon = lon;
-        this.context = context;
         this.ucm = new UserCafeMapModel(context);
         this.jsonObjectUserCafeMap = this.ucm.getUserCafeMapJson();
     }
 
-    private void prepareViewContents(View view, int viewMode) {
-        this.view = view;
+    private void prepareViewContents(int viewMode) {
+
         this.nameTextView = (TextView) view.findViewById(R.id.cafeName);
         this.addressTextView = (TextView) view.findViewById(R.id.cafeAddress);
         this.telTextView = (TextView) view.findViewById(R.id.cafeTel);
@@ -127,19 +131,12 @@ public class DetailPageModel {
      * Displays edit page
      * View mode 2
      *
-     * @param fa
-     * @param v
      * @param viewMode
      * @param cafeData
-     * @param latitude
-     * @param longitude
      */
-    public void displayPreviewPage(FragmentActivity fa, View v, int viewMode, Map<String, String> cafeData, double latitude, double longitude) {
+    public void displayPreviewPage(int viewMode, Map<String, String> cafeData) {
         final Map<String, String> temporaryCafeData = cafeData;
-        final double lat = latitude;
-        final double lon = longitude;
-        final FragmentActivity activity = fa;
-        prepareViewContents(v, viewMode);
+        prepareViewContents(viewMode);
 
         // read preview image
         try {
@@ -164,25 +161,23 @@ public class DetailPageModel {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                UserCafeMapModel ucmm = new UserCafeMapModel(context);
-//                Cafe cafe = new Cafe(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
-//                        temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
-//                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"));
-//
-//                ucmm.saveUserCafeMap(key, cafe);
-//                ucmm.saveUserCafeMapImage(uploadImageBmp, key);
-
-                ucmm.saveUserCafeMap(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
+                CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
+                boolean successFlag = cafeUserTblHelper.executeInsert(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
                         temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
-                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), uploadImageBmp);
+                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp));
 
+                // If cafe data already exist, execute UPDATE
+                if (!successFlag) {
+                    cafeUserTblHelper.executeUpdate(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
+                            temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
+                            temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp));
+                }
 
                 Intent intent = new Intent(context, MapsActivity.class);
 
                 intent.putExtra("defaultPosLat", lat);
                 intent.putExtra("defaultPosLon", lon);
-                activity.startActivity(intent);
+                fragmentActivity.startActivity(intent);
             }
         });
     }
@@ -192,19 +187,10 @@ public class DetailPageModel {
      * View mode 0 or 3
      * From making a new data
      *
-     * @param fa
-     * @param re
-     * @param v
      * @param viewMode
-     * @param latitude
-     * @param longitude
      */
-    public void displayEditPage(FragmentActivity fa, Resources re, View v, int viewMode, double latitude, double longitude) {
-        prepareViewContents(v, viewMode);
-        final FragmentActivity activity = fa;
-        final Resources resources = re;
-        final double lat = latitude;
-        final double lon = longitude;
+    public void displayEditPage(int viewMode) { // view 0
+        prepareViewContents(viewMode);
 
         // Invisible
         deleteButton.setVisibility(View.INVISIBLE);
@@ -264,20 +250,16 @@ public class DetailPageModel {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                activity.startActivity(intent);
+                fragmentActivity.startActivity(intent);
 
             }
         });
 
     }
 
-    // From existing data
-    public void displayEditPage(FragmentActivity fa, Resources re, View v, int viewMode, double latitude, double longitude, Map<String, String> cafeData) {
-        prepareViewContents(v, viewMode);
-        final FragmentActivity activity = fa;
-        final Resources resources = re;
-        final double lat = latitude;
-        final double lon = longitude;
+    // From existing data(View mode 3)
+    public void displayEditPage(int viewMode, Map<String, String> cafeData, boolean ownerFlag) {
+        prepareViewContents(viewMode);
         final Map<String, String> previousCafeData = cafeData;
 
         nameTextView.setText(previousCafeData.get("cafeName"));
@@ -286,7 +268,7 @@ public class DetailPageModel {
 
         // set time parts
         String[] timeArray = previousCafeData.get("cafeTime").split(" - ");
-        String fromTime = timeArray[0].replaceAll("AM", "").replaceAll("PM", ""); // EX) 10:00
+        final String fromTime = timeArray[0].replaceAll("AM", "").replaceAll("PM", ""); // EX) 10:00
         String toTime = timeArray[1].replaceAll("AM", "").replaceAll("PM", ""); // EX) 19:00
         setSpinnerData(startHourSpinner, fromTime.split(":")[0]);
         setSpinnerData(startMinuteSpinner, fromTime.split(":")[1]);
@@ -299,21 +281,21 @@ public class DetailPageModel {
         setSpinnerData(wifiSpinner, previousCafeData.get("cafeWifi"));
 
         // set previous image
-//        try {
-//            FileInputStream is = context.openFileInput(key + ".png");
-//            setUploadImageBmp(BitmapFactory.decodeStream(is));
-//            is.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        if (ownerFlag) {
+            uploadImageBmp = getImageFromAssets(previousCafeData.get("cafeName"));
+            uploadImage.setImageBitmap(uploadImageBmp);
+        } else {
+            uploadImageBmp = new UserCafeMapModel(context).convertByteToBitmap(new CafeUserTblHelper(context).executeSelect(lat, lon, "image"));
+            uploadImage.setImageBitmap(uploadImageBmp);
+        }
 
         // Delete only existing cafe info
-        if (checkCafeDetailExist() == true) {
+        if (!ownerFlag) {
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    new AlertDialog.Builder(activity)
+                    new AlertDialog.Builder(fragmentActivity)
                             .setTitle("Delete cafe information")
                             .setMessage("Are you sure you want to permanently delete this cafe info ?")
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -321,13 +303,13 @@ public class DetailPageModel {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     // OK button pressed
-                                    //ucm.deleteUserCafeMap(jsonObjectUserCafeMap, key);
+                                    new CafeUserTblHelper(context).executeDelete(lat, lon); // DELETE
 
                                     Intent intent = new Intent(context, MapsActivity.class);
 
                                     intent.putExtra("defaultPosLat", lat);
                                     intent.putExtra("defaultPosLon", lon);
-                                    activity.startActivity(intent);
+                                    fragmentActivity.startActivity(intent);
                                 }
                             })
                             .setNegativeButton("Cancel", null)
@@ -335,7 +317,7 @@ public class DetailPageModel {
                 }
             });
         } else {
-            //deleteButton.setVisibility(View.INVISIBLE);
+            deleteButton.setVisibility(View.INVISIBLE);
         }
 
         // preview
@@ -377,15 +359,6 @@ public class DetailPageModel {
                 // temp preview image
                 try {
                     OutputStream out = context.openFileOutput("preview.png", MODE_PRIVATE);
-                    if (uploadImageBmp == null) {
-                        // Set no image
-                        try {
-                            InputStream istream = resources.getAssets().open("noImage.png");
-                            uploadImageBmp = BitmapFactory.decodeStream(istream);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
                     uploadImageBmp.compress(Bitmap.CompressFormat.PNG, 100, out);
                     out.close();
                 } catch (FileNotFoundException e) {
@@ -394,7 +367,7 @@ public class DetailPageModel {
                     e.printStackTrace();
                 }
 
-                activity.startActivity(intent);
+                fragmentActivity.startActivity(intent);
 
             }
         });
@@ -404,28 +377,24 @@ public class DetailPageModel {
      * Displays detail page
      * View mode 1
      *
-     * @param v
      * @param viewMode
      */
-    public void displayDetailPage(FragmentActivity fa, View v, int viewMode, double latitude, double longitude) {
-        prepareViewContents(v, viewMode);
-        final FragmentActivity activity = fa;
-        final double lat = latitude;
-        final double lon = longitude;
+    public void displayDetailPage(int viewMode, final boolean ownerFlag) {
+        prepareViewContents(viewMode);
 
         // image in cafe_user_tbl exits or not
-        byte[] result = new CafeUserTblHelper(context).executeSelect(lat, lon, "image");
-
-        String type;
-        if (result != null) type = "user"; // get data from user data
-        else type = "master";// det data from master data
-
-        // Set image
-
+        // Get data owner's or user's
         final Map<String, Object> cafeDetail;
+        Bitmap image = null;
 
-        if (type.equals("master")) cafeDetail = getUserCafeMapDetail(lat, lon);
-        else cafeDetail = getUserCafeMapDetail(lat, lon);
+        if (ownerFlag) {
+            cafeDetail = new CafeMasterTblHelper(context).executeSelect(lat, lon);
+            image = getImageFromAssets(cafeDetail.get("cafeName").toString());
+        } else {
+            cafeDetail = new CafeUserTblHelper(context).executeSelect(lat, lon);
+            byte[] imageByte = (byte[]) cafeDetail.get("cafeImage");
+            image = ucm.convertByteToBitmap(imageByte);
+        }
 
         nameTextView.setText(cafeDetail.get("cafeName").toString());
         addressTextView.setText(cafeDetail.get("cafeAddress").toString());
@@ -433,10 +402,9 @@ public class DetailPageModel {
         timeTextView.setText(cafeDetail.get("cafeTime").toString());
         socketTextView.setText(cafeDetail.get("cafeSocket").toString());
         wifiTextView.setText(cafeDetail.get("cafeWifi").toString());
-        byte[] imageByte = (byte[]) cafeDetail.get("cafeImage");
-        cafeScreenshot.setImageBitmap(ucm.convertByteToBitmap(imageByte));
+        cafeScreenshot.setImageBitmap(image);
 
-        if (type.equals("master")) editButton.setVisibility(View.INVISIBLE);
+        //if (type.equals("master")) editButton.setVisibility(View.INVISIBLE);
 
         // go to edit page
         editButton.setOnClickListener(new View.OnClickListener() {
@@ -446,6 +414,7 @@ public class DetailPageModel {
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
                 intent.putExtra("viewMode", 3);
+                intent.putExtra("ownerFlag", ownerFlag);
                 intent.putExtra("cafeName", cafeDetail.get("cafeName").toString());
                 intent.putExtra("cafeAddress", cafeDetail.get("cafeAddress").toString());
                 intent.putExtra("cafeTel", cafeDetail.get("cafeTel").toString());
@@ -453,22 +422,13 @@ public class DetailPageModel {
                 intent.putExtra("cafeSocket", cafeDetail.get("cafeSocket").toString());
                 intent.putExtra("cafeWifi", cafeDetail.get("cafeWifi").toString());
 
-                activity.startActivity(intent);
+                fragmentActivity.startActivity(intent);
 
             }
         });
 
     }
 
-    public Map<String, Object> getUserCafeMapDetail(double lat, double lon) {
-        Map<String, Object> cafeDetail = new HashMap<>();
-
-        CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
-        cafeDetail = cafeUserTblHelper.executeSelect(lat, lon);
-
-        return cafeDetail;
-    }
-    
     private void setSpinnerData(Spinner timeSpinner, String time) {
         Adapter adp = (ArrayAdapter<String>) timeSpinner.getAdapter();
         int index = 0;
@@ -482,25 +442,33 @@ public class DetailPageModel {
     }
 
     /**
-     * Checks cafe data that exists in json file.
+     * Sets a upload image by the preview button.
+     * This method suppose to be called
+     * from onActivityResult@DetailPageFragment.
      *
-     * @return boolean
+     * @param uploadImageBmp
      */
-    public boolean checkCafeDetailExist() {
-        boolean fileIsFound = true;
-
-        try {
-            //this.jsonObjectUserCafeMap.get(key).getAsJsonObject();
-        } catch (NullPointerException e) {
-            // File not found
-            fileIsFound = false;
-        }
-
-        return fileIsFound;
-    }
-
     public void setUploadImageBmp(Bitmap uploadImageBmp) {
         this.uploadImage.setImageBitmap(uploadImageBmp);
         this.uploadImageBmp = uploadImageBmp;
+    }
+
+    /**
+     * Obtains PNG image from assets folder.
+     *
+     * @param name
+     * @return Bitmap image
+     */
+    private Bitmap getImageFromAssets(String name) {
+        Bitmap bitmap = null;
+
+        try {
+            InputStream inputStream = resources.getAssets().open(name.replaceAll(" ", "_").toLowerCase() + ".png");
+            bitmap = BitmapFactory.decodeStream(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bitmap;
     }
 }

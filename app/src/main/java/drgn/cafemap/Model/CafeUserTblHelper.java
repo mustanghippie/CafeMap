@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
-import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +23,7 @@ public class CafeUserTblHelper {
 
     private SQLiteDatabase sqLiteDatabase;
     private final String databaseName = "cafemap_db";
+    private final String TAG = "[TAG]CafeUserTblHelper:";
 
     public CafeUserTblHelper(Context context) {
         this.sqLiteDatabase = context.openOrCreateDatabase(databaseName, MODE_PRIVATE, null);
@@ -42,7 +43,7 @@ public class CafeUserTblHelper {
 
 
         final String WHERE = " WHERE lat = '" + latString + "' AND lon = '" + lonString + "'";
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_user_tbl"+WHERE, null);
+        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_user_tbl" + WHERE, null);
         boolean isEof = query.moveToFirst();
 
         while (isEof) {
@@ -144,6 +145,20 @@ public class CafeUserTblHelper {
         return result;
     }
 
+    /**
+     * Executes to insert.
+     *
+     * @param lat
+     * @param lon
+     * @param name
+     * @param address
+     * @param time
+     * @param tel
+     * @param socket
+     * @param wifi
+     * @param image
+     * @return
+     */
     protected boolean executeInsert(double lat, double lon, String name, String address, String time, String tel, String socket, String wifi, byte[] image) {
         boolean successFlag = true;
 
@@ -160,6 +175,66 @@ public class CafeUserTblHelper {
                 statement.bindString(7, wifi);
                 statement.bindString(8, socket);
                 statement.bindBlob(9, image);
+                statement.executeInsert();
+            } catch (SQLiteConstraintException e) {
+                Log.d(TAG, "SQLiteConstraintException@executeInsert, execute executeUpdate");
+                successFlag = false;
+            } finally {
+                statement.close();
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } finally {
+            sqLiteDatabase.endTransaction();
+        }
+
+        return successFlag;
+    }
+
+    /**
+     * Executes to delete 1 record.
+     *
+     * @param lat
+     * @param lon
+     * @return
+     */
+    protected boolean executeDelete(double lat, double lon) {
+        boolean successFlag = true;
+
+        sqLiteDatabase.beginTransaction();
+        try {
+            final SQLiteStatement statement = sqLiteDatabase.compileStatement("DELETE FROM cafe_user_tbl WHERE lat=? AND lon=?");
+            try {
+                statement.bindString(1, String.valueOf(lat));
+                statement.bindString(2, String.valueOf(lon));
+                statement.executeUpdateDelete();
+            } finally {
+                statement.close();
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } finally {
+            sqLiteDatabase.endTransaction();
+        }
+
+        return successFlag;
+    }
+
+    protected boolean executeUpdate(double lat, double lon, String name, String address, String time, String tel, String socket, String wifi, byte[] image) {
+        boolean successFlag = true;
+
+        sqLiteDatabase.beginTransaction();
+        try {
+            final SQLiteStatement statement = sqLiteDatabase.compileStatement(
+                    "UPDATE cafe_user_tbl SET name=?,address=?,time=?,tel=?,wifi=?,socket=?,image=? WHERE lat=? AND lon=?");
+            try {
+                statement.bindString(1, name);
+                statement.bindString(2, address);
+                statement.bindString(3, time);
+                statement.bindString(4, tel);
+                statement.bindString(5, wifi);
+                statement.bindString(6, socket);
+                statement.bindBlob(7, image);
+                statement.bindString(8, String.valueOf(lat));
+                statement.bindString(9, String.valueOf(lon));
                 statement.executeInsert();
             } finally {
                 statement.close();
