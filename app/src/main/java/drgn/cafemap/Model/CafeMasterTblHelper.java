@@ -64,16 +64,25 @@ public class CafeMasterTblHelper {
      *
      * @param lat
      * @param lon
-     * @return Map<String, String> 1 record data
+     * @return Map<String, Object> 1 record data
      */
-    public Map<String, String> executeSelect(double lat, double lon) {
-        Map<String, String> result = new HashMap<>();
+    public Map<String, Object> executeSelect(double lat, double lon) {
+        Map<String, Object> result = new HashMap<>();
+        String latString = String.valueOf(lat);
+        String lonString = String.valueOf(lon);
 
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_master_tbl", null);
+        final String WHERE = " WHERE lat = '" + latString + "' AND lon = '" + lonString + "'";
+        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_master_tbl"+WHERE, null);
         boolean isEof = query.moveToFirst();
+
         while (isEof) {
             // get data
-            result.put("name",query.getString(query.getColumnIndex("name")));
+            result.put("cafeName", query.getString(query.getColumnIndex("name")));
+            result.put("cafeAddress", query.getString(query.getColumnIndex("address")));
+            result.put("cafeTime", query.getString(query.getColumnIndex("time")));
+            result.put("cafeTel", query.getString(query.getColumnIndex("tel")));
+            result.put("cafeWifi", query.getString(query.getColumnIndex("wifi")));
+            result.put("cafeSocket", query.getString(query.getColumnIndex("socket")));
             isEof = query.moveToNext();
         }
 
