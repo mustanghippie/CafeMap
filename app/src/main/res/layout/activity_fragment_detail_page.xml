@@ -22,7 +22,8 @@
                 android:background="#F5CC5B"
                 android:orientation="horizontal">
 
-                <ImageView
+                <ImageButton
+                    android:id="@+id/email"
                     android:layout_width="14dp"
                     android:layout_height="24dp"
                     android:layout_marginLeft="10dp"
@@ -30,7 +31,7 @@
                     android:layout_weight="1"
                     android:adjustViewBounds="true"
                     android:src="@drawable/icon_arrow"
-                    android:visibility="invisible" />
+                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/cafeName"
