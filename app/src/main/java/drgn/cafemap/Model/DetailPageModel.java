@@ -21,10 +21,13 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -446,7 +449,9 @@ public class DetailPageModel {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Click");
+                Map<String, String> mailAccount = getMailAccount();
+                final String email = mailAccount.get("mail");
+                final String password = mailAccount.get("password");
                 final String body = "TEST";
                 final String subject = "Title";
 
@@ -458,10 +463,10 @@ public class DetailPageModel {
 
                     //以下メール送信
                     final Properties property = new Properties();
-                    property.put("mail.smtp.host",                "smtp.gmail.com");
-                    property.put("mail.host",                     "smtp.gmail.com");
-                    property.put("mail.smtp.port",                "465");
-                    property.put("mail.smtp.socketFactory.port",  "465");
+                    property.put("mail.smtp.host", "smtp.gmail.com");
+                    property.put("mail.host", "smtp.gmail.com");
+                    property.put("mail.smtp.port", "465");
+                    property.put("mail.smtp.socketFactory.port", "465");
                     property.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
                     // セッション
@@ -498,7 +503,7 @@ public class DetailPageModel {
 
                     // メール送信する。
                     final Transport transport = session.getTransport("smtp");
-                    transport.connect(email,password);
+                    transport.connect(email, password);
                     transport.sendMessage(mimeMsg, mimeMsg.getAllRecipients());
                     transport.close();
 
@@ -557,5 +562,35 @@ public class DetailPageModel {
         }
 
         return bitmap;
+    }
+
+    /**
+     * Obtains mail account information
+     *
+     * @return
+     */
+    private Map<String, String> getMailAccount() {
+        Map<String, String> mailAccount = new HashMap<>();
+
+        InputStream is = null;
+        BufferedReader br = null;
+
+        try {
+            try {
+                is = context.getAssets().open("mail_account");
+                br = new BufferedReader(new InputStreamReader(is));
+
+                mailAccount.put("mail", br.readLine());
+                mailAccount.put("password", br.readLine());
+            } finally {
+                if (is != null) is.close();
+                if (br != null) br.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return mailAccount;
+
     }
 }
