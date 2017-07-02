@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -116,6 +117,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.userCafeMapModel = new UserCafeMapModel(getApplicationContext());
         // Create database
         DBHelper dbHelper = new DBHelper(getApplicationContext());
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
     }
 

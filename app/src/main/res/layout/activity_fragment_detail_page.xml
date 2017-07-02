@@ -23,7 +23,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/email"
+                    android:id="@+id/sendButton"
                     android:layout_width="14dp"
                     android:layout_height="24dp"
                     android:layout_marginLeft="10dp"
