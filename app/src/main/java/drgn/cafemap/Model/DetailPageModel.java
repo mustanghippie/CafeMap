@@ -4,9 +4,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Adapter;
@@ -24,6 +26,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import drgn.cafemap.Controller.DetailPageActivity;
 import drgn.cafemap.Controller.MapsActivity;
@@ -72,6 +85,7 @@ public class DetailPageModel {
     private TextView socketTextView;
     private TextView wifiTextView;
     private ImageButton editButton;
+    private ImageButton sendButton;
 
 
     public DetailPageModel(Context context, View view, FragmentActivity fragmentActivity, Resources resources, double lat, double lon) {
@@ -114,6 +128,7 @@ public class DetailPageModel {
                 this.socketTextView = (TextView) view.findViewById(R.id.cafeSocket);
                 this.wifiTextView = (TextView) view.findViewById(R.id.cafeWifi);
                 this.editButton = (ImageButton) view.findViewById(R.id.editButton);
+                this.sendButton = (ImageButton) view.findViewById(R.id.sendButton);
                 break;
             case 2:
                 this.saveButton = (Button) view.findViewById(R.id.saveButton);
@@ -423,6 +438,78 @@ public class DetailPageModel {
                 intent.putExtra("cafeWifi", cafeDetail.get("cafeWifi").toString());
 
                 fragmentActivity.startActivity(intent);
+
+            }
+        });
+
+        // send cafe information
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Click");
+                final String body = "TEST";
+                final String subject = "Title";
+
+                try {
+                    //email と password更新
+                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+                    sp.edit().putString("email", email).commit();
+                    sp.edit().putString("password", password).commit();
+
+                    //以下メール送信
+                    final Properties property = new Properties();
+                    property.put("mail.smtp.host",                "smtp.gmail.com");
+                    property.put("mail.host",                     "smtp.gmail.com");
+                    property.put("mail.smtp.port",                "465");
+                    property.put("mail.smtp.socketFactory.port",  "465");
+                    property.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+                    // セッション
+                    final Session session = Session.getInstance(property, new javax.mail.Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(email, password);
+                        }
+                    });
+
+                    MimeMessage mimeMsg = new MimeMessage(session);
+
+                    mimeMsg.setSubject(subject, "utf-8");
+                    mimeMsg.setFrom(new InternetAddress(email));
+                    mimeMsg.setRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(email));
+
+            /* 添付ファイルをする場合はこれを使う
+
+
+            final MimeBodyPart filePart = new MimeBodyPart();
+            File file = new File("[添付ファイルパス]");
+            FileDataSource fds = new FileDataSource(file);
+            DataHandler data = new DataHandler(fds);
+            filePart.setDataHandler(data);
+            filePart.setFileName(MimeUtility.encodeWord("[メール本文の添付ファイル名]")); */
+
+                    final MimeBodyPart txtPart = new MimeBodyPart();
+                    txtPart.setText(body, "utf-8");
+
+                    final Multipart mp = new MimeMultipart();
+                    mp.addBodyPart(txtPart);
+                    //mp.addBodyPart(filePart); //添付ファイルをする場合はこれ
+                    mimeMsg.setContent(mp);
+
+                    // メール送信する。
+                    final Transport transport = session.getTransport("smtp");
+                    transport.connect(email,password);
+                    transport.sendMessage(mimeMsg, mimeMsg.getAllRecipients());
+                    transport.close();
+
+                } catch (MessagingException e) {
+                    System.out.println("exception = " + e);
+
+                } /*catch (UnsupportedEncodingException e) {
+            必要あるのか不明
+        }*/ finally {
+                    System.out.println("finish sending email");
+                }
 
             }
         });
