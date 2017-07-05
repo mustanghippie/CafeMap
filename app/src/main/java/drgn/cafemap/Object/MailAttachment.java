@@ -33,7 +33,7 @@ public class MailAttachment {
         sql = "INSERT INTO cafe_master_tbl(lat, lon, name, address, time, tel, wifi, socket) " +
                 "VALUES(" + String.valueOf(lat) + ", \"" + String.valueOf(lon) + "\", \"" + cafeName + "\", \"" + cafeAddress + "\", " +
                 "\"" + cafeTime + "\", \"" + cafeTel + "\", \"" + cafeSocket + "\", \"" + cafeWifi + "\");";
-        System.out.println(sql);
+
         return sql;
     }
 }

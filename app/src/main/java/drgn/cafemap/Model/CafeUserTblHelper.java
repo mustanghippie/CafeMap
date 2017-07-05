@@ -41,7 +41,6 @@ public class CafeUserTblHelper {
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
 
-
         final String WHERE = " WHERE lat = '" + latString + "' AND lon = '" + lonString + "'";
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_user_tbl" + WHERE, null);
         boolean isEof = query.moveToFirst();
@@ -110,6 +109,9 @@ public class CafeUserTblHelper {
 
             isEof = query.moveToNext();
         }
+
+        query.close();
+        sqLiteDatabase.close();
 
         return result;
     }
