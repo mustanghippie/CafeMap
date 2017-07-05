@@ -19,17 +19,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import drgn.cafemap.R;
 
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by musta on 2017/06/10.

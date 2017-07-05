@@ -20,9 +20,9 @@ public class ConvertJsonToSQL extends AppCompatActivity {
         setContentView(R.layout.activity_convert_json_to_sql);
 
         UserCafeMapModel userCafeMapModel = new UserCafeMapModel(getApplicationContext());
-        JsonObject jsonObject = userCafeMapModel.getUserCafeMapJson();
+//        JsonObject jsonObject = userCafeMapModel.getUserCafeMapJson();
 
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
 
     }
 }

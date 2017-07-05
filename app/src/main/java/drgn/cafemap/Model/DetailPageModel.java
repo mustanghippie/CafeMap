@@ -72,8 +72,6 @@ public class DetailPageModel {
     private FragmentActivity fragmentActivity;
     private View view;
     private Resources resources;
-    // Json
-    private JsonObject jsonObjectUserCafeMap;
     // Common View
     private TextView nameTextView;
     private TextView addressTextView;
@@ -111,7 +109,6 @@ public class DetailPageModel {
         this.lat = lat;
         this.lon = lon;
         this.ucm = new UserCafeMapModel(context);
-        this.jsonObjectUserCafeMap = this.ucm.getUserCafeMapJson();
     }
 
     private void prepareViewContents(int viewMode) {

@@ -16,12 +16,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import drgn.cafemap.Model.GetAddressGeocoder;
-import drgn.cafemap.Model.AsyncTaskMarkerSet;
 import drgn.cafemap.Model.DetailPageModel;
 import drgn.cafemap.R;
 
@@ -169,16 +170,98 @@ public class DetailPageFragment extends Fragment {
         if (requestCode == 1000 && resultCode == RESULT_OK) {
             Uri uri = null;
             if (resultData != null) {
-                uri = resultData.getData();
-
-                try {
-                    uploadImageBmp = getBitmapFromUri(uri);
-                    dpm.setUploadImageBmp(uploadImageBmp);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                uri = resultData.getData();
+//                try {
+                //uploadImageBmp = getBitmapFromUri(uri);
+                uploadImageBmp = resizeBitmap(resultData.getData());
+                dpm.setUploadImageBmp(uploadImageBmp);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
+    }
+
+    /**
+     * Resize image 375x200
+     *
+     * @param uri
+     * @return bitmap that is resized
+     */
+    private Bitmap resizeBitmap(Uri uri) {
+        Bitmap resizeImage = null;
+
+        BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+        // doesn't read out of size of screen
+        decodeOptions.inJustDecodeBounds = true;
+        try {
+            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+            BitmapFactory.decodeStream(inputStream, null, decodeOptions);
+            inputStream.close();
+            int actualWidth = decodeOptions.outWidth;
+            int actualHeight = decodeOptions.outHeight;
+
+            int desiredWidth = getResizedDimension(375, 200, actualWidth, actualHeight);
+            int desiredHeight = getResizedDimension(200, 375, actualHeight, actualWidth);
+            decodeOptions.inJustDecodeBounds = false;
+            decodeOptions.inSampleSize = findBestSampleSize(actualWidth, actualHeight, desiredWidth, desiredHeight);
+
+            inputStream = getContext().getContentResolver().openInputStream(uri);
+            Bitmap tempBitmap = BitmapFactory.decodeStream(inputStream, null, decodeOptions);
+            inputStream.close();
+            if (tempBitmap != null && (tempBitmap.getWidth() > desiredWidth ||
+                    tempBitmap.getHeight() > desiredHeight)) {
+                resizeImage = Bitmap.createScaledBitmap(tempBitmap,
+                        desiredWidth, desiredHeight, true);
+                tempBitmap.recycle();
+            } else {
+                resizeImage = tempBitmap;
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return resizeImage;
+    }
+
+    private int findBestSampleSize(
+            int actualWidth, int actualHeight, int desiredWidth, int desiredHeight) {
+        double wr = (double) actualWidth / desiredWidth;
+        double hr = (double) actualHeight / desiredHeight;
+        double ratio = Math.min(wr, hr);
+        float n = 1.0f;
+        while ((n * 2) <= ratio) {
+            n *= 2;
+        }
+        return (int) n;
+    }
+
+    private int getResizedDimension(int maxPrimary, int maxSecondary, int actualPrimary,
+                                    int actualSecondary) {
+        if ((maxPrimary == 0) && (maxSecondary == 0)) {
+            return actualPrimary;
+        }
+
+        if (maxPrimary == 0) {
+            double ratio = (double) maxSecondary / (double) actualSecondary;
+            return (int) (actualPrimary * ratio);
+        }
+
+        if (maxSecondary == 0) {
+            return maxPrimary;
+        }
+
+        double ratio = (double) actualSecondary / (double) actualPrimary;
+        int resized = maxPrimary;
+
+        if ((resized * ratio) < maxSecondary) {
+            resized = (int) (maxSecondary / ratio);
+        }
+        return resized;
     }
 
     private Bitmap getBitmapFromUri(Uri uri) throws IOException {
