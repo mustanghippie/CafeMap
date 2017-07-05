@@ -532,7 +532,7 @@ public class DetailPageModel {
 
 
                     final Transport transport = session.getTransport("smtp");
-                    // メール送信する。
+
                     transport.connect(email, password);
                     transport.sendMessage(mimeMsg, mimeMsg.getAllRecipients());
                     transport.close();
