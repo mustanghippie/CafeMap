@@ -55,6 +55,9 @@ public class CafeMasterTblHelper {
             isEof = query.moveToNext();
         }
 
+        query.close();
+        sqLiteDatabase.close();
+
         return result;
     }
 
