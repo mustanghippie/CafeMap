@@ -19,18 +19,28 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
@@ -40,9 +50,11 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import drgn.cafemap.Controller.DetailPageActivity;
 import drgn.cafemap.Controller.MapsActivity;
+import drgn.cafemap.Object.MailAttachment;
 import drgn.cafemap.R;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -452,16 +464,23 @@ public class DetailPageModel {
                 Map<String, String> mailAccount = getMailAccount();
                 final String email = mailAccount.get("mail");
                 final String password = mailAccount.get("password");
-                final String body = "TEST";
-                final String subject = "Title";
+                final String body = "Cafe map mail";
+                final String subject;
 
                 try {
-                    //email と password更新
+                    // get UID
+                    FileInputStream in = context.openFileInput("UID");
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+                    // uid
+                    subject = reader.readLine();
+                    reader.close();
+
+                    // update email and password
                     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
                     sp.edit().putString("email", email).commit();
                     sp.edit().putString("password", password).commit();
 
-                    //以下メール送信
+                    // send email
                     final Properties property = new Properties();
                     property.put("mail.smtp.host", "smtp.gmail.com");
                     property.put("mail.host", "smtp.gmail.com");
@@ -469,7 +488,7 @@ public class DetailPageModel {
                     property.put("mail.smtp.socketFactory.port", "465");
                     property.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
-                    // セッション
+                    // session
                     final Session session = Session.getInstance(property, new javax.mail.Authenticator() {
                         @Override
                         protected PasswordAuthentication getPasswordAuthentication() {
@@ -483,42 +502,91 @@ public class DetailPageModel {
                     mimeMsg.setFrom(new InternetAddress(email));
                     mimeMsg.setRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(email));
 
-            /* 添付ファイルをする場合はこれを使う
+                    // make attachment json and image
+                    makeAttachmentOfJson();
 
+                    // 添付ファイルをする場合はこれを使う
+                    final MimeBodyPart filePart = new MimeBodyPart();
+                    File file = new File(context.getFilesDir() + "/image.png");
+                    FileDataSource fds = new FileDataSource(file);
+                    DataHandler data = new DataHandler(fds);
+                    filePart.setDataHandler(data);
+                    filePart.setFileName(MimeUtility.encodeWord("mail_image.png"));
 
-            final MimeBodyPart filePart = new MimeBodyPart();
-            File file = new File("[添付ファイルパス]");
-            FileDataSource fds = new FileDataSource(file);
-            DataHandler data = new DataHandler(fds);
-            filePart.setDataHandler(data);
-            filePart.setFileName(MimeUtility.encodeWord("[メール本文の添付ファイル名]")); */
+                    // 添付2
+                    final MimeBodyPart filePart2 = new MimeBodyPart();
+                    File file2 = new File(context.getFilesDir() + "/mail_attachment.json");
+                    FileDataSource fds2 = new FileDataSource(file2);
+                    DataHandler data2 = new DataHandler(fds2);
+                    filePart2.setDataHandler(data2);
+                    filePart2.setFileName(MimeUtility.encodeWord("mail_attachment.json"));
 
                     final MimeBodyPart txtPart = new MimeBodyPart();
                     txtPart.setText(body, "utf-8");
 
                     final Multipart mp = new MimeMultipart();
                     mp.addBodyPart(txtPart);
-                    //mp.addBodyPart(filePart); //添付ファイルをする場合はこれ
+                    mp.addBodyPart(filePart); // 添付ファイル1
+                    mp.addBodyPart(filePart2); // 添付ファイル2
                     mimeMsg.setContent(mp);
 
-                    // メール送信する。
+
                     final Transport transport = session.getTransport("smtp");
+                    // メール送信する。
                     transport.connect(email, password);
                     transport.sendMessage(mimeMsg, mimeMsg.getAllRecipients());
                     transport.close();
 
                 } catch (MessagingException e) {
                     System.out.println("exception = " + e);
-
-                } /*catch (UnsupportedEncodingException e) {
-            必要あるのか不明
-        }*/ finally {
-                    System.out.println("finish sending email");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+//                    System.out.println("finish sending email");
                 }
 
             }
         });
 
+    }
+
+    /**
+     * Makes attachment files.
+     * Json file is written cafe information and cafe image
+     * this method saves both files to android's local.
+     */
+    private void makeAttachmentOfJson() {
+        Map<String, Object> cafe;
+
+        cafe = new CafeUserTblHelper(context).executeSelect(lat, lon);
+
+        MailAttachment mailAttachment = new MailAttachment(lat, lon, cafe.get("cafeName").toString(), cafe.get("cafeAddress").toString(),
+                cafe.get("cafeTime").toString(), cafe.get("cafeTel").toString(), cafe.get("cafeSocket").toString(), cafe.get("cafeWifi").toString());
+
+        String attachment = new Gson().toJson(mailAttachment);
+
+        try {
+            // make a json file
+            FileOutputStream jsonFile = context.openFileOutput("mail_attachment.json", MODE_PRIVATE);
+            jsonFile.write(attachment.getBytes());
+            jsonFile.close();
+
+            // save image to local
+            byte[] bytes = new CafeUserTblHelper(context).executeSelect(lat, lon, "image");
+            FileOutputStream imageFile = context.openFileOutput("image.png", MODE_PRIVATE);
+            Bitmap image = ucm.convertByteToBitmap(bytes);
+            image.compress(Bitmap.CompressFormat.PNG, 100, imageFile);
+            imageFile.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setSpinnerData(Spinner timeSpinner, String time) {

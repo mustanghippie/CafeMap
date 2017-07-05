@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import drgn.cafemap.Object.Cafe;
 import drgn.cafemap.R;
 
 import static android.content.Context.MODE_PRIVATE;
