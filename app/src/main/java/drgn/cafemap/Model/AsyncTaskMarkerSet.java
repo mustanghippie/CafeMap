@@ -8,8 +8,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -71,7 +69,7 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... value) {
-
+System.out.println("AsyncTaskMarkerSet------------------");
         latch = new CountDownLatch(1);
 
         // Firebase realtime database

@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import drgn.cafemap.Model.GetAddressGeocoder;
+import drgn.cafemap.Model.AsyncTaskAddressGeocoder;
 import drgn.cafemap.Model.DetailPageModel;
 import drgn.cafemap.R;
 
@@ -106,8 +106,8 @@ public class DetailPageFragment extends Fragment {
                 // cafe address
                 final TextView addressTextView;
                 addressTextView = (TextView) view.findViewById(R.id.cafeAddress);
-                // set address by GetAddressGeocoder
-                GetAddressGeocoder coder = new GetAddressGeocoder(getContext(), addressTextView, lat, lon);
+                // set address by AsyncTaskAddressGeocoder
+                AsyncTaskAddressGeocoder coder = new AsyncTaskAddressGeocoder(getContext(), addressTextView, lat, lon);
                 coder.execute();
 
                 // make edit page

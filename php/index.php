@@ -1,3 +1,0 @@
-<php
-phpinfo();
-$hoge = "test";

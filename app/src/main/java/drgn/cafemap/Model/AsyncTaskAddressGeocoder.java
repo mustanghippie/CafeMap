@@ -13,14 +13,14 @@ import java.util.List;
  * Created by musta on 2017/06/10.
  */
 
-public class GetAddressGeocoder extends AsyncTask<String, String, String> {
+public class AsyncTaskAddressGeocoder extends AsyncTask<String, String, String> {
 
     private Context context;
     private TextView addressTextView;
     private double lat;
     private double lon;
 
-    public GetAddressGeocoder(Context context, TextView addressTextView, double lat, double lon) {
+    public AsyncTaskAddressGeocoder(Context context, TextView addressTextView, double lat, double lon) {
         this.context = context;
         this.addressTextView = addressTextView;
         this.lat = lat;

@@ -38,12 +38,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import drgn.cafemap.Model.AsyncTaskMarkerSet;
-import drgn.cafemap.Model.CafeUserTblHelper;
 import drgn.cafemap.R;
 import drgn.cafemap.Model.UserCafeMapModel;
 import drgn.cafemap.util.DBHelper;
@@ -58,7 +55,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest locationRequest;
-    public static AsyncTaskMarkerSet atms;
     private Marker currentMarker = null;
     private UserCafeMapModel userCafeMapModel;
 
@@ -290,9 +286,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
             } else {
                 //LocationManagerの取得(初回のマップ移動)
-                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 // get position from gps
                 Location myLocate = locationManager.getLastKnownLocation("gps");
+
                 if (myLocate != null) {
                     LatLng currentLocation = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
