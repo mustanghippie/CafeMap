@@ -3,23 +3,14 @@ package drgn.cafemap.Model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +18,7 @@ import drgn.cafemap.R;
 
 
 /**
- * Created by musta on 2017/06/10.
+ * Created by Nobu on 2017/06/10.
  */
 
 public class UserCafeMapModel {
@@ -36,23 +27,6 @@ public class UserCafeMapModel {
 
     public UserCafeMapModel(Context context) {
         this.context = context;
-    }
-
-    /**
-     * Saves user cafe map data in cafe_user_tbl.
-     */
-    public void saveUserCafeMap(double lat, double lon, String cafeName, String cafeAddress, String cafeTime, String cafeTel,
-                                String cafeSocket, String cafeWifi, Bitmap uploadImage) {
-        Toast.makeText(context, "Now saving", Toast.LENGTH_LONG).show();
-
-        CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
-        byte[] image = convertBitmapToByte(uploadImage);
-        boolean successFlag = cafeUserTblHelper.executeInsert(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeSocket, cafeWifi, image);
-
-        if (successFlag) {
-            System.out.println("Data inserted successfully");
-        }
-
     }
 
     /**
@@ -98,30 +72,6 @@ public class UserCafeMapModel {
             this.setUpMarkers(mMap, lat, lon, cafeName, cafeTime, cafeWifi, cafeSocket, "user");
         }
 
-    }
-
-    public JsonObject getUserCafeMapJson() {
-        String jsonObjStringUserCafeMap = "";
-        try {
-            InputStream in = context.openFileInput("UserCafeMap.json");
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String s;
-            while ((s = reader.readLine()) != null) {
-                jsonObjStringUserCafeMap += s;
-            }
-            reader.close();
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            System.out.println("[Debug] UserCafeMap.json Not Found");
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JsonObject jsonUserCafeMap = new Gson().fromJson(jsonObjStringUserCafeMap, JsonObject.class);
-        return jsonUserCafeMap;
     }
 
     private void setUpMarkers(GoogleMap mMap, double lat, double lon, String cafeName, String cafeTime, String cafeWifi, String cafeSocket, String iconType) {
