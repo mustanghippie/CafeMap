@@ -191,13 +191,13 @@ public class DetailPageModel {
                 CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
                 boolean successFlag = cafeUserTblHelper.executeInsert(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
                         temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
-                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp));
+                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp), 0);
 
                 // If cafe data already exist, execute UPDATE
                 if (!successFlag) {
                     cafeUserTblHelper.executeUpdate(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
                             temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
-                            temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp));
+                            temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp), 0);
                 }
 
                 Intent intent = new Intent(context, MapsActivity.class);
@@ -467,96 +467,13 @@ public class DetailPageModel {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // OK button pressed
-                                Map<String, String> mailAccount = getMailAccount();
-                                final String email = mailAccount.get("mail");
-                                final String password = mailAccount.get("password");
-                                final String body = "Cafe map mail";
-                                final String subject;
-
-                                // make attachment json and image
-                                makeAttachmentOfJson();
-
-                                try {
-                                    // get UID
-                                    FileInputStream in = context.openFileInput("UID");
-                                    BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-                                    // uid
-                                    subject = reader.readLine();
-                                    reader.close();
-
-                                    // update email and password
-                                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-                                    sp.edit().putString("email", email).commit();
-                                    sp.edit().putString("password", password).commit();
-
-                                    // send email
-                                    final Properties property = new Properties();
-                                    property.put("mail.smtp.host", "smtp.gmail.com");
-                                    property.put("mail.host", "smtp.gmail.com");
-                                    property.put("mail.smtp.port", "465");
-                                    property.put("mail.smtp.socketFactory.port", "465");
-                                    property.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-
-                                    // session
-                                    final Session session = Session.getInstance(property, new javax.mail.Authenticator() {
-                                        @Override
-                                        protected PasswordAuthentication getPasswordAuthentication() {
-                                            return new PasswordAuthentication(email, password);
-                                        }
-                                    });
-
-                                    MimeMessage mimeMsg = new MimeMessage(session);
-
-                                    mimeMsg.setSubject(subject, "utf-8");
-                                    mimeMsg.setFrom(new InternetAddress(email));
-                                    mimeMsg.setRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(email));
-
-                                    // 添付ファイルをする場合はこれを使う
-                                    final MimeBodyPart filePart = new MimeBodyPart();
-                                    File file = new File(context.getFilesDir() + "/image.png");
-                                    FileDataSource fds = new FileDataSource(file);
-                                    DataHandler data = new DataHandler(fds);
-                                    filePart.setDataHandler(data);
-                                    filePart.setFileName(MimeUtility.encodeWord("mail_image.png"));
-
-                                    // 添付2
-                                    final MimeBodyPart filePart2 = new MimeBodyPart();
-                                    File file2 = new File(context.getFilesDir() + "/mail_attachment.json");
-                                    FileDataSource fds2 = new FileDataSource(file2);
-                                    DataHandler data2 = new DataHandler(fds2);
-                                    filePart2.setDataHandler(data2);
-                                    filePart2.setFileName(MimeUtility.encodeWord("mail_attachment.json"));
-
-                                    final MimeBodyPart txtPart = new MimeBodyPart();
-                                    txtPart.setText(body, "utf-8");
-
-                                    final Multipart mp = new MimeMultipart();
-                                    mp.addBodyPart(txtPart);
-                                    mp.addBodyPart(filePart); // 添付ファイル1
-                                    mp.addBodyPart(filePart2); // 添付ファイル2
-                                    mimeMsg.setContent(mp);
-
-
-                                    final Transport transport = session.getTransport("smtp");
-
-                                    transport.connect(email, password);
-                                    transport.sendMessage(mimeMsg, mimeMsg.getAllRecipients());
-                                    transport.close();
-
-                                    // display message
-                                    Toast.makeText(context, "Thank you for your support.", Toast.LENGTH_LONG).show();
-
-                                } catch (MessagingException e) {
-                                    System.out.println("exception = " + e);
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                } finally {
-//                    System.out.println("finish sending email");
+                                // check send_flag preventing to send email in a row
+                                boolean sendFlag = new CafeUserTblHelper(context).checkSendFlag(lat, lon);
+                                if (!sendFlag) {
+                                    AsyncSendMail asyncSendMail = new AsyncSendMail(context, lat, lon);
+                                    asyncSendMail.execute("");
                                 }
+                                Toast.makeText(context, "Thank you for your support!!", Toast.LENGTH_LONG).show();
                             }
                         })
                         .setNegativeButton("Cancel", null)

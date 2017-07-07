@@ -82,6 +82,30 @@ public class CafeUserTblHelper {
     }
 
     /**
+     * Checks cafe info sent or unsent from table.
+     *
+     * @param lat
+     * @param lon
+     * @return boolean true => already sent / false => not yet
+     */
+    protected boolean checkSendFlag(double lat, double lon) {
+        String latString = String.valueOf(lat);
+        String lonString = String.valueOf(lon);
+
+        boolean sendFlag = false;
+
+        Cursor query = sqLiteDatabase.rawQuery("SELECT send_flag FROM cafe_user_tbl WHERE lat = '" + latString + "' AND lon = '" + lonString + "'", null);
+        boolean isEof = query.moveToFirst();
+        // get data
+        int flag = query.getInt(query.getColumnIndex("send_flag"));
+        if (flag == 1) sendFlag = true;
+        query.close();
+        sqLiteDatabase.close();
+
+        return sendFlag;
+    }
+
+    /**
      * Obtains all data from cafe_user_tbl
      *
      * @return
@@ -161,12 +185,12 @@ public class CafeUserTblHelper {
      * @param image
      * @return
      */
-    protected boolean executeInsert(double lat, double lon, String name, String address, String time, String tel, String socket, String wifi, byte[] image) {
+    protected boolean executeInsert(double lat, double lon, String name, String address, String time, String tel, String socket, String wifi, byte[] image, int sendFlag) {
         boolean successFlag = true;
 
         sqLiteDatabase.beginTransaction();
         try {
-            final SQLiteStatement statement = sqLiteDatabase.compileStatement("INSERT INTO cafe_user_tbl VALUES (?,?,?,?,?,?,?,?,?)");
+            final SQLiteStatement statement = sqLiteDatabase.compileStatement("INSERT INTO cafe_user_tbl VALUES (?,?,?,?,?,?,?,?,?,?)");
             try {
                 statement.bindString(1, String.valueOf(lat));
                 statement.bindString(2, String.valueOf(lon));
@@ -177,6 +201,7 @@ public class CafeUserTblHelper {
                 statement.bindString(7, wifi);
                 statement.bindString(8, socket);
                 statement.bindBlob(9, image);
+                statement.bindLong(10, sendFlag);
                 statement.executeInsert();
             } catch (SQLiteConstraintException e) {
                 Log.d(TAG, "SQLiteConstraintException@executeInsert, execute executeUpdate");
@@ -220,13 +245,13 @@ public class CafeUserTblHelper {
         return successFlag;
     }
 
-    protected boolean executeUpdate(double lat, double lon, String name, String address, String time, String tel, String socket, String wifi, byte[] image) {
+    protected boolean executeUpdate(double lat, double lon, String name, String address, String time, String tel, String socket, String wifi, byte[] image, int sendFlag) {
         boolean successFlag = true;
 
         sqLiteDatabase.beginTransaction();
         try {
             final SQLiteStatement statement = sqLiteDatabase.compileStatement(
-                    "UPDATE cafe_user_tbl SET name=?,address=?,time=?,tel=?,wifi=?,socket=?,image=? WHERE lat=? AND lon=?");
+                    "UPDATE cafe_user_tbl SET name=?,address=?,time=?,tel=?,wifi=?,socket=?,image=?,send_flag=? WHERE lat=? AND lon=?");
             try {
                 statement.bindString(1, name);
                 statement.bindString(2, address);
@@ -235,8 +260,33 @@ public class CafeUserTblHelper {
                 statement.bindString(5, wifi);
                 statement.bindString(6, socket);
                 statement.bindBlob(7, image);
-                statement.bindString(8, String.valueOf(lat));
-                statement.bindString(9, String.valueOf(lon));
+                statement.bindLong(8, sendFlag);
+                statement.bindString(9, String.valueOf(lat));
+                statement.bindString(10, String.valueOf(lon));
+                statement.executeInsert();
+            } finally {
+                statement.close();
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } finally {
+            sqLiteDatabase.endTransaction();
+            sqLiteDatabase.close();
+        }
+
+        return successFlag;
+    }
+
+    protected boolean executeUpdate(double lat, double lon, int sendFlag) {
+        boolean successFlag = true;
+
+        sqLiteDatabase.beginTransaction();
+        try {
+            final SQLiteStatement statement = sqLiteDatabase.compileStatement(
+                    "UPDATE cafe_user_tbl SET send_flag=? WHERE lat=? AND lon=?");
+            try {
+                statement.bindLong(1, sendFlag);
+                statement.bindString(2, String.valueOf(lat));
+                statement.bindString(3, String.valueOf(lon));
                 statement.executeInsert();
             } finally {
                 statement.close();
