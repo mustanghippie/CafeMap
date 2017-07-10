@@ -30,6 +30,8 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Created by Nobu on 2017/06/08.
+ *
+ * @todo This class is deprecated.
  */
 
 public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
@@ -69,7 +71,7 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... value) {
-System.out.println("AsyncTaskMarkerSet------------------");
+
         latch = new CountDownLatch(1);
 
         // Firebase realtime database
