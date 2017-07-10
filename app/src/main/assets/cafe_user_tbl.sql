@@ -1,1 +1,0 @@
-CREATE TABLE cafe_user_tbl(lat TEXT, lon TEXT, name TEXT default 'No name', address TEXT,time TEXT, tel TEXT, wifi TEXT default 'Unavailable',socket TEXT default 'Unavailable', image BLOB, PRIMARY KEY(lat, lon) );

@@ -28,8 +28,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(final SQLiteDatabase db) {
         Log.d(TAG, "onCreate version: " + db.getVersion());
-        this.execFileSQL(db, "cafe_master_tbl.sql");
-        this.execFileSQL(db, "cafe_user_tbl.sql");
+        this.execFileSQL(db, "sql/cafe_master_tbl.sql");
+        this.execFileSQL(db, "sql/cafe_user_tbl.sql");
     }
 
     @Override
@@ -37,10 +37,12 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         Log.d(TAG, "onUpgrade version : " + db.getVersion());
         Log.d(TAG, "onUpgrade oldVersion : " + oldVersion);
         Log.d(TAG, "onUpgrade newVersion : " + newVersion);
+        this.dropCafeMasterTbl(db);
+        this.execFileSQL(db, "sql/cafe_master_tbl.sql");
     }
 
     /**
-     * assetsフォルダのSQLファイルを実行する
+     * Executes sql file in assets folder.
      *
      * @param db
      * @param fileName
@@ -97,5 +99,14 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Executes drop table sql.
+     *
+     */
+    private void dropCafeMasterTbl(SQLiteDatabase db){
+        String dropCafeMasterTbl = "DROP TABLE cafe_master_tbl";
+
+        db.execSQL(dropCafeMasterTbl);
+    }
 
 }
