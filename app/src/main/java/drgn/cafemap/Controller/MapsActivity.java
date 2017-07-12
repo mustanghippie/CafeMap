@@ -21,6 +21,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -325,6 +327,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
 
                     return false;
+                }
+            });
+
+            // bookmark
+            final ImageButton bookmarkButton = (ImageButton) findViewById(R.id.bookmark_button);
+            bookmarkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+                    alphaAnimation.setDuration(100);
+                    alphaAnimation.setFillAfter(false);
+                    bookmarkButton.startAnimation(alphaAnimation);
+
+                }
+            });
+
+            // gps button to go to current position
+            final ImageButton gpsButton = (ImageButton) findViewById(R.id.gps_button);
+            gpsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+                    alphaAnimation.setDuration(100);
+                    alphaAnimation.setFillAfter(false);
+                    gpsButton.startAnimation(alphaAnimation);
                 }
             });
 
