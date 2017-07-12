@@ -34,7 +34,7 @@ public class CafeMasterTblHelper {
     protected List<Map<String, Object>> executeSelect() {
         List<Map<String, Object>> result = new ArrayList<>();
 
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM "+table, null);
+        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM " + this.table, null);
         boolean isEof = query.moveToFirst();
         String cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket;
         double lat, lon;
@@ -61,6 +61,40 @@ public class CafeMasterTblHelper {
         return result;
     }
 
+    /**
+     * Obtains records by cafe name.
+     *
+     * @param searchCafeName
+     * @return
+     */
+    protected List<Map<String, Object>> executeSelect(String searchCafeName) {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM " + this.table + " WHERE name LIKE '%" + searchCafeName + "%' ", null);
+        boolean isEof = query.moveToFirst();
+        String cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket;
+        double lat, lon;
+        while (isEof) {
+            lat = Double.parseDouble(query.getString(query.getColumnIndex("lat")));
+            lon = Double.parseDouble(query.getString(query.getColumnIndex("lon")));
+            cafeName = query.getString(query.getColumnIndex("name"));
+            cafeAddress = query.getString(query.getColumnIndex("address"));
+            cafeTime = query.getString(query.getColumnIndex("time"));
+            cafeTel = query.getString(query.getColumnIndex("tel"));
+            cafeWifi = query.getString(query.getColumnIndex("wifi"));
+            cafeSocket = query.getString(query.getColumnIndex("socket"));
+            // Set Map<String,object> that has one record from makeOneRecordOfUserCafeData
+            result.add(this.makeOneRecordOfUserCafeData(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket));
+
+            isEof = query.moveToNext();
+        }
+
+        query.close();
+        sqLiteDatabase.close();
+
+        return result;
+    }
+
 
     /**
      * Obtains 1 record.
@@ -75,7 +109,7 @@ public class CafeMasterTblHelper {
         String lonString = String.valueOf(lon);
 
         final String WHERE = " WHERE lat = '" + latString + "' AND lon = '" + lonString + "'";
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_master_tbl"+WHERE, null);
+        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_master_tbl" + WHERE, null);
         boolean isEof = query.moveToFirst();
 
         while (isEof) {

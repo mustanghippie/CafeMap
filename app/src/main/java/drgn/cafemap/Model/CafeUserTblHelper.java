@@ -62,6 +62,7 @@ public class CafeUserTblHelper {
         return result;
     }
 
+
     protected byte[] executeSelect(double lat, double lon, String image) {
         byte[] result = null;
         String latString = String.valueOf(lat);
@@ -114,6 +115,43 @@ public class CafeUserTblHelper {
         List<Map<String, Object>> result = new ArrayList<>();
 
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_user_tbl", null);
+        boolean isEof = query.moveToFirst();
+        String cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket;
+        double lat, lon;
+        byte[] cafeImage;
+        while (isEof) {
+            lat = Double.parseDouble(query.getString(query.getColumnIndex("lat")));
+            lon = Double.parseDouble(query.getString(query.getColumnIndex("lon")));
+            cafeName = query.getString(query.getColumnIndex("name"));
+            cafeAddress = query.getString(query.getColumnIndex("address"));
+            cafeTime = query.getString(query.getColumnIndex("time"));
+            cafeTel = query.getString(query.getColumnIndex("tel"));
+            cafeWifi = query.getString(query.getColumnIndex("wifi"));
+            cafeSocket = query.getString(query.getColumnIndex("socket"));
+            cafeImage = query.getBlob(query.getColumnIndex("image"));
+            // Set Map<String,object> that has one record from makeOneRecordOfUserCafeData
+            result.add(this.makeOneRecordOfUserCafeData(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket, cafeImage));
+
+            isEof = query.moveToNext();
+        }
+
+        query.close();
+        sqLiteDatabase.close();
+
+        return result;
+    }
+
+    /**
+     * Obtains records by cafe name.
+     *
+     * @param searchCafeName
+     * @return
+     */
+    protected List<Map<String, Object>> executeSelect(String searchCafeName) {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        final String WHERE = " WHERE name LIKE '%" + searchCafeName + "%'";
+        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_user_tbl" + WHERE, null);
         boolean isEof = query.moveToFirst();
         String cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket;
         double lat, lon;

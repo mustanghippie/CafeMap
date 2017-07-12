@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import drgn.cafemap.R;
 public class UserCafeMapModel {
 
     private Context context;
+    private ArrayList<Marker> markerArrayList = new ArrayList<>();
 
     public UserCafeMapModel(Context context) {
         this.context = context;
@@ -74,6 +76,44 @@ public class UserCafeMapModel {
 
     }
 
+    public void setCafeMapMarkers(GoogleMap mMap, String searchCafeName) {
+        String cafeName, cafeWifi, cafeSocket, cafeTime;
+        double lat, lon;
+
+        // connect to cafe_master_tbl
+        CafeMasterTblHelper cafeMasterTblHelper = new CafeMasterTblHelper(context);
+        // connect to cafe_user_tbl
+        CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
+
+        // get all data from cafe_master_tbl
+        List<Map<String, Object>> cafeMasterMapList = cafeMasterTblHelper.executeSelect(searchCafeName);
+        // get all data from cafe_user_tbl
+        List<Map<String, Object>> cafeUserMapList = cafeUserTblHelper.executeSelect(searchCafeName);
+
+        // cafe master marker
+        for (Map<String, Object> maps : cafeMasterMapList) {
+            cafeName = maps.get("cafeName").toString();
+            cafeTime = maps.get("cafeTime").toString();
+            cafeWifi = maps.get("cafeWifi").toString();
+            cafeSocket = maps.get("cafeSocket").toString();
+            lat = Double.parseDouble(maps.get("lat").toString());
+            lon = Double.parseDouble(maps.get("lon").toString());
+            this.setUpMarkers(mMap, lat, lon, cafeName, cafeTime, cafeWifi, cafeSocket, "owner");
+        }
+
+        // cafe user marker
+        for (Map<String, Object> maps : cafeUserMapList) {
+            cafeName = maps.get("cafeName").toString();
+            cafeTime = maps.get("cafeTime").toString();
+            cafeWifi = maps.get("cafeWifi").toString();
+            cafeSocket = maps.get("cafeSocket").toString();
+            lat = Double.parseDouble(maps.get("lat").toString());
+            lon = Double.parseDouble(maps.get("lon").toString());
+            this.setUpMarkers(mMap, lat, lon, cafeName, cafeTime, cafeWifi, cafeSocket, "user");
+        }
+
+    }
+
     private void setUpMarkers(GoogleMap mMap, double lat, double lon, String cafeName, String cafeTime, String cafeWifi, String cafeSocket, String iconType) {
         Marker marker;
         MarkerOptions options = new MarkerOptions();
@@ -94,7 +134,32 @@ public class UserCafeMapModel {
         marker = mMap.addMarker(options);
         // Set tag
         if (iconType.equals("owner")) marker.setTag("owner");
-        if ((iconType.equals("user"))) marker.setTag("user");
+        if (iconType.equals("user")) marker.setTag("user");
+
+        // save marker
+        markerArrayList.add(marker);
+
+    }
+
+    /**
+     * Searches cafe
+     *
+     * @param searchText
+     */
+    public void searchCafe(GoogleMap mMap, String searchText) {
+        this.removeMarkers();
+        this.setCafeMapMarkers(mMap, searchText);
+    }
+
+    /**
+     * Removes all markers on the map.
+     */
+    private void removeMarkers() {
+
+        for (Marker marker : markerArrayList) {
+            marker.remove();
+        }
+
     }
 
     /**

@@ -1,6 +1,7 @@
 package drgn.cafemap.Controller;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,7 +19,11 @@ import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -247,7 +252,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     intent.putExtra("lat", latlng.latitude);
                     intent.putExtra("lon", latlng.longitude);
                     intent.putExtra("viewMode", viewMode);
-                    if (marker.getTag().toString().equals("owner")) intent.putExtra("ownerFlag", true);
+                    if (marker.getTag().toString().equals("owner"))
+                        intent.putExtra("ownerFlag", true);
                     else intent.putExtra("ownerFlag", false);
 
                     startActivity(intent);
@@ -302,6 +308,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
                 }
             }
+
+            // search cafe
+            final EditText searchText = (EditText) findViewById(R.id.search_text);
+            // control keyboard object
+            final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            searchText.setOnKeyListener(new View.OnKeyListener() {
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    //イベントを取得するタイミングには、ボタンが押されてなおかつエンターキーだったときを指定
+                    if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        //キーボードを閉じる
+                        inputMethodManager.hideSoftInputFromWindow(searchText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+
+                        userCafeMapModel.searchCafe(mMap, searchText.getText().toString());
+                        return true;
+                    }
+
+                    return false;
+                }
+            });
 
         } else {
             Log.d("debug", "permission error");
