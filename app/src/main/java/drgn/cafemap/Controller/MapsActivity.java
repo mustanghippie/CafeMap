@@ -74,6 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double defaultPosLon;
     // don't set a marker during opening cafe info
     private boolean disableClickEvent = false;
+    private int displayBookmark = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -319,9 +320,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     //イベントを取得するタイミングには、ボタンが押されてなおかつエンターキーだったときを指定
                     if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                        //キーボードを閉じる
+                        // close android keyboard
                         inputMethodManager.hideSoftInputFromWindow(searchText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
-
+                        // searching cafe
                         userCafeMapModel.searchCafe(mMap, searchText.getText().toString());
                         return true;
                     }
@@ -339,6 +340,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     alphaAnimation.setDuration(100);
                     alphaAnimation.setFillAfter(false);
                     bookmarkButton.startAnimation(alphaAnimation);
+
+                    // display bookmarked cafe
+                    if (displayBookmark % 2 == 1) {
+                        userCafeMapModel.displayBookmarkedCafe(mMap);
+                    } else {
+                        userCafeMapModel.setCafeMapMarkers(mMap);
+                    }
+                    displayBookmark++;
+
 
                 }
             });

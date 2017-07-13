@@ -113,7 +113,7 @@ public class CafeUserTblHelper {
      * @param lon
      * @return boolean true => bookmark false => not bookmark
      */
-    protected boolean checkBookmarkFlag(double lat,double lon){
+    protected boolean checkBookmarkFlag(double lat, double lon) {
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
 
@@ -168,16 +168,31 @@ public class CafeUserTblHelper {
     }
 
     /**
-     * Obtains records by cafe name.
+     * Obtains records by condition and value.
+     * condition is a name of column.
+     * value is sql of condition.
      *
-     * @param searchCafeName
-     * @return
+     * @param condition
+     * @param value
+     * @return List<Map<String, Object>> has data or null in error case
      */
-    protected List<Map<String, Object>> executeSelect(String searchCafeName) {
+    protected List<Map<String, Object>> executeSelect(String condition, String value) {
         List<Map<String, Object>> result = new ArrayList<>();
+        String sql = "";
+        switch (condition) {
+            case "name":
+                sql = "SELECT * FROM cafe_user_tbl WHERE name LIKE '%" + value + "%'";
+                break;
+            case "bookmark":
+                sql = "SELECT * FROM cafe_user_tbl WHERE bookmark =" + value + "";
+                break;
 
-        final String WHERE = " WHERE name LIKE '%" + searchCafeName + "%'";
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_user_tbl" + WHERE, null);
+            default:
+                System.out.println("[Error] out of condition@CafeUSerTblHelper.");
+                return null;
+        }
+
+        Cursor query = sqLiteDatabase.rawQuery(sql, null);
         boolean isEof = query.moveToFirst();
         String cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket;
         double lat, lon;

@@ -79,16 +79,18 @@ public class UserCafeMapModel {
     public void setCafeMapMarkers(GoogleMap mMap, String searchCafeName) {
         String cafeName, cafeWifi, cafeSocket, cafeTime;
         double lat, lon;
+        List<Map<String, Object>> cafeMasterMapList = new ArrayList<>();
+        List<Map<String, Object>> cafeUserMapList = new ArrayList<>();
 
         // connect to cafe_master_tbl
         CafeMasterTblHelper cafeMasterTblHelper = new CafeMasterTblHelper(context);
         // connect to cafe_user_tbl
         CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
-
         // get all data from cafe_master_tbl
-        List<Map<String, Object>> cafeMasterMapList = cafeMasterTblHelper.executeSelect(searchCafeName);
+        cafeMasterMapList = cafeMasterTblHelper.executeSelect("name", searchCafeName);
         // get all data from cafe_user_tbl
-        List<Map<String, Object>> cafeUserMapList = cafeUserTblHelper.executeSelect(searchCafeName);
+        cafeUserMapList = cafeUserTblHelper.executeSelect("name", searchCafeName);
+
 
         // cafe master marker
         for (Map<String, Object> maps : cafeMasterMapList) {
@@ -114,6 +116,59 @@ public class UserCafeMapModel {
 
     }
 
+    public void setCafeMapMarkers(GoogleMap mMap, boolean bookmarkFlag) {
+        String cafeName, cafeWifi, cafeSocket, cafeTime;
+        double lat, lon;
+        List<Map<String, Object>> cafeMasterMapList = new ArrayList<>();
+        List<Map<String, Object>> cafeUserMapList = new ArrayList<>();
+        String bookmarkValue = "0";
+        if (bookmarkFlag) bookmarkValue = "1"; // 0 => flag/false 1 => flag/true
+
+        // connect to cafe_master_tbl
+        CafeMasterTblHelper cafeMasterTblHelper = new CafeMasterTblHelper(context);
+        // connect to cafe_user_tbl
+        CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
+        // get all data from cafe_master_tbl
+        cafeMasterMapList = cafeMasterTblHelper.executeSelect("bookmark", bookmarkValue);
+        // get all data from cafe_user_tbl
+        cafeUserMapList = cafeUserTblHelper.executeSelect("bookmark", bookmarkValue);
+
+        // cafe master marker
+        for (Map<String, Object> maps : cafeMasterMapList) {
+            cafeName = maps.get("cafeName").toString();
+            cafeTime = maps.get("cafeTime").toString();
+            cafeWifi = maps.get("cafeWifi").toString();
+            cafeSocket = maps.get("cafeSocket").toString();
+            lat = Double.parseDouble(maps.get("lat").toString());
+            lon = Double.parseDouble(maps.get("lon").toString());
+            this.setUpMarkers(mMap, lat, lon, cafeName, cafeTime, cafeWifi, cafeSocket, "owner");
+        }
+
+        // cafe user marker
+        for (Map<String, Object> maps : cafeUserMapList) {
+            cafeName = maps.get("cafeName").toString();
+            cafeTime = maps.get("cafeTime").toString();
+            cafeWifi = maps.get("cafeWifi").toString();
+            cafeSocket = maps.get("cafeSocket").toString();
+            lat = Double.parseDouble(maps.get("lat").toString());
+            lon = Double.parseDouble(maps.get("lon").toString());
+            this.setUpMarkers(mMap, lat, lon, cafeName, cafeTime, cafeWifi, cafeSocket, "user");
+        }
+
+    }
+
+    /**
+     * Sets markers on google map.
+     *
+     * @param mMap
+     * @param lat
+     * @param lon
+     * @param cafeName
+     * @param cafeTime
+     * @param cafeWifi
+     * @param cafeSocket
+     * @param iconType
+     */
     private void setUpMarkers(GoogleMap mMap, double lat, double lon, String cafeName, String cafeTime, String cafeWifi, String cafeSocket, String iconType) {
         Marker marker;
         MarkerOptions options = new MarkerOptions();
@@ -142,13 +197,18 @@ public class UserCafeMapModel {
     }
 
     /**
-     * Searches cafe
+     * Searches cafe by search text
      *
      * @param searchText
      */
     public void searchCafe(GoogleMap mMap, String searchText) {
         this.removeMarkers();
         this.setCafeMapMarkers(mMap, searchText);
+    }
+
+    public void displayBookmarkedCafe(GoogleMap mMap) {
+        this.removeMarkers();
+        this.setCafeMapMarkers(mMap, true);
     }
 
     /**

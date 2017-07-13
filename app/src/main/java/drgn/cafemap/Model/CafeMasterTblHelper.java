@@ -88,15 +88,32 @@ public class CafeMasterTblHelper {
     }
 
     /**
-     * Obtains records by cafe name.
+     * Obtains records by condition and value.
+     * condition is a name of column.
+     * value is sql of condition.
      *
-     * @param searchCafeName
-     * @return
+     * @param condition
+     * @param value
+     * @return List<Map<String, Object>> has data or null in error case
      */
-    protected List<Map<String, Object>> executeSelect(String searchCafeName) {
+    protected List<Map<String, Object>> executeSelect(String condition, String value) {
         List<Map<String, Object>> result = new ArrayList<>();
+        String sql = "";
 
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM " + this.table + " WHERE name LIKE '%" + searchCafeName + "%' ", null);
+        switch (condition) {
+            case "name":
+                sql = "SELECT * FROM cafe_master_tbl WHERE name LIKE '%" + value + "%'";
+                break;
+            case "bookmark":
+                sql = "SELECT * FROM cafe_master_tbl WHERE bookmark =" + value + "";
+                break;
+            default:
+                System.out.println("[Error] out of condition@CafeMasterTblHelper.");
+                return null;
+        }
+
+        Cursor query = sqLiteDatabase.rawQuery(sql, null);
+
         boolean isEof = query.moveToFirst();
         String cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket;
         double lat, lon;
