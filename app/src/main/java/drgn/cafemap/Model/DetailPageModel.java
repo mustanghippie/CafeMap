@@ -99,6 +99,7 @@ public class DetailPageModel {
     private TextView wifiTextView;
     private ImageButton editButton;
     private Button sendCafeInfoButton;
+    private ImageButton addBookmarkButton;
 
 
     public DetailPageModel(Context context, View view, FragmentActivity fragmentActivity, Resources resources, double lat, double lon) {
@@ -141,6 +142,7 @@ public class DetailPageModel {
                 this.wifiTextView = (TextView) view.findViewById(R.id.cafeWifi);
                 this.editButton = (ImageButton) view.findViewById(R.id.editButton);
                 this.sendCafeInfoButton = (Button) view.findViewById(R.id.sendCafeInfoButton);
+                this.addBookmarkButton = (ImageButton) view.findViewById(R.id.addBookmarkButton);
                 break;
             case 2:
                 this.saveButton = (Button) view.findViewById(R.id.saveButton);
@@ -454,6 +456,7 @@ public class DetailPageModel {
             }
         });
 
+
         // send cafe information
         sendCafeInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -478,6 +481,36 @@ public class DetailPageModel {
                         })
                         .setNegativeButton("Cancel", null)
                         .show();
+            }
+        });
+
+        // get bookmark flag
+        boolean bookmarkFlag;
+        if (ownerFlag) bookmarkFlag = new CafeMasterTblHelper(context).checkBookmarkFlag(lat, lon);
+        else bookmarkFlag = new CafeUserTblHelper(context).checkBookmarkFlag(lat, lon);
+
+        // change bookmark icon and set flag
+        if (bookmarkFlag) addBookmarkButton.setImageResource(R.drawable.icon_bookmark_added);
+        else addBookmarkButton.setImageResource(R.drawable.icon_bookmark_add);
+
+        // bookmark button
+        addBookmarkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean bookmarkFlag;
+                if (ownerFlag) bookmarkFlag = new CafeMasterTblHelper(context).checkBookmarkFlag(lat, lon);
+                else bookmarkFlag = new CafeUserTblHelper(context).checkBookmarkFlag(lat, lon);
+
+                // update bookmark flag on database table
+                if (ownerFlag) {
+                    new CafeMasterTblHelper(context).executeUpdateBookmark(lat, lon, !bookmarkFlag);
+                } else {
+                    new CafeUserTblHelper(context).executeUpdateBookmark(lat, lon, !bookmarkFlag);
+                }
+
+                // change bookmark icon and set flag
+                if (!bookmarkFlag) addBookmarkButton.setImageResource(R.drawable.icon_bookmark_added);
+                else addBookmarkButton.setImageResource(R.drawable.icon_bookmark_add);
             }
         });
 

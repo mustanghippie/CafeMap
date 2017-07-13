@@ -1,4 +1,4 @@
-CREATE TABLE cafe_master_tbl(lat TEXT, lon TEXT, name TEXT default 'No name', address TEXT,time TEXT, tel TEXT, wifi TEXT default 'Unavailable',socket TEXT default 'Unavailable',PRIMARY KEY(lat, lon) );
+CREATE TABLE cafe_master_tbl(lat TEXT, lon TEXT, name TEXT default 'No name', address TEXT,time TEXT, tel TEXT, wifi TEXT default 'Unavailable',socket TEXT default 'Unavailable',bookmark INTEGER default 0,PRIMARY KEY(lat, lon) );
 
 INSERT INTO cafe_master_tbl(lat, lon, name, address, time, tel, wifi, socket) VALUES('49.238323199999996','-123.0418275','HOME', '5077 Chatham St Vancouver, BC V5R 3Z2','8:00AM - 10:00PM','778-XXX-1234','Available','Available');
 INSERT INTO cafe_master_tbl(lat, lon, name, address, time, tel, wifi, socket) VALUES('49.23630368960825','-123.0415491387248','Chili paper house', '3003 Kingsway Unit 1, Vancouver, BC V5R 5J6','10:00AM - 11:00PM','778-ZZZZ-3841','Unavailable','Unavailable');

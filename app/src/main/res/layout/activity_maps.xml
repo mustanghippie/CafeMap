@@ -44,7 +44,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="10dp"
             android:background="@null"
-            android:src="@drawable/icon_bookmark_list" />
+            android:src="@drawable/icon_bookmark_list2" />
 
         <ImageButton
             android:id="@+id/gps_button"
