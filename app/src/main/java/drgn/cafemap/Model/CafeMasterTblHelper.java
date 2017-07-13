@@ -75,8 +75,8 @@ public class CafeMasterTblHelper {
 
         boolean bookmark = false;
 
-        Cursor query = sqLiteDatabase.rawQuery("SELECT bookmark FROM cafe_user_tbl WHERE lat = '" + latString + "' AND lon = '" + lonString + "'", null);
-
+        Cursor query = sqLiteDatabase.rawQuery("SELECT bookmark FROM cafe_master_tbl WHERE lat = '" + latString + "' AND lon = '" + lonString + "'", null);
+        boolean isEof = query.moveToFirst();
         // get data
         int flag = query.getInt(query.getColumnIndex("bookmark"));
         if (flag == 1) bookmark = true;
