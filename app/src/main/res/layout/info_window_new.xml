@@ -32,7 +32,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="6dp"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/icon_edit_1" />
+            android:src="@drawable/icon_edit_window_info" />
 
         <TextView
             android:id="@+id/title"

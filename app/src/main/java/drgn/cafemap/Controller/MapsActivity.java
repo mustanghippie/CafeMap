@@ -1,7 +1,6 @@
 package drgn.cafemap.Controller;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,11 +21,11 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,6 +74,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // don't set a marker during opening cafe info
     private boolean disableClickEvent = false;
     private int displayBookmark = 1;
+    private InputMethodManager inputMethodManager;
+    private LinearLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,8 +123,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Create database
         DBHelper dbHelper = new DBHelper(getApplicationContext());
 
+        // to send email
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        // main layout
+        this.mainLayout = (LinearLayout)findViewById(R.id.mapsLayout);
 
     }
 
@@ -267,6 +272,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng point) {
+                    // hide the keyboard
+                    inputMethodManager.hideSoftInputFromWindow(mainLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                     if (!disableClickEvent) {
                         // display marker's location for debug
                         // Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
@@ -315,7 +322,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // search cafe
             final EditText searchText = (EditText) findViewById(R.id.search_text);
             // control keyboard object
-            final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            this.inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             searchText.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     //イベントを取得するタイミングには、ボタンが押されてなおかつエンターキーだったときを指定
@@ -441,4 +448,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onBackPressed() {
     }
+
 }

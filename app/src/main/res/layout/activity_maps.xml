@@ -8,6 +8,7 @@
     tools:context="drgn.cafemap.Controller.MapsActivity">
 
     <LinearLayout
+        android:id="@+id/mapsLayout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="#f5cc5b"
