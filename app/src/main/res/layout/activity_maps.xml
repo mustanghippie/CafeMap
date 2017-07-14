@@ -11,7 +11,7 @@
         android:id="@+id/mapsLayout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="#f5cc5b"
+        android:background="#00000000"
         android:orientation="horizontal">
 
         <ImageButton
@@ -29,12 +29,14 @@
 
         <EditText
             android:id="@+id/search_text"
-            android:layout_width="265dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:gravity="left"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
             android:hint="Cafe name"
             android:inputType="text"
+            android:cursorVisible="true"
             android:textSize="14sp" />
 
         <ImageButton
@@ -43,9 +45,8 @@
             android:layout_height="28dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:layout_marginLeft="10dp"
             android:background="@null"
-            android:src="@drawable/icon_bookmark_list2" />
+            android:src="@drawable/icon_bookmark_list" />
 
         <ImageButton
             android:id="@+id/gps_button"
@@ -53,9 +54,11 @@
             android:layout_height="28dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="15dp"
             android:background="@null"
-            android:src="@drawable/icon_gps" />
+            android:src="@drawable/icon_gps"
+            android:visibility="invisible"/>
 
 
     </LinearLayout>

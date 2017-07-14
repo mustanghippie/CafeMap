@@ -39,6 +39,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -61,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest locationRequest;
+    private UiSettings mUiSettings;
     private Marker currentMarker = null;
     private UserCafeMapModel userCafeMapModel;
 
@@ -152,9 +154,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // Initialize
             this.mMap = googleMap;
+            this.mUiSettings = mMap.getUiSettings();
             mMap.setLocationSource(this);
+            // get my location button
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
+            // zoom up and zoom down buttons
+//            this.mUiSettings.setZoomControlsEnabled(true);
 
             // Sets markers and reads data from cafe_user_tbl and cafe_master_tbl
             this.userCafeMapModel.setCafeMapMarkers(mMap);
@@ -305,10 +311,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 // get position from gps
                 Location myLocate = locationManager.getLastKnownLocation("gps");
-
+//System.out.println(myLocate+" mylocation--------");
                 if (myLocate != null) {
                     LatLng currentLocation = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+
+//                    // @todo debug code
+//                    LatLng debugpos = new LatLng(49.28490701079872,-123.1143503);
+//                    System.out.println("Debug code ===== move camera");
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(debugpos, 17));
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to connect gps", Toast.LENGTH_LONG).show();
 
@@ -360,17 +372,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-            // gps button to go to current position
-            final ImageButton gpsButton = (ImageButton) findViewById(R.id.gps_button);
-            gpsButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
-                    alphaAnimation.setDuration(100);
-                    alphaAnimation.setFillAfter(false);
-                    gpsButton.startAnimation(alphaAnimation);
-                }
-            });
+            // gps button to go to my location
+//            final ImageButton gpsButton = (ImageButton) findViewById(R.id.gps_button);
+//            gpsButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+//                    alphaAnimation.setDuration(100);
+//                    alphaAnimation.setFillAfter(false);
+//                    gpsButton.startAnimation(alphaAnimation);
+//                }
+//            });
+
+            // disable add marker on the header
+//            this.mainLayout.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                }
+//            });
 
         } else {
             Log.d("debug", "permission error");
@@ -429,7 +449,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(this, "onMyLocationButtonClick", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "onMyLocationButtonClick", Toast.LENGTH_SHORT).show();
+        Log.d("debug", "onMyLocationButtonClick");
 
         return false;
     }

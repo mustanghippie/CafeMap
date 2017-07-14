@@ -456,6 +456,8 @@ public class DetailPageModel {
             }
         });
 
+        // to be invisible in cafe master case
+        if (ownerFlag) sendCafeInfoButton.setVisibility(View.INVISIBLE);
 
         // send cafe information
         sendCafeInfoButton.setOnClickListener(new View.OnClickListener() {

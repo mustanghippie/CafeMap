@@ -44,7 +44,7 @@
         <activity
             android:name=".Controller.MapsActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/search" />
         <activity
             android:name=".Controller.DetailPageActivity"
             android:label="@string/title_activity_edit_page"
