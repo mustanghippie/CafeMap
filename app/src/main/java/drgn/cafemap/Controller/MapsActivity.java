@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
@@ -47,6 +49,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import drgn.cafemap.R;
 import drgn.cafemap.Model.UserCafeMapModel;
@@ -87,7 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // get default location after user cafe info set
         this.defaultPosLat = getIntent().getDoubleExtra("defaultPosLat", 0.0);
         this.defaultPosLon = getIntent().getDoubleExtra("defaultPosLon", 0.0);
-        // Create LocationRequest and set interval定
+        // Create LocationRequest and set interval
         locationRequest = LocationRequest.create();
 
         // positioning precision and battery priority
@@ -130,7 +133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         StrictMode.setThreadPolicy(policy);
 
         // main layout
-        this.mainLayout = (LinearLayout)findViewById(R.id.mapsLayout);
+        this.mainLayout = (LinearLayout) findViewById(R.id.mapsLayout);
 
     }
 
@@ -307,19 +310,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // move camera
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
             } else {
+
                 //LocationManagerの取得(初回のマップ移動)
                 LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                // get position from gps
-                Location myLocate = locationManager.getLastKnownLocation("gps");
-//System.out.println(myLocate+" mylocation--------");
+                List<String> providers = locationManager.getProviders(true);
+                Location bestLocation = null;
+                // looking for best location provider
+                for (String provider : providers) {
+                    Location l = locationManager.getLastKnownLocation(provider);
+                    if (l == null) {
+                        continue;
+                    }
+                    if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                        bestLocation = l;
+                    }
+                }
+
+                Location myLocate = bestLocation;
+
                 if (myLocate != null) {
                     LatLng currentLocation = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
-
-//                    // @todo debug code
-//                    LatLng debugpos = new LatLng(49.28490701079872,-123.1143503);
-//                    System.out.println("Debug code ===== move camera");
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(debugpos, 17));
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to connect gps", Toast.LENGTH_LONG).show();
@@ -372,26 +383,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-            // gps button to go to my location
-//            final ImageButton gpsButton = (ImageButton) findViewById(R.id.gps_button);
-//            gpsButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
-//                    alphaAnimation.setDuration(100);
-//                    alphaAnimation.setFillAfter(false);
-//                    gpsButton.startAnimation(alphaAnimation);
-//                }
-//            });
-
-            // disable add marker on the header
-//            this.mainLayout.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//                }
-//            });
-
         } else {
             Log.d("debug", "permission error");
             return;
@@ -406,10 +397,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // display GPS mark
             onLocationChangedListener.onLocationChanged(location);
 
-            double lat = location.getLatitude();
-            double lng = location.getLongitude();
+//            double lat = location.getLatitude();
+//            double lng = location.getLongitude();
 
-            Log.d("debug", "location=" + lat + "," + lng);
+//            Log.d("debug", "location=" + lat + "," + lng);
         }
     }
 
@@ -431,6 +422,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private LocationRequest createLocationRequest() {
         Log.d("Debug", "createLocationRequest");
+        FusedLocationProviderApi fusedLocationProviderApi = LocationServices.FusedLocationApi;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+        Location currentLocation = fusedLocationProviderApi.getLastLocation(mGoogleApiClient);
+//        System.out.println("current latitude ======= "+currentLocation.getLatitude());
+//        System.out.println("current longitude ======= "+currentLocation.getLongitude());
+
+
         return new LocationRequest()
                 .setInterval(1000)
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
