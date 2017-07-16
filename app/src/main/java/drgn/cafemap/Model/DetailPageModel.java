@@ -4,11 +4,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Adapter;
@@ -21,37 +19,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
 
 import drgn.cafemap.Controller.DetailPageActivity;
 import drgn.cafemap.Controller.MapsActivity;
@@ -98,8 +75,8 @@ public class DetailPageModel {
     private TextView socketTextView;
     private TextView wifiTextView;
     private ImageButton editButton;
-    private Button sendCafeInfoButton;
     private ImageButton addBookmarkButton;
+    private ImageButton mailButton;
 
 
     public DetailPageModel(Context context, View view, FragmentActivity fragmentActivity, Resources resources, double lat, double lon) {
@@ -141,7 +118,7 @@ public class DetailPageModel {
                 this.socketTextView = (TextView) view.findViewById(R.id.cafeSocket);
                 this.wifiTextView = (TextView) view.findViewById(R.id.cafeWifi);
                 this.editButton = (ImageButton) view.findViewById(R.id.editButton);
-                this.sendCafeInfoButton = (Button) view.findViewById(R.id.sendCafeInfoButton);
+                this.mailButton = (ImageButton) view.findViewById(R.id.mailButton);
                 this.addBookmarkButton = (ImageButton) view.findViewById(R.id.addBookmarkButton);
                 break;
             case 2:
@@ -457,10 +434,10 @@ public class DetailPageModel {
         });
 
         // to be invisible in cafe master case
-        if (ownerFlag) sendCafeInfoButton.setVisibility(View.INVISIBLE);
+        if (ownerFlag) mailButton.setVisibility(View.INVISIBLE);
 
         // send cafe information
-        sendCafeInfoButton.setOnClickListener(new View.OnClickListener() {
+        mailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

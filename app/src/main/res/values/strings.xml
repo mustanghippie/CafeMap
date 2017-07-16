@@ -31,6 +31,7 @@
         <item>AM</item>
     </string-array>
     <string-array name="availableOrUnavailable">
+        <item></item>
         <item>Available</item>
         <item>Unavailable</item>
     </string-array>
