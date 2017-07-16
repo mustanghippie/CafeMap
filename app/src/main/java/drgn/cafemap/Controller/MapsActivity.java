@@ -13,7 +13,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
@@ -163,7 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             // zoom up and zoom down buttons
-//            this.mUiSettings.setZoomControlsEnabled(true);
+            this.mUiSettings.setZoomControlsEnabled(true);
 
             // Sets markers and reads data from cafe_user_tbl and cafe_master_tbl
             this.userCafeMapModel.setCafeMapMarkers(mMap);

@@ -168,16 +168,16 @@ public class DetailPageFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         if (requestCode == 1000 && resultCode == RESULT_OK) {
-            Uri uri = null;
+            Uri uri = resultData.getData();
             if (resultData != null) {
 //                uri = resultData.getData();
-//                try {
-                //uploadImageBmp = getBitmapFromUri(uri);
-                uploadImageBmp = resizeBitmap(resultData.getData());
+                try {
+                uploadImageBmp = getBitmapFromUri(uri);
+//                uploadImageBmp = resizeBitmap(resultData.getData());
                 dpm.setUploadImageBmp(uploadImageBmp);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
