@@ -1,5 +1,6 @@
 package drgn.cafemap.Model;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,8 +8,13 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.Point;
+import android.support.media.ExifInterface;
 import android.support.v4.app.FragmentActivity;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,22 +24,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import drgn.cafemap.Controller.DetailPageActivity;
 import drgn.cafemap.Controller.MapsActivity;
-import drgn.cafemap.Object.MailAttachment;
 import drgn.cafemap.R;
+import drgn.cafemap.util.AnimationUtil;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -134,7 +134,7 @@ public class DetailPageModel {
     }
 
     /**
-     * Displays edit page
+     * Displays preview page
      * View mode 2
      *
      * @param viewMode
@@ -148,6 +148,8 @@ public class DetailPageModel {
         try {
             InputStream in = context.openFileInput("preview.png");
             uploadImageBmp = BitmapFactory.decodeStream(in);
+            // delete a temp file
+            context.deleteFile("preview.png");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -264,7 +266,7 @@ public class DetailPageModel {
     }
 
     // From existing data(View mode 3)
-    public void displayEditPage(int viewMode, Map<String, String> cafeData, boolean ownerFlag) {
+    public void displayEditPage(int viewMode, Map<String, String> cafeData, boolean ownerFlag, final Activity activity) {
         prepareViewContents(viewMode);
         final Map<String, String> previousCafeData = cafeData;
 
@@ -291,7 +293,7 @@ public class DetailPageModel {
             uploadImageBmp = getImageFromAssets(previousCafeData.get("cafeName"));
             uploadImage.setImageBitmap(uploadImageBmp);
         } else {
-            uploadImageBmp = new UserCafeMapModel(context).convertByteToBitmap(new CafeUserTblHelper(context).executeSelect(lat, lon, "image"));
+            uploadImageBmp = new UserCafeMapModel(context).getCafeImage(lat, lon);
             uploadImage.setImageBitmap(uploadImageBmp);
         }
 
@@ -372,9 +374,7 @@ public class DetailPageModel {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 fragmentActivity.startActivity(intent);
-
             }
         });
     }
@@ -398,8 +398,7 @@ public class DetailPageModel {
             image = getImageFromAssets(cafeDetail.get("cafeName").toString());
         } else {
             cafeDetail = new CafeUserTblHelper(context).executeSelect(lat, lon);
-            byte[] imageByte = (byte[]) cafeDetail.get("cafeImage");
-            image = ucm.convertByteToBitmap(imageByte);
+            image = new UserCafeMapModel(context).getCafeImage(lat, lon);
         }
 
         nameTextView.setText(cafeDetail.get("cafeName").toString());
@@ -416,6 +415,9 @@ public class DetailPageModel {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // click animation
+                new AnimationUtil().clickFadeInFadeOutAnimation(editButton);
+
                 Intent intent = new Intent(context, DetailPageActivity.class);
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
@@ -440,6 +442,8 @@ public class DetailPageModel {
         mailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // click animation
+                new AnimationUtil().clickFadeInFadeOutAnimation(mailButton);
 
                 new AlertDialog.Builder(fragmentActivity)
                         .setTitle("Would it be possible to send your cafe map?")
@@ -477,7 +481,12 @@ public class DetailPageModel {
             @Override
             public void onClick(View v) {
                 boolean bookmarkFlag;
-                if (ownerFlag) bookmarkFlag = new CafeMasterTblHelper(context).checkBookmarkFlag(lat, lon);
+
+                // click animation
+                new AnimationUtil().clickFadeInFadeOutAnimation(addBookmarkButton);
+
+                if (ownerFlag)
+                    bookmarkFlag = new CafeMasterTblHelper(context).checkBookmarkFlag(lat, lon);
                 else bookmarkFlag = new CafeUserTblHelper(context).checkBookmarkFlag(lat, lon);
 
                 // update bookmark flag on database table
@@ -488,46 +497,12 @@ public class DetailPageModel {
                 }
 
                 // change bookmark icon and set flag
-                if (!bookmarkFlag) addBookmarkButton.setImageResource(R.drawable.icon_bookmark_added);
+                if (!bookmarkFlag)
+                    addBookmarkButton.setImageResource(R.drawable.icon_bookmark_added);
                 else addBookmarkButton.setImageResource(R.drawable.icon_bookmark_add);
             }
         });
 
-    }
-
-    /**
-     * Makes attachment files.
-     * Json file is written cafe information and cafe image
-     * this method saves both files to android's local.
-     */
-    private void makeAttachmentOfJson() {
-        Map<String, Object> cafe;
-
-        cafe = new CafeUserTblHelper(context).executeSelect(lat, lon);
-
-        MailAttachment mailAttachment = new MailAttachment(lat, lon, cafe.get("cafeName").toString(), cafe.get("cafeAddress").toString(),
-                cafe.get("cafeTime").toString(), cafe.get("cafeTel").toString(), cafe.get("cafeSocket").toString(), cafe.get("cafeWifi").toString());
-
-        String attachment = new Gson().toJson(mailAttachment);
-
-        try {
-            // make a json file
-            FileOutputStream jsonFile = context.openFileOutput("mail_attachment.json", MODE_PRIVATE);
-            jsonFile.write(attachment.getBytes());
-            jsonFile.close();
-
-            // save image to local
-            byte[] bytes = new CafeUserTblHelper(context).executeSelect(lat, lon, "image");
-            FileOutputStream imageFile = context.openFileOutput("image.png", MODE_PRIVATE);
-            Bitmap image = ucm.convertByteToBitmap(bytes);
-            image.compress(Bitmap.CompressFormat.PNG, 100, imageFile);
-            imageFile.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void setSpinnerData(Spinner timeSpinner, String time) {
@@ -546,12 +521,76 @@ public class DetailPageModel {
      * Sets a upload image by the preview button.
      * This method suppose to be called
      * from onActivityResult@DetailPageFragment.
+     * <p>
+     * Resize image
      *
      * @param uploadImageBmp
      */
-    public void setUploadImageBmp(Bitmap uploadImageBmp) {
-        this.uploadImage.setImageBitmap(uploadImageBmp);
-        this.uploadImageBmp = uploadImageBmp;
+    public void setUploadImageBmp(Bitmap uploadImageBmp, int orientation) {
+
+        WindowManager windowManager = ((Activity) context).getWindowManager();
+        // make instance of the window
+        Display disp = windowManager.getDefaultDisplay();
+        Point size = new Point();
+        disp.getSize(size);
+        float viewWidth = size.x;
+        float viewHeight = size.y;
+
+        Matrix mat = new Matrix();
+
+        // get width and height
+        int wOrg = uploadImageBmp.getWidth();
+        int hOrg = uploadImageBmp.getHeight();
+
+        // リサイズ比の取得（画像の短辺がMAX_PIXELになる比を求めます）
+        float scale = Math.max(viewWidth / wOrg, viewHeight / hOrg);
+        if (scale < 1.0) {
+            mat.postScale(scale, scale);
+        }
+
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_UNDEFINED:
+                break;
+            case ExifInterface.ORIENTATION_NORMAL:
+                break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL://flip vertical
+                mat.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180://flip horizontal
+                mat.postRotate(180f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90://flip vertical rotate270
+                mat.postRotate(90f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE://rotate 90
+                mat.postRotate(-90f);
+                mat.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE://flip vertical, rotate 90
+                mat.postRotate(90f);
+                mat.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270://rotate 270
+                mat.postRotate(-90f);
+                break;
+        }
+
+        Bitmap resizeBitmap = Bitmap.createBitmap(uploadImageBmp, 0, 0, wOrg, hOrg, mat, true);
+
+        // save image in local
+        OutputStream out;
+        try {
+            out = context.openFileOutput("preview.png", context.MODE_PRIVATE);
+            resizeBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.uploadImage.setImageBitmap(resizeBitmap);
+        this.uploadImageBmp = resizeBitmap;
     }
 
     /**
@@ -571,35 +610,5 @@ public class DetailPageModel {
         }
 
         return bitmap;
-    }
-
-    /**
-     * Obtains mail account information
-     *
-     * @return
-     */
-    private Map<String, String> getMailAccount() {
-        Map<String, String> mailAccount = new HashMap<>();
-
-        InputStream is = null;
-        BufferedReader br = null;
-
-        try {
-            try {
-                is = context.getAssets().open("mail_account");
-                br = new BufferedReader(new InputStreamReader(is));
-
-                mailAccount.put("mail", br.readLine());
-                mailAccount.put("password", br.readLine());
-            } finally {
-                if (is != null) is.close();
-                if (br != null) br.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return mailAccount;
-
     }
 }

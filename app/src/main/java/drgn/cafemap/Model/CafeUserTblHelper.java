@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ public class CafeUserTblHelper {
         String lonString = String.valueOf(lon);
 
         final String WHERE = " WHERE lat = '" + latString + "' AND lon = '" + lonString + "'";
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_user_tbl" + WHERE, null);
+        Cursor query = sqLiteDatabase.rawQuery("SELECT name, address, time, tel, wifi, socket FROM cafe_user_tbl" + WHERE, null);
         boolean isEof = query.moveToFirst();
 
         while (isEof) {
@@ -53,7 +54,7 @@ public class CafeUserTblHelper {
             result.put("cafeTel", query.getString(query.getColumnIndex("tel")));
             result.put("cafeWifi", query.getString(query.getColumnIndex("wifi")));
             result.put("cafeSocket", query.getString(query.getColumnIndex("socket")));
-            result.put("cafeImage", query.getBlob(query.getColumnIndex("image")));
+//            result.put("cafeImage", query.getBlob(query.getColumnIndex("image")));
             isEof = query.moveToNext();
         }
         query.close();
@@ -62,8 +63,15 @@ public class CafeUserTblHelper {
         return result;
     }
 
-
-    protected byte[] executeSelect(double lat, double lon, String image) {
+    /**
+     * Obtains image that type is byte[] from database.
+     *
+     * @param lat
+     * @param lon
+     * @return
+     * @throws MemoryOverOverflowException
+     */
+    protected byte[] executeSelectImage(double lat, double lon) throws MemoryOverOverflowException {
         byte[] result = null;
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
@@ -71,10 +79,14 @@ public class CafeUserTblHelper {
         Cursor query = sqLiteDatabase.rawQuery("SELECT image FROM cafe_user_tbl WHERE lat = '" + latString + "' AND lon = '" + lonString + "'", null);
         boolean isEof = query.moveToFirst();
 
-        while (isEof) {
-            // get data
-            result = query.getBlob(query.getColumnIndex("image"));
-            isEof = query.moveToNext();
+        try {
+            while (isEof) {
+                // get data
+                result = query.getBlob(query.getColumnIndex("image"));
+                isEof = query.moveToNext();
+            }
+        } catch (IllegalStateException e) {
+            throw new MemoryOverOverflowException("Memory over by reading images", e);
         }
         query.close();
         sqLiteDatabase.close();
@@ -140,11 +152,13 @@ public class CafeUserTblHelper {
     protected List<Map<String, Object>> executeSelect() {
         List<Map<String, Object>> result = new ArrayList<>();
 
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM cafe_user_tbl", null);
+        Cursor query = sqLiteDatabase.rawQuery("SELECT lat, lon, name ,address, time, tel, wifi, socket FROM cafe_user_tbl", null);
         boolean isEof = query.moveToFirst();
         String cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket;
+        int cafeBookmark;
         double lat, lon;
         byte[] cafeImage;
+
         while (isEof) {
             lat = Double.parseDouble(query.getString(query.getColumnIndex("lat")));
             lon = Double.parseDouble(query.getString(query.getColumnIndex("lon")));
@@ -154,9 +168,11 @@ public class CafeUserTblHelper {
             cafeTel = query.getString(query.getColumnIndex("tel"));
             cafeWifi = query.getString(query.getColumnIndex("wifi"));
             cafeSocket = query.getString(query.getColumnIndex("socket"));
-            cafeImage = query.getBlob(query.getColumnIndex("image"));
+//                cafeImage = query.getBlob(query.getColumnIndex("image"));
+//                cafeBookmark = query.getInt(query.getColumnIndex("bookmark"));
             // Set Map<String,object> that has one record from makeOneRecordOfUserCafeData
-            result.add(this.makeOneRecordOfUserCafeData(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket, cafeImage));
+//                result.add(this.makeOneRecordOfUserCafeData(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket, cafeImage));
+            result.add(this.makeOneRecordOfUserCafeData(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket));
 
             isEof = query.moveToNext();
         }
@@ -208,7 +224,8 @@ public class CafeUserTblHelper {
             cafeSocket = query.getString(query.getColumnIndex("socket"));
             cafeImage = query.getBlob(query.getColumnIndex("image"));
             // Set Map<String,object> that has one record from makeOneRecordOfUserCafeData
-            result.add(this.makeOneRecordOfUserCafeData(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket, cafeImage));
+//            result.add(this.makeOneRecordOfUserCafeData(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket, cafeImage));
+            result.add(this.makeOneRecordOfUserCafeData(lat, lon, cafeName, cafeAddress, cafeTime, cafeTel, cafeWifi, cafeSocket));
 
             isEof = query.moveToNext();
         }
@@ -230,11 +247,10 @@ public class CafeUserTblHelper {
      * @param cafeTel
      * @param cafeWifi
      * @param cafeSocket
-     * @param cafeImage
      * @return Map<String, Object>
      */
     private Map<String, Object> makeOneRecordOfUserCafeData(double lat, double lon, String cafeName, String cafeAddress, String cafeTime,
-                                                            String cafeTel, String cafeWifi, String cafeSocket, byte[] cafeImage) {
+                                                            String cafeTel, String cafeWifi, String cafeSocket) {
         Map<String, Object> result = new HashMap<>();
 
         result.put("lat", lat);
@@ -245,7 +261,7 @@ public class CafeUserTblHelper {
         result.put("cafeTel", cafeTel);
         result.put("cafeWifi", cafeWifi);
         result.put("cafeSocket", cafeSocket);
-        result.put("cafeImage", cafeImage);
+//        result.put("cafeImage", cafeImage);
 
         return result;
     }
@@ -403,6 +419,31 @@ public class CafeUserTblHelper {
         }
 
         return successFlag;
+    }
+
+    /**
+     * There's a probability that memory over flow
+     * when system reads image from database.
+     * Because of a large size image that is uploaded by a user.
+     * Cafe map has resize function and works already, but
+     * just to be on the safe side, you have to use this exception
+     * when using executeSelectImage().
+     */
+    public class MemoryOverOverflowException extends Exception {
+        public MemoryOverOverflowException() {
+        }
+
+        public MemoryOverOverflowException(String message) {
+            super(message);
+        }
+
+        public MemoryOverOverflowException(Throwable cause) {
+            super(cause);
+        }
+
+        public MemoryOverOverflowException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 
 }

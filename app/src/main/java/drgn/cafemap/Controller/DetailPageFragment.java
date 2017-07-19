@@ -3,6 +3,7 @@ package drgn.cafemap.Controller;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.app.Fragment;
@@ -136,7 +137,7 @@ public class DetailPageFragment extends Fragment {
 
                 break;
             case 3: // Display edit page from "existing cafe info"
-                dpm.displayEditPage(viewMode, temporaryCafeData, ownerFlag);
+                dpm.displayEditPage(viewMode, temporaryCafeData, ownerFlag, getActivity());
 
                 // Upload image
                 uploadImageButton = (Button) view.findViewById(R.id.uploadImageButton);
@@ -170,11 +171,15 @@ public class DetailPageFragment extends Fragment {
         if (requestCode == 1000 && resultCode == RESULT_OK) {
             Uri uri = resultData.getData();
             if (resultData != null) {
-//                uri = resultData.getData();
                 try {
-                uploadImageBmp = getBitmapFromUri(uri);
-//                uploadImageBmp = resizeBitmap(resultData.getData());
-                dpm.setUploadImageBmp(uploadImageBmp);
+                    // get exif data from a picture
+                    InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+                    ExifInterface exif = new ExifInterface(inputStream);
+                    int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+//                    uploadImageBmp = getBitmapFromUri(uri);
+                    uploadImageBmp = resizeBitmap(uri);
+                    dpm.setUploadImageBmp(uploadImageBmp, exifOrientation);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

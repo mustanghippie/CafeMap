@@ -3,6 +3,8 @@ package drgn.cafemap.Model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -26,6 +28,7 @@ public class UserCafeMapModel {
 
     private Context context;
     private ArrayList<Marker> markerArrayList = new ArrayList<>();
+    private final String TAG = "[Log] UserCafeMapModel";
 
     public UserCafeMapModel(Context context) {
         this.context = context;
@@ -246,7 +249,7 @@ public class UserCafeMapModel {
      * @param image
      * @return Bitmap
      */
-    protected Bitmap convertByteToBitmap(byte[] image) {
+    private Bitmap convertByteToBitmap(byte[] image) {
         Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
         return bmp;
     }
@@ -256,11 +259,21 @@ public class UserCafeMapModel {
      *
      * @param lat
      * @param lon
-     * @return Bitmap
+     * @return Bitmap or null(Exception)
      */
     public Bitmap getCafeImage(double lat, double lon) {
+
         CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
-        byte[] result = cafeUserTblHelper.executeSelect(lat, lon, "image");
+        byte[] result = new byte[0];
+        try {
+            result = cafeUserTblHelper.executeSelectImage(lat, lon);
+        } catch (CafeUserTblHelper.MemoryOverOverflowException e) {
+            Log.d(TAG, "IllegalStateException@getCafeImage");
+            Toast.makeText(context, "Failed to read a image.\nA image is probably too large size.", Toast.LENGTH_LONG).show();
+            result = null;
+        }
+        // Exception that image couldn't read from database
+        if (result == null) return null;
         Bitmap image = this.convertByteToBitmap(result);
         return image;
     }

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -148,7 +149,7 @@ public class AsyncSendMail extends AsyncTask<String, String, String> {
             e.printStackTrace();
         } finally {
             // update send_flag
-            new CafeUserTblHelper(context).executeUpdate(lat,lon,1);
+            new CafeUserTblHelper(context).executeUpdate(lat, lon, 1);
         }
 
 
@@ -182,9 +183,8 @@ public class AsyncSendMail extends AsyncTask<String, String, String> {
             jsonFile.close();
 
             // save image to local
-            byte[] bytes = new CafeUserTblHelper(context).executeSelect(lat, lon, "image");
             FileOutputStream imageFile = context.openFileOutput("image.png", MODE_PRIVATE);
-            Bitmap image = new UserCafeMapModel(context).convertByteToBitmap(bytes);
+            Bitmap image = new UserCafeMapModel(context).getCafeImage(lat,lon);
 
             image.compress(Bitmap.CompressFormat.PNG, 100, imageFile);
             imageFile.close();

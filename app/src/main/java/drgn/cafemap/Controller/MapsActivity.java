@@ -52,6 +52,7 @@ import java.util.List;
 
 import drgn.cafemap.R;
 import drgn.cafemap.Model.UserCafeMapModel;
+import drgn.cafemap.util.AnimationUtil;
 import drgn.cafemap.util.DBHelper;
 
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
@@ -307,7 +308,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng position = new LatLng(defaultPosLat, defaultPosLon);
 
                 // move camera
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 16));
             } else {
 
                 //LocationManagerの取得(初回のマップ移動)
@@ -329,7 +330,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (myLocate != null) {
                     LatLng currentLocation = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to connect gps", Toast.LENGTH_LONG).show();
@@ -337,7 +338,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // default position
                     LatLng position = new LatLng(49.285131, -123.112998);
 
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 16));
                 }
             }
 
@@ -365,10 +366,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             bookmarkButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
-                    alphaAnimation.setDuration(100);
-                    alphaAnimation.setFillAfter(false);
-                    bookmarkButton.startAnimation(alphaAnimation);
+                    // click animation
+                    new AnimationUtil().clickFadeInFadeOutAnimation(bookmarkButton);
 
                     // display bookmarked cafe
                     if (displayBookmark % 2 == 1) {
@@ -377,8 +376,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         userCafeMapModel.setCafeMapMarkers(mMap);
                     }
                     displayBookmark++;
-
-
                 }
             });
 
