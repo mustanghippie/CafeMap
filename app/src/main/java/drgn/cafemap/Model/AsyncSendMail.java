@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -167,7 +166,7 @@ public class AsyncSendMail extends AsyncTask<String, String, String> {
      * this method saves both files to android's local.
      */
     private void makeAttachmentOfJson() {
-        Map<String, Object> cafe;
+        Map<String, String> cafe;
 
         cafe = new CafeUserTblHelper(context).executeSelect(lat, lon);
 

@@ -46,9 +46,9 @@ public class AsyncTaskMarkerSet extends AsyncTask<String, String, String> {
     private StorageReference imageRef;
     private Bitmap bitmap;
 
-    // Google Maps data
+    // Google Cafe data
     private GoogleMap mMap;
-    // Google Maps Marker hashmap
+    // Google Cafe Marker hashmap
     private Map<String, HashMap<String, String>> cafeMap = new HashMap<>();
     // Cafe names list to get images of cafes
     private ArrayList<String> cafeNameArrayList = new ArrayList<>();

@@ -4,10 +4,11 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.List;
+
+import drgn.cafemap.util.Cafe;
 
 /**
  * Created by Nobu on 2017/06/10.
@@ -16,13 +17,13 @@ import java.util.List;
 public class AsyncTaskAddressGeocoder extends AsyncTask<String, String, String> {
 
     private Context context;
-    private TextView addressTextView;
+    private Cafe cafe;
     private double lat;
     private double lon;
 
-    public AsyncTaskAddressGeocoder(Context context, TextView addressTextView, double lat, double lon) {
+    public AsyncTaskAddressGeocoder(Context context, Cafe cafe, double lat, double lon) {
         this.context = context;
-        this.addressTextView = addressTextView;
+        this.cafe = cafe;
         this.lat = lat;
         this.lon = lon;
     }
@@ -52,6 +53,6 @@ public class AsyncTaskAddressGeocoder extends AsyncTask<String, String, String> 
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
         // doInBackground後処理
-        addressTextView.setText(result);
+        cafe.setCafeAddress(result);
     }
 }

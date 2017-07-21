@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +34,10 @@ public class CafeUserTblHelper {
      *
      * @param lat
      * @param lon
-     * @return Map<String, String> 1 record data
+     * @return Map<String, String> 1 record data or null(no data)
      */
-    protected Map<String, Object> executeSelect(double lat, double lon) {
-        Map<String, Object> result = new HashMap<>();
+    protected Map<String, String> executeSelect(double lat, double lon) {
+        Map<String, String> result = new HashMap<>();
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
 
@@ -54,12 +53,11 @@ public class CafeUserTblHelper {
             result.put("cafeTel", query.getString(query.getColumnIndex("tel")));
             result.put("cafeWifi", query.getString(query.getColumnIndex("wifi")));
             result.put("cafeSocket", query.getString(query.getColumnIndex("socket")));
-//            result.put("cafeImage", query.getBlob(query.getColumnIndex("image")));
             isEof = query.moveToNext();
         }
         query.close();
         sqLiteDatabase.close();
-
+        if (result.size() == 0) result = null;
         return result;
     }
 
@@ -101,7 +99,7 @@ public class CafeUserTblHelper {
      * @param lon
      * @return boolean true => already sent / false => not yet
      */
-    protected boolean checkSendFlag(double lat, double lon) {
+    public boolean checkSendFlag(double lat, double lon) {
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
 
@@ -330,6 +328,9 @@ public class CafeUserTblHelper {
                 statement.bindString(1, String.valueOf(lat));
                 statement.bindString(2, String.valueOf(lon));
                 statement.executeUpdateDelete();
+            } catch (SQLiteConstraintException e) {
+                Log.d(TAG, "SQLiteConstraintException@executeDelete, execute executeUpdateDelete");
+                successFlag = false;
             } finally {
                 statement.close();
             }
@@ -360,6 +361,9 @@ public class CafeUserTblHelper {
                 statement.bindString(9, String.valueOf(lat));
                 statement.bindString(10, String.valueOf(lon));
                 statement.executeInsert();
+            } catch (SQLiteConstraintException e) {
+                Log.d(TAG, "SQLiteConstraintException@executeUpdate, execute executeInsert");
+                successFlag = false;
             } finally {
                 statement.close();
             }

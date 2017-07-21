@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="drgn.cafemap.Controller.DetailPageActivity">
+    tools:context="drgn.cafemap.Controller.PreviewPageFragment">
+
+    <data>
+        <variable
+            name="cafe"
+            type="drgn.cafemap.util.Cafe" />
+        <variable
+            name="handlers"
+            type="drgn.cafemap.util.PreviewPageHandlers" />
+    </data>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -74,8 +80,8 @@
                     android:src="@drawable/icon_name" />
 
                 <TextView
-                    android:text="Preview"
                     android:id="@+id/cafeName"
+                    android:text="@{cafe.cafeName}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -98,6 +104,7 @@
 
                 <TextView
                     android:id="@+id/cafeAddress"
+                    android:text="@{cafe.cafeAddress}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -119,6 +126,7 @@
 
                 <TextView
                     android:id="@+id/cafeTime"
+                    android:text="@{cafe.cafeTime}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -140,6 +148,7 @@
 
                 <TextView
                     android:id="@+id/cafeTel"
+                    android:text="@{cafe.cafeTel}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -161,6 +170,7 @@
 
                 <TextView
                     android:id="@+id/cafeSocket"
+                    android:text="@{cafe.cafeSocket}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -182,6 +192,7 @@
 
                 <TextView
                     android:id="@+id/cafeWifi"
+                    android:text="@{cafe.cafeWifi}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -205,6 +216,7 @@
 
                 <Button
                     android:id="@+id/saveButton"
+                    android:onClick="@{handlers.onClickSaveButton}"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="20dp"
@@ -220,4 +232,4 @@
 
     </ScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+</layout>
