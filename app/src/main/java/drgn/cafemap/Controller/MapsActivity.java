@@ -20,7 +20,6 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -259,19 +258,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     //Log.d("Click Info Window", "Click Info Window");
-                    Intent intent = new Intent(getApplication(), DetailPageActivity.class);
+                    Intent intent = new Intent(getApplication(), CafeActivity.class);
                     LatLng latlng = marker.getPosition();
 
                     // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
-                    int viewMode = 1;
-                    if (marker.getTitle().equals("Add your cafe")) viewMode = 0;
+                    boolean existingDataFlag = true;
+                    if (marker.getTitle().equals("Add your cafe")) existingDataFlag = false;
 
                     intent.putExtra("lat", latlng.latitude);
                     intent.putExtra("lon", latlng.longitude);
-                    intent.putExtra("viewMode", viewMode);
-                    if (marker.getTag().toString().equals("owner"))
+                    intent.putExtra("existingDataFlag", existingDataFlag);
+                    if (marker.getTag().toString().equals("owner")) {
                         intent.putExtra("ownerFlag", true);
-                    else intent.putExtra("ownerFlag", false);
+                    } else {
+                        intent.putExtra("ownerFlag", false);
+                    }
 
                     startActivity(intent);
                 }
@@ -392,11 +393,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (onLocationChangedListener != null) {
             // display GPS mark
             onLocationChangedListener.onLocationChanged(location);
-
-//            double lat = location.getLatitude();
-//            double lng = location.getLongitude();
-
-//            Log.d("debug", "location=" + lat + "," + lng);
         }
     }
 
@@ -423,9 +419,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return null;
         }
         Location currentLocation = fusedLocationProviderApi.getLastLocation(mGoogleApiClient);
-//        System.out.println("current latitude ======= "+currentLocation.getLatitude());
-//        System.out.println("current longitude ======= "+currentLocation.getLongitude());
-
 
         return new LocationRequest()
                 .setInterval(1000)
@@ -445,7 +438,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMyLocationButtonClick() {
-//        Toast.makeText(this, "onMyLocationButtonClick", Toast.LENGTH_SHORT).show();
         Log.d("debug", "onMyLocationButtonClick");
 
         return false;

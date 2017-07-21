@@ -30,7 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import drgn.cafemap.Controller.DetailPageActivity;
+import drgn.cafemap.Controller.CafeActivity;
 import drgn.cafemap.Controller.MapsActivity;
 import drgn.cafemap.R;
 import drgn.cafemap.util.AnimationUtil;
@@ -38,9 +38,11 @@ import drgn.cafemap.util.AnimationUtil;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
- * Created by Nobu on 2017/06/11.
+ * -------------------------------------
+ * Todo This class is deprecated.
+ * I'm going to delete this class later.
+ * -------------------------------------
  */
-
 public class DetailPageModel {
     // Base param
     private double lat;
@@ -227,7 +229,7 @@ public class DetailPageModel {
                 // wifi
                 String cafeWifi = wifiSpinner.getSelectedItem().toString();
 
-                Intent intent = new Intent(context, DetailPageActivity.class);
+                Intent intent = new Intent(context, CafeActivity.class);
 
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
@@ -352,7 +354,7 @@ public class DetailPageModel {
                 // wifi
                 String cafeWifi = wifiSpinner.getSelectedItem().toString();
 
-                Intent intent = new Intent(context, DetailPageActivity.class);
+                Intent intent = new Intent(context, CafeActivity.class);
 
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
@@ -390,7 +392,7 @@ public class DetailPageModel {
 
         // image in cafe_user_tbl exits or not
         // Get data owner's or user's
-        final Map<String, Object> cafeDetail;
+        final Map<String, String> cafeDetail;
         Bitmap image = null;
 
         if (ownerFlag) {
@@ -418,7 +420,7 @@ public class DetailPageModel {
                 // click animation
                 new AnimationUtil().clickFadeInFadeOutAnimation(editButton);
 
-                Intent intent = new Intent(context, DetailPageActivity.class);
+                Intent intent = new Intent(context, CafeActivity.class);
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
                 intent.putExtra("viewMode", 3);
@@ -442,7 +444,7 @@ public class DetailPageModel {
         mailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // click animation
+//                // click animation
                 new AnimationUtil().clickFadeInFadeOutAnimation(mailButton);
 
                 new AlertDialog.Builder(fragmentActivity)
@@ -599,7 +601,7 @@ public class DetailPageModel {
      * @param name
      * @return Bitmap image
      */
-    private Bitmap getImageFromAssets(String name) {
+    public Bitmap getImageFromAssets(String name) {
         Bitmap bitmap = null;
 
         try {

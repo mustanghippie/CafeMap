@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="drgn.cafemap.Controller.DetailPageActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="cafe"
+            type="drgn.cafemap.util.Cafe" />
+        <variable
+            name="handlers"
+            type="drgn.cafemap.util.EditPageHandlers" />
+    </data>
 
     <ScrollView
+        tools:context="drgn.cafemap.Controller.CafeActivity"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -74,6 +80,7 @@
 
                 <EditText
                     android:id="@+id/cafeName"
+                    android:text="@{cafe.cafeName}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
@@ -98,6 +105,7 @@
 
                 <EditText
                     android:id="@+id/cafeAddress"
+                    android:text="@{cafe.cafeAddress}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
@@ -233,6 +241,7 @@
 
                 <EditText
                     android:id="@+id/cafeTel"
+                    android:text="@{cafe.cafeTel}"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="14dp"
@@ -301,6 +310,7 @@
 
                 <Button
                     android:id="@+id/uploadImageButton"
+                    android:onClick="@{handlers.onClickUploadImageButton}"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -338,6 +348,7 @@
 
                 <Button
                     android:id="@+id/previewButton"
+                    android:onClick="@{handlers.onClickPreviewButton}"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -353,6 +364,7 @@
 
                 <Button
                     android:id="@+id/deleteButton"
+                    android:onClick="@{handlers.onClickDeleteButton}"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="5dp"
@@ -373,4 +385,4 @@
 
     </ScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+</layout>

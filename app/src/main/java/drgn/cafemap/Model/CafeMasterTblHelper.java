@@ -69,7 +69,7 @@ public class CafeMasterTblHelper {
      * @param lon
      * @return boolean true => bookmark false => not bookmark
      */
-    protected boolean checkBookmarkFlag(double lat,double lon){
+    protected boolean checkBookmarkFlag(double lat, double lon) {
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
 
@@ -144,10 +144,10 @@ public class CafeMasterTblHelper {
      *
      * @param lat
      * @param lon
-     * @return Map<String, Object> 1 record data
+     * @return Map<String, Object> 1 record data or null(no data)
      */
-    public Map<String, Object> executeSelect(double lat, double lon) {
-        Map<String, Object> result = new HashMap<>();
+    public Map<String, String> executeSelect(double lat, double lon) {
+        Map<String, String> result = new HashMap<>();
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
 
@@ -168,8 +168,36 @@ public class CafeMasterTblHelper {
 
         query.close();
         sqLiteDatabase.close();
-
+        if (result.size() == 0) result = null;
         return result;
+    }
+
+    /**
+     * Obtains cafe name.
+     *
+     * @param lat
+     * @param lon
+     * @return String cafe name
+     */
+    public String executeSelectCafeName(double lat, double lon) {
+        String cafeName = "";
+        String latString = String.valueOf(lat);
+        String lonString = String.valueOf(lon);
+
+        final String WHERE = " WHERE lat = '" + latString + "' AND lon = '" + lonString + "'";
+
+        Cursor query = sqLiteDatabase.rawQuery("SELECT name FROM cafe_master_tbl" + WHERE, null);
+        boolean isEof = query.moveToFirst();
+
+        while (isEof) {
+            // get data
+            cafeName = query.getString(query.getColumnIndex("name"));
+            isEof = query.moveToNext();
+        }
+        query.close();
+        sqLiteDatabase.close();
+
+        return cafeName;
     }
 
     /**

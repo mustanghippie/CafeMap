@@ -4,7 +4,7 @@
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
+         Google Cafe Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -16,13 +16,13 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/AppTheme.NoActionBar">
 
         <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
+             The API key for Google Cafe-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
@@ -46,13 +46,8 @@
             android:name=".Controller.MapsActivity"
             android:label="@string/app_name"
             android:theme="@style/search" />
-        <activity
-            android:name=".Controller.DetailPageActivity"
-            android:label="@string/title_activity_edit_page"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Controller.DetailPageFragment" />
-        <activity android:name=".util.ConvertFirebaseToSQL" />
-        <activity android:name=".util.ConvertJsonToSQL" />
+        <activity android:name=".Controller.CafeActivity"></activity>
     </application>
 
 </manifest>

@@ -17,7 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -30,6 +32,9 @@ dependencies {
     // firebase database & storage
     // gson
     // firebase auth
+    compile files('libs/activation.jar')
+    compile files('libs/additionnal.jar')
+    compile files('libs/mail.jar')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:25.3.1'
@@ -41,12 +46,14 @@ dependencies {
     compile 'com.google.firebase:firebase-core:10.2.6'
     compile 'com.google.firebase:firebase-auth:10.2.6'
     compile 'com.google.android.gms:play-services-auth:10.2.6'
+    compile 'com.android.support:exifinterface:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
     testCompile 'junit:junit:4.12'
-    compile "com.android.support:exifinterface:25.3.1"
-    compile files('libs/activation.jar')
-    compile files('libs/additionnal.jar')
-    compile files('libs/mail.jar')
 }
+
+
+
+
 
 
 

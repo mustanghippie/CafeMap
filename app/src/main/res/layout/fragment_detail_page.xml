@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="drgn.cafemap.Controller.DetailPageActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="handlers"
+            type="drgn.cafemap.util.DetailPageHandlers" />
+        <variable
+            name="cafe"
+            type="drgn.cafemap.util.Cafe" />
+    </data>
 
     <ScrollView
+        tools:context="drgn.cafemap.Controller.CafeActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -63,6 +70,7 @@
 
                 <ImageButton
                     android:id="@+id/mailButton"
+                    android:onClick="@{handlers.onClickMailButton}"
                     android:layout_width="28dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -75,6 +83,7 @@
 
                 <ImageButton
                     android:id="@+id/addBookmarkButton"
+                    android:onClick="@{handlers.onClickAddBookmarkButton}"
                     android:layout_width="28dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -87,6 +96,7 @@
 
                 <ImageButton
                     android:id="@+id/editButton"
+                    android:onClick="@{handlers.onClickEditButton}"
                     android:layout_width="28dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -113,6 +123,7 @@
 
                 <TextView
                     android:id="@+id/cafeName"
+                    android:text="@{cafe.cafeName}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -134,6 +145,7 @@
 
                 <TextView
                     android:id="@+id/cafeAddress"
+                    android:text="@{cafe.cafeAddress}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -155,6 +167,7 @@
 
                 <TextView
                     android:id="@+id/cafeTime"
+                    android:text="@{cafe.cafeTime}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -176,6 +189,7 @@
 
                 <TextView
                     android:id="@+id/cafeTel"
+                    android:text="@{cafe.cafeTel}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -197,6 +211,7 @@
 
                 <TextView
                     android:id="@+id/cafeSocket"
+                    android:text="@{cafe.cafeSocket}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -218,6 +233,7 @@
 
                 <TextView
                     android:id="@+id/cafeWifi"
+                    android:text="@{cafe.cafeWifi}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="22dp"
@@ -225,31 +241,6 @@
                     android:textSize="14sp" />
 
             </LinearLayout>
-
-            <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_marginBottom="40dp"-->
-                <!--android:gravity="center"-->
-                <!--android:orientation="vertical">-->
-
-                <!--<Button-->
-                    <!--android:id="@+id/sendCafeInfoButton"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_marginBottom="5dp"-->
-                    <!--android:layout_marginLeft="20dp"-->
-                    <!--android:layout_marginRight="20dp"-->
-                    <!--android:layout_marginTop="20dp"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:background="@color/colorAccent"-->
-                    <!--android:text="Share"-->
-                    <!--android:textAlignment="center"-->
-                    <!--android:textColor="@color/common_google_signin_btn_text_dark_default"-->
-                    <!--android:textSize="20sp" />-->
-
-
-            <!--</LinearLayout>-->
 
             <ImageView
                 android:id="@+id/badge"
@@ -261,4 +252,4 @@
 
     </ScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+</layout>
