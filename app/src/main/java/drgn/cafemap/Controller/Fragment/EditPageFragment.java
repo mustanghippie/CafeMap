@@ -1,4 +1,4 @@
-package drgn.cafemap.Controller;
+package drgn.cafemap.Controller.Fragment;
 
 
 import android.app.AlertDialog;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 
+import drgn.cafemap.Controller.Activity.MapsActivity;
 import drgn.cafemap.Model.AsyncTaskAddressGeocoder;
 import drgn.cafemap.Model.CafeModel;
 import drgn.cafemap.R;

@@ -146,7 +146,7 @@ public class CafeMasterTblHelper {
      * @param lon
      * @return Map<String, Object> 1 record data or null(no data)
      */
-    public Map<String, String> executeSelect(double lat, double lon) {
+    protected Map<String, String> executeSelect(double lat, double lon) {
         Map<String, String> result = new HashMap<>();
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
@@ -179,7 +179,7 @@ public class CafeMasterTblHelper {
      * @param lon
      * @return String cafe name
      */
-    public String executeSelectCafeName(double lat, double lon) {
+    protected String executeSelectCafeName(double lat, double lon) {
         String cafeName = "";
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);

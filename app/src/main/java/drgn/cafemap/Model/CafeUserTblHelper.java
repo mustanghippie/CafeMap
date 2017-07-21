@@ -99,7 +99,7 @@ public class CafeUserTblHelper {
      * @param lon
      * @return boolean true => already sent / false => not yet
      */
-    public boolean checkSendFlag(double lat, double lon) {
+    protected boolean checkSendFlag(double lat, double lon) {
         String latString = String.valueOf(lat);
         String lonString = String.valueOf(lon);
 
@@ -433,7 +433,7 @@ public class CafeUserTblHelper {
      * just to be on the safe side, you have to use this exception
      * when using executeSelectImage().
      */
-    public class MemoryOverOverflowException extends Exception {
+    protected class MemoryOverOverflowException extends Exception {
         public MemoryOverOverflowException() {
         }
 

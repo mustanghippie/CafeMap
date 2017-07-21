@@ -443,4 +443,12 @@ public class CafeModel {
         return result;
     }
 
+    public boolean checkMailSendFlag(double lat, double lon) {
+        boolean sendFlag = false;
+
+        sendFlag = new CafeUserTblHelper(context).checkSendFlag(lat, lon);
+
+        return sendFlag;
+    }
+
 }

@@ -30,8 +30,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import drgn.cafemap.Controller.CafeActivity;
-import drgn.cafemap.Controller.MapsActivity;
+import drgn.cafemap.Controller.Activity.CafeActivity;
+import drgn.cafemap.Controller.Activity.MapsActivity;
 import drgn.cafemap.R;
 import drgn.cafemap.util.AnimationUtil;
 
@@ -458,8 +458,8 @@ public class DetailPageModel {
                                 // check send_flag preventing to send email in a row
                                 boolean sendFlag = new CafeUserTblHelper(context).checkSendFlag(lat, lon);
                                 if (!sendFlag) {
-                                    AsyncSendMail asyncSendMail = new AsyncSendMail(context, lat, lon);
-                                    asyncSendMail.execute("");
+                                    AsyncTaskSendMail asyncTaskSendMail = new AsyncTaskSendMail(context, lat, lon);
+                                    asyncTaskSendMail.execute("");
                                 }
                                 Toast.makeText(context, "Thank you for your support!!", Toast.LENGTH_LONG).show();
                             }

@@ -1,4 +1,4 @@
-package drgn.cafemap.Controller;
+package drgn.cafemap.Controller.Fragment;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
-import drgn.cafemap.Model.AsyncSendMail;
+import drgn.cafemap.Model.AsyncTaskSendMail;
 import drgn.cafemap.Model.CafeModel;
 import drgn.cafemap.Model.CafeUserTblHelper;
 import drgn.cafemap.R;
@@ -121,10 +121,10 @@ public class DetailPageFragment extends Fragment implements DetailPageHandlers {
                     public void onClick(DialogInterface dialog, int which) {
                         // OK button pressed
                         // check send_flag preventing to send email in a row
-                        boolean sendFlag = new CafeUserTblHelper(context).checkSendFlag(lat, lon);
+                        boolean sendFlag = cafeModel.checkMailSendFlag(lat, lon);
                         if (!sendFlag) {
-                            AsyncSendMail asyncSendMail = new AsyncSendMail(context, lat, lon);
-                            asyncSendMail.execute("");
+                            AsyncTaskSendMail asyncTaskSendMail = new AsyncTaskSendMail(context, lat, lon);
+                            asyncTaskSendMail.execute("");
                         }
                         Toast.makeText(context, "Thank you for your support!!", Toast.LENGTH_LONG).show();
                     }

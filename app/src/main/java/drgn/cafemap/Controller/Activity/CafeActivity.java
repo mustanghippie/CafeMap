@@ -1,10 +1,13 @@
-package drgn.cafemap.Controller;
+package drgn.cafemap.Controller.Activity;
 
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import drgn.cafemap.Controller.Fragment.DetailPageFragment;
+import drgn.cafemap.Controller.Fragment.EditPageFragment;
+import drgn.cafemap.Controller.Fragment.PreviewPageFragment;
 import drgn.cafemap.R;
 import drgn.cafemap.util.Cafe;
 

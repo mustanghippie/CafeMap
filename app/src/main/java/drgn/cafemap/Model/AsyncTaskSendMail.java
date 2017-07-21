@@ -35,6 +35,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import drgn.cafemap.Model.CafeUserTblHelper;
+import drgn.cafemap.Model.UserCafeMapModel;
 import drgn.cafemap.Object.MailAttachment;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -43,12 +45,12 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by Nobu on 2017/07/05.
  */
 
-public class AsyncSendMail extends AsyncTask<String, String, String> {
+public class AsyncTaskSendMail extends AsyncTask<String, String, String> {
 
     private Context context;
     private double lat, lon;
 
-    public AsyncSendMail(Context context, double lat, double lon) {
+    public AsyncTaskSendMail(Context context, double lat, double lon) {
         this.context = context;
         this.lat = lat;
         this.lon = lon;

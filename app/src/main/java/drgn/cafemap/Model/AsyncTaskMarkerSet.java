@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import drgn.cafemap.Model.UserCafeMapModel;
+
 import static android.content.ContentValues.TAG;
 
 /**

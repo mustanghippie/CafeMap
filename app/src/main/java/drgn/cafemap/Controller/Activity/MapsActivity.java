@@ -1,4 +1,4 @@
-package drgn.cafemap.Controller;
+package drgn.cafemap.Controller.Activity;
 
 import android.content.Context;
 import android.content.Intent;

@@ -13,7 +13,7 @@
     </data>
 
     <ScrollView
-        tools:context="drgn.cafemap.Controller.CafeActivity"
+        tools:context="drgn.cafemap.Controller.Activity.CafeActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
