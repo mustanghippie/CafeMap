@@ -14,11 +14,10 @@ import android.widget.Toast;
 
 import drgn.cafemap.Model.AsyncTaskSendMail;
 import drgn.cafemap.Model.CafeModel;
-import drgn.cafemap.Model.CafeUserTblHelper;
 import drgn.cafemap.R;
 import drgn.cafemap.databinding.FragmentDetailPageBinding;
-import drgn.cafemap.util.AnimationUtil;
-import drgn.cafemap.util.DetailPageHandlers;
+import drgn.cafemap.Util.AnimationUtil;
+import drgn.cafemap.Util.DetailPageHandlers;
 
 public class DetailPageFragment extends Fragment implements DetailPageHandlers {
 

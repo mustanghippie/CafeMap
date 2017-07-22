@@ -51,8 +51,8 @@ import java.util.List;
 
 import drgn.cafemap.R;
 import drgn.cafemap.Model.UserCafeMapModel;
-import drgn.cafemap.util.AnimationUtil;
-import drgn.cafemap.util.DBHelper;
+import drgn.cafemap.Util.AnimationUtil;
+import drgn.cafemap.Util.DBHelper;
 
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
