@@ -1,4 +1,4 @@
-package drgn.cafemap.util;
+package drgn.cafemap.Util;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

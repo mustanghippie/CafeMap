@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import drgn.cafemap.util.Cafe;
+import drgn.cafemap.Object.Cafe;
 
 import static android.content.Context.MODE_PRIVATE;
 
