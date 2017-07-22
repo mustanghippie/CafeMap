@@ -9,7 +9,7 @@
             type="drgn.cafemap.Util.DetailPageHandlers" />
         <variable
             name="cafe"
-            type="drgn.cafemap.Util.Cafe" />
+            type="drgn.cafemap.Object.Cafe" />
     </data>
 
     <ScrollView

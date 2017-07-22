@@ -1,4 +1,4 @@
-package drgn.cafemap.Util;
+package drgn.cafemap.Object;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;

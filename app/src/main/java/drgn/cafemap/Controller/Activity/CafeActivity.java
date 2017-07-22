@@ -9,7 +9,7 @@ import drgn.cafemap.Controller.Fragment.DetailPageFragment;
 import drgn.cafemap.Controller.Fragment.EditPageFragment;
 import drgn.cafemap.Controller.Fragment.PreviewPageFragment;
 import drgn.cafemap.R;
-import drgn.cafemap.Util.Cafe;
+import drgn.cafemap.Object.Cafe;
 
 public class CafeActivity extends AppCompatActivity implements DetailPageFragment.DetailPageFragmentListener,
         EditPageFragment.EditPageFragmentListener, PreviewPageFragment.PreviewPageFragmentListener {

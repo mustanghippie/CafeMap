@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 import java.io.IOException;
 import java.util.List;
 
-import drgn.cafemap.Util.Cafe;
+import drgn.cafemap.Object.Cafe;
 
 /**
  * Created by Nobu on 2017/06/10.

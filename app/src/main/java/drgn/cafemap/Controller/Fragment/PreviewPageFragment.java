@@ -12,7 +12,7 @@ import android.widget.Toast;
 import drgn.cafemap.Model.CafeModel;
 import drgn.cafemap.R;
 import drgn.cafemap.databinding.FragmentPreviewPageBinding;
-import drgn.cafemap.Util.Cafe;
+import drgn.cafemap.Object.Cafe;
 import drgn.cafemap.Util.PreviewPageHandlers;
 
 public class PreviewPageFragment extends Fragment implements PreviewPageHandlers {

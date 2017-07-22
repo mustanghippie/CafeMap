@@ -23,7 +23,7 @@ import drgn.cafemap.Model.AsyncTaskAddressGeocoder;
 import drgn.cafemap.Model.CafeModel;
 import drgn.cafemap.R;
 import drgn.cafemap.databinding.FragmentEditPageBinding;
-import drgn.cafemap.Util.Cafe;
+import drgn.cafemap.Object.Cafe;
 import drgn.cafemap.Util.EditPageHandlers;
 
 import static android.app.Activity.RESULT_OK;
