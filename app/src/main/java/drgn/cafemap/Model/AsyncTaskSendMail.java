@@ -35,8 +35,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import drgn.cafemap.Model.CafeUserTblHelper;
-import drgn.cafemap.Model.UserCafeMapModel;
 import drgn.cafemap.Object.MailAttachment;
 
 import static android.content.Context.MODE_PRIVATE;

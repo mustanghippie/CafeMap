@@ -434,18 +434,18 @@ public class CafeUserTblHelper {
      * when using executeSelectImage().
      */
     protected class MemoryOverOverflowException extends Exception {
-        public MemoryOverOverflowException() {
+        protected MemoryOverOverflowException() {
         }
 
-        public MemoryOverOverflowException(String message) {
+        protected MemoryOverOverflowException(String message) {
             super(message);
         }
 
-        public MemoryOverOverflowException(Throwable cause) {
+        protected MemoryOverOverflowException(Throwable cause) {
             super(cause);
         }
 
-        public MemoryOverOverflowException(String message, Throwable cause) {
+        protected MemoryOverOverflowException(String message, Throwable cause) {
             super(message, cause);
         }
     }

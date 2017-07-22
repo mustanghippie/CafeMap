@@ -227,24 +227,6 @@ public class UserCafeMapModel {
 
     /**
      * Converts bitmap image to byte[] data.
-     * sqlite3 requires blob as byte[], that's why a bitmap has to convert bitmap into byte.
-     *
-     * @param bitmap
-     * @return byte[]
-     */
-    protected byte[] convertBitmapToByte(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        //PNG quality 100%
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-
-        byte[] result = byteArrayOutputStream.toByteArray();
-
-        return result;
-    }
-
-    /**
-     * Converts bitmap image to byte[] data.
      *
      * @param image
      * @return Bitmap

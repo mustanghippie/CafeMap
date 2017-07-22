@@ -15,10 +15,10 @@ import java.io.InputStreamReader;
  */
 
 public class DBOpenHelper extends SQLiteOpenHelper {
-    public Context m_context;
-    public static final String TAG = "DBOpenHelper";
-    public static final String DB_NAME = "cafemap_db";
-    public static final int DB_VERSION = 1;
+    private Context m_context;
+    private final String TAG = "DBOpenHelper";
+    private static final String DB_NAME = "cafemap_db";
+    private static final int DB_VERSION = 1;
 
     public DBOpenHelper(final Context context) {
         super(context, DB_NAME, null, DB_VERSION);

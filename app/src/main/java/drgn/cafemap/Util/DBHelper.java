@@ -11,8 +11,8 @@ import java.io.File;
  */
 
 public class DBHelper {
-    public static final String TAG = "DBHelper";
-    public SQLiteDatabase db;
+    private final String TAG = "DBHelper";
+    private SQLiteDatabase db;
     private final DBOpenHelper dbOpenHelper;
 
     public DBHelper(final Context context) {
@@ -34,12 +34,12 @@ public class DBHelper {
     }
 
     /**
-     * Databaseが削除できればtrue。できなければfalse
+     * Delete database
      *
      * @param context
      * @return
      */
-    public boolean isDatabaseDelete(final Context context) {
+    protected boolean isDatabaseDelete(final Context context) {
         boolean result = false;
         if (this.db != null) {
             File file = context.getDatabasePath(dbOpenHelper.getDatabaseName());

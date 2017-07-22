@@ -450,5 +450,4 @@ public class CafeModel {
 
         return sendFlag;
     }
-
 }

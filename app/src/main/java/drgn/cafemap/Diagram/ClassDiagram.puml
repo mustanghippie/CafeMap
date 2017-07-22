@@ -131,14 +131,174 @@ package Util{
     interface PreviewPageHandlers{
         onClickSaveButton(View view)
     }
+
+    class DBHelper{
+        -final String TAG = "DBHelper"
+        -QLiteDatabase db
+        -final DBOpenHelper dbOpenHelper
+        +DBHelper()
+        -establishDb()
+        #isDatabaseDelete()
+    }
+
+    class DBOpenHelper{
+        -Context m_context
+        -final String TAG = "DBOpenHelper"
+        -{static} final String DB_NAME = "cafemap_db"
+        -{static} final int DB_VERSION = 1
+        +DBOpenHelper()
+        +onCreate()
+        +onUpgrade()
+        -execFileSQL()
+        -dropCafeMasterTbl()
+    }
+}
+
+package Model{
+
+    class UserCafeMapModel{
+        -Context context
+        -ArrayList<Marker> markerArrayList = new ArrayList<>()
+        -final String TAG = "[Log] UserCafeMapModel"
+        +UserCafeMapModel()
+        +setCafeMapMarkers()
+        +setUpMarkers()
+        +searchCafe()
+        +displayBookmarkedCafe()
+        -removeMarkers()
+        -convertByteToBitmap()
+        +getCafeImage()
+    }
+
+    class CafeMasterTblHelper{
+        -QLiteDatabase sqLiteDatabase
+        -final String databaseName = "cafemap_db"
+        -final String table = "cafe_master_tbl"
+        +CafeMasterTblHelper()
+        #executeSelect()
+        #checkBookmarkFlag()
+        #executeSelect()
+        #executeSelectCafeName()
+        -makeOneRecordOfUserCafeData()
+        #executeUpdateBookmark()
+    }
+
+    class CafeUserTblHelper{
+        -SQLiteDatabase sqLiteDatabase
+        -final String databaseName = "cafemap_db"
+        -final String TAG = "[TAG]CafeUserTblHelper:"
+        +CafeUserTblHelper()
+        #executeSelect()
+        #executeSelectImage()
+        #checkSendFlag()
+        #checkBookmarkFlag()
+        -makeOneRecordOfUserCafeData()
+        #executeInsert()
+        #executeDelete()
+        #executeUpdate()
+        #executeUpdateBookmark()
+        #MemoryOverOverflowException()
+    }
+
+    class CafeModel{
+        -Context context
+        -Resources resources
+        +getCafeInstance()
+        +getCafeImage()
+        +getBookmarkFlag()
+        +updateBookmarkFlag()
+        -getImageFromAssets()
+        +setSpinnerData()
+        +resizeBitmap()
+        -getResizedDimension()
+        -findBestSampleSize()
+        +fixImageOrientation()
+        +deleteCafeData()
+        +savePreviewImageOnLocal()
+        +readPreviewImageFromLocal()
+        +insertCafeData()
+        +uploadCafeData()
+        -convertBitmapToByte()
+        +checkMailSendFlag()
+    }
+
+    class AsyncTaskAddressGeocoder{
+        -Context context;
+        -Cafe cafe;
+        -double lat;
+        -double lon;
+        +AsyncTaskAddressGeocoder()
+        #doInBackground()
+        #onPostExecute()
+    }
+
+    class AsyncTaskSendMail{
+        -Context context;
+        -double lat, lon;
+        #doInBackground()
+        -makeAttachmentOfJson()
+        -getMailAccount()
+    }
+}
+
+package Object{
+
+    class Cafe{
+        -String cafeName
+        -String cafeAddress
+        -String cafeTime
+        -String cafeTel
+        -String cafeSocket
+        -String cafeWifi
+        +Cafe()
+        +getCafeName()
+        +setCafeName()
+        +getCafeAddress()
+        +setCafeAddress()
+        +getCafeTel()
+        +setCafeTel()
+        +getCafeTime()
+        +setCafeTime()
+        +getCafeSocket()
+        +setCafeSocket()
+        +getCafeWifi()
+        +setCafeWifi()
+    }
+
+    class MailAttachment{
+        -double lat;
+        -double lon;
+        -String cafeName;
+        -String cafeAddress;
+        -String cafeTime;
+        -String cafeWifi;
+        -String cafeSocket;
+        -String cafeTel;
+        -String sql;
+        +MailAttachment()
+        -makeInsertSQL()
+    }
 }
 
 MainActivity - MapsActivity
-MapsActivity -- CafeActivity
-CafeActivity -- DetailPageFragment
+MapsActivity - CafeActivity
+CafeActivity - DetailPageFragment
 DetailPageFragment -> DetailPageHandlers
-CafeActivity -- EditPageFragment
+CafeActivity - EditPageFragment
 EditPageFragment -> EditPageHandlers
-CafeActivity -- PreviewPageFragment
+CafeActivity - PreviewPageFragment
 PreviewPageFragment -> PreviewPageHandlers
+DetailPageFragment -- CafeModel
+EditPageFragment -- CafeModel
+PreviewPageFragment -- CafeModel
+CafeModel -- CafeMasterTblHelper
+CafeModel -- CafeUserTblHelper
+MapsActivity -- UserCafeMapModel
+EditPageFragment - AsyncTaskAddressGeocoder
+EditPageFragment -- AsyncTaskSendMail
+MapsActivity -- DBHelper
+DBHelper -- DBOpenHelper
+
+Controller --> Object
+
 @enduml

@@ -172,16 +172,16 @@ public class DetailPageModel {
             @Override
             public void onClick(View v) {
                 CafeUserTblHelper cafeUserTblHelper = new CafeUserTblHelper(context);
-                boolean successFlag = cafeUserTblHelper.executeInsert(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
-                        temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
-                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp), 0);
-
-                // If cafe data already exist, execute UPDATE
-                if (!successFlag) {
-                    cafeUserTblHelper.executeUpdate(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
-                            temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
-                            temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp), 0);
-                }
+//                boolean successFlag = cafeUserTblHelper.executeInsert(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
+//                        temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
+//                        temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new UserCafeMapModel(context).convertBitmapToByte(uploadImageBmp), 0);
+//
+//                // If cafe data already exist, execute UPDATE
+//                if (!successFlag) {
+//                    cafeUserTblHelper.executeUpdate(lat, lon, temporaryCafeData.get("cafeName"), temporaryCafeData.get("cafeAddress"),
+//                            temporaryCafeData.get("cafeTime"), temporaryCafeData.get("cafeTel"),
+//                            temporaryCafeData.get("cafeSocket"), temporaryCafeData.get("cafeWifi"), new CafeModel(context,resources).convertBitmapToByte(uploadImageBmp), 0);
+//                }
 
                 Intent intent = new Intent(context, MapsActivity.class);
 
