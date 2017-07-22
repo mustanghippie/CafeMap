@@ -1,101 +1,144 @@
 @startuml
 
-class MainActivity{
-    -REQUEST_PERMISSION
-    -REQUEST_PERMISSION
-    -RC_SIGN_IN = 9001
-    -FirebaseAuth mAuth
-    -GoogleApiClient
-    #onCreate()
-    +checkPermission()
-    -requestLocationPermission()
-    +onRequestPermissionsResult()
-    -firebaseAuthWithGoogle()
-    +onConnectionFailed()
-    +onActivityResult()
-    -changeActivity()
+
+
+
+
+
+
+package Controller{
+    package Activity{
+        class MainActivity{
+            -REQUEST_PERMISSION
+            -REQUEST_PERMISSION
+            -RC_SIGN_IN = 9001
+            -FirebaseAuth mAuth
+            -GoogleApiClient
+            #onCreate()
+            +checkPermission()
+            -requestLocationPermission()
+            +onRequestPermissionsResult()
+            -firebaseAuthWithGoogle()
+            +onConnectionFailed()
+            +onActivityResult()
+            -changeActivity()
+        }
+
+        class MapsActivity{
+            -GoogleMap
+            -GoogleApiClient
+            -LocationRequest
+            -OnLocationChangedListener
+            -priority[]
+            -locationPriority
+            #onCreate()
+            #onResume()
+            +onPause()
+            +onMapReady()
+            +onLocationChanged()
+            +onConnected()
+            -createLocationRequest()
+            +onConnectionSuspended()
+            +onConnectionFailed()
+            +onMyLocationButtonClick()
+            +activate()
+            +deactivate()
+        }
+
+        class CafeActivity{
+            -double lat, lon
+            -boolean ownerFlag
+            -boolean existingDataFlag
+            +onCreate()
+            +goToEditPageEvent()
+            +goToPreviewPageEvent()
+            +finishedPreviewPageEvent()
+        }
+    }
+
+    package Fragment{
+
+        class DetailPageFragment{
+            -FragmentDetailPageBinding binding
+            -Context context
+            -DetailPageFragmentListener listener
+            -double lat, lon;
+            -boolean ownerFlag;
+            -CafeModel cafeModel;
+            +{static} newInstance()
+            +onCreate()
+            +onAttach()
+            +onCreateView()
+            +onViewCreated()
+            +onClickMailButton()
+            +onClickAddBookmarkButton()
+            +onClickEditButton()
+        }
+
+        class EditPageFragment{
+            -Context context
+            -FragmentEditPageBinding binding
+            -EditPageFragmentListener listener
+            -Bitmap uploadImageBmp = null
+            -double lat, lon
+            -boolean ownerFlag
+            -boolean existingDataFlag
+            -CafeModel cafeModel
+            +{static} newInstance()
+            +onCreate()
+            +onAttach()
+            +onCreateView()
+            +onViewCreated()
+            +onClickUploadImageButton()
+            +onActivityResult()
+            +onClickPreviewButton()
+            +onClickDeleteButton()
+        }
+
+        class PreviewPageFragment{
+            -Context context
+            -CafeModel cafeModel
+            -FragmentPreviewPageBinding binding
+            -Cafe cafe
+            -double lat, lon
+            -Bitmap previewImage
+            -PreviewPageFragmentListener listener
+            +{static} newInstance()
+            +onCreate()
+            +onAttach()
+            +onCreateView()
+            +onViewCreated()
+            +onClickSaveButton()
+        }
+    }
+
 }
 
-class MapsActivity{
-    -GoogleMap
-    -GoogleApiClient
-    -LocationRequest
-    -OnLocationChangedListener
-    -priority[]
-    -locationPriority
-    #onCreate()
-    #onResume()
-    +onPause()
-    +onMapReady()
-    +onLocationChanged()
-    +onConnected()
-    -createLocationRequest()
-    +onConnectionSuspended()
-    +onConnectionFailed()
-    +onMyLocationButtonClick()
-    +activate()
-    +deactivate()
+package Util{
+
+    interface DetailPageHandlers{
+        onClickMailButton(View view);
+        onClickAddBookmarkButton(View view);
+        onClickEditButton(View view);
+    }
+
+    interface EditPageHandlers{
+        onClickUploadImageButton(View view)
+        onClickPreviewButton(View view)
+        onClickDeleteButton(View view)
+    }
+
+    interface PreviewPageHandlers{
+        onClickSaveButton(View view)
+    }
 }
 
-class DetailPageFragment{
-    -String key;
-    -int viewMode; // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
-    -AsyncTaskMarkerSet atms
-    -ImageView uploadImage
-    -Bitmap uploadImageBmp
-    -double lat, lon
-    -DetailPageModel dpm
-    +onCreate()
-    +onViewCreated()
-    -setParamsInView()
-    +onActivityResult()
-    -getBitmapFromUri()
-}
-
-class AsyncTaskMarkerSet{
-    -CountDownLatch latch
-    -DatabaseReference mDatabase
-    -FirebaseStorage storage
-    -StorageReference storageRef
-    -StorageReference imageRef
-    -Bitmap bitmap
-    -GoogleMap mMap
-    -Map<String, HashMap<String, String>> cafeMap
-    -ArrayList<String> cafeNameArrayList
-    -Map<String, Bitmap> cafeBitmapMap
-
-    +AsyncTaskMarkerSet()
-    #doInBackground()
-    +readImagesFromFirebase()
-    #onPostExecute()
-    +getCafeBitmapMap()
-    +getCafeMap()
-
-}
-
-class MapsActivityModel{
-    +setUpMarkers()
-}
-
-class UserCafeMapModel{
-    -Context context
-    +UserCafeMapModel()
-    +saveUserCafeMap()
-    +saveUserCafeMapImage()
-    +setUserCafeMapMarkers()
-    -saveUserCafeMapJson()
-    -saveUserCafeMapKeyJson()
-    -makeEmptyUserCafeMapJson()
-    -makeEmptyUserCafeMapJsonKey()
-    +getUserCafeMapJson()
-    -getUserCafeMapKeyJson()
-    +deleteUserCafeMap()
-    -deleteUSerCafeMapKey()
-}
-
-MainActivity -- MapsActivity
-MapsActivity -- DetailPageFragment
-MapsActivity -- AsyncTaskMarkerSet
-MapsActivity -- MapsActivityModel
-DetailPageFragment -- UserCafeMapModel
+MainActivity - MapsActivity
+MapsActivity -- CafeActivity
+CafeActivity -- DetailPageFragment
+DetailPageFragment -> DetailPageHandlers
+CafeActivity -- EditPageFragment
+EditPageFragment -> EditPageHandlers
+CafeActivity -- PreviewPageFragment
+PreviewPageFragment -> PreviewPageHandlers
 @enduml

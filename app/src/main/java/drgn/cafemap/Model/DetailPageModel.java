@@ -33,7 +33,7 @@ import java.util.Map;
 import drgn.cafemap.Controller.Activity.CafeActivity;
 import drgn.cafemap.Controller.Activity.MapsActivity;
 import drgn.cafemap.R;
-import drgn.cafemap.util.AnimationUtil;
+import drgn.cafemap.Util.AnimationUtil;
 
 import static android.content.Context.MODE_PRIVATE;
 

@@ -6,10 +6,10 @@
 
         <variable
             name="handlers"
-            type="drgn.cafemap.util.DetailPageHandlers" />
+            type="drgn.cafemap.Util.DetailPageHandlers" />
         <variable
             name="cafe"
-            type="drgn.cafemap.util.Cafe" />
+            type="drgn.cafemap.Util.Cafe" />
     </data>
 
     <ScrollView
