@@ -120,6 +120,10 @@ public class EditPageFragment extends Fragment implements EditPageHandlers {
             // setting an upload image
             this.uploadImageBmp = cafeModel.getCafeImage(ownerFlag, lat, lon);
             binding.uploadImage.setImageBitmap(uploadImageBmp);
+
+            // hide delete button in owner cafe case
+            if (ownerFlag) binding.deleteButton.setVisibility(View.INVISIBLE);
+
         } else {
             Cafe cafe = new Cafe("", "", "", "", "", "");
             binding.setCafe(cafe);

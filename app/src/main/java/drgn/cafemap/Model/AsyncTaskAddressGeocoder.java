@@ -41,7 +41,10 @@ public class AsyncTaskAddressGeocoder extends AsyncTask<String, String, String> 
         String address = "";
         try {
             List<Address> addresses = coder.getFromLocation(lat, lon, 1);
-            address += addresses.get(0).getAddressLine(0) + addresses.get(0).getAddressLine(1);
+            address += addresses.get(0).getAddressLine(0);
+            if (addresses.get(0).getAddressLine(1) != null) {
+                address += ", " + addresses.get(0).getAddressLine(1);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

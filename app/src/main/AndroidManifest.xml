@@ -46,7 +46,6 @@
             android:name=".Controller.Activity.MapsActivity"
             android:label="@string/app_name"
             android:theme="@style/search" />
-        <activity android:name=".Controller.Fragment.DetailPageFragment" />
         <activity android:name=".Controller.Activity.CafeActivity"></activity>
     </application>
 

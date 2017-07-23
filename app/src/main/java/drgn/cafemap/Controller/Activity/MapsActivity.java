@@ -56,10 +56,11 @@ import drgn.cafemap.Util.DBHelper;
 
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMyLocationButtonClickListener, LocationSource {
+        LocationListener, GoogleMap.OnMyLocationButtonClickListener, LocationSource,
+        GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener, GoogleMap.InfoWindowAdapter,
+        GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -90,28 +91,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.defaultPosLat = getIntent().getDoubleExtra("defaultPosLat", 0.0);
         this.defaultPosLon = getIntent().getDoubleExtra("defaultPosLon", 0.0);
         // Create LocationRequest and set interval
-        locationRequest = LocationRequest.create();
-
-        // positioning precision and battery priority
-        locationPriority = priority[1];
-
-        if (locationPriority == priority[0]) {
-            // 位置情報の精度を優先する場合
-            locationRequest.setPriority(locationPriority);
-            locationRequest.setInterval(5000);
-            locationRequest.setFastestInterval(16);
-        } else if (locationPriority == priority[1]) {
-            // 消費電力を考慮する場合
-            locationRequest.setPriority(locationPriority);
-            locationRequest.setInterval(60000);
-            locationRequest.setFastestInterval(16);
-        } else if (locationPriority == priority[2]) {
-            // "city" level accuracy
-            locationRequest.setPriority(locationPriority);
-        } else {
-            // 外部からのトリガーでの測位のみ
-            locationRequest.setPriority(locationPriority);
-        }
+        this.locationRequest = LocationRequest.create();
+        // setting positioning precision and battery priority
+        this.setLocationPriority();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -127,7 +109,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Create database
         DBHelper dbHelper = new DBHelper(getApplicationContext());
 
-        // to send email
+        // setting email function
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -163,156 +145,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnMyLocationButtonClickListener(this);
             // zoom up and zoom down buttons
             this.mUiSettings.setZoomControlsEnabled(true);
-
             // Sets markers and reads data from cafe_user_tbl and cafe_master_tbl
             this.userCafeMapModel.setCafeMapMarkers(mMap);
+            // control keyboard object
+            this.inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            // Add a marker event
+            mMap.setOnMapClickListener(this);
+            // drag a marker event
+            mMap.setOnMarkerDragListener(this);
+            // open cafe window event
+            mMap.setInfoWindowAdapter(this);
+            // click information window event
+            mMap.setOnInfoWindowClickListener(this);
 
-            // open cafe information when a user tap a marker
-            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-                @Override
-                public View getInfoWindow(Marker marker) {
-                    disableClickEvent = true;
-
-                    // Making a new cafe data
-                    if (marker.getTitle().equals("Add your cafe")) {
-                        View view = getLayoutInflater().inflate(R.layout.info_window_new, null);
-                        String title = marker.getTitle();
-
-                        TextView titleUi = (TextView) view.findViewById(R.id.title);
-                        titleUi.setText(title);
-                        return view;
-                    }
-
-                    // Set view
-                    View view = getLayoutInflater().inflate(R.layout.info_window, null);
-                    // set up image
-                    ImageView img = (ImageView) view.findViewById(R.id.badge);
-                    // get cafe image
-                    Bitmap image = null;
-                    if (marker.getTag().toString().equals("user")) {
-                        image = userCafeMapModel.getCafeImage(marker.getPosition().latitude, marker.getPosition().longitude);
-                    } else { // in owner case
-                        try {
-                            InputStream inputStream = getResources().getAssets().open(marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png");
-                            image = BitmapFactory.decodeStream(inputStream);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    img.setImageBitmap(image);
-
-                    // set title
-                    String title = marker.getTitle();
-                    TextView titleUi = (TextView) view.findViewById(R.id.title);
-                    // Spannable string allows us to edit the formatting of the text.
-                    SpannableString titleText = new SpannableString(title);
-                    titleText.setSpan(new ForegroundColorSpan(Color.BLACK), 0, titleText.length(), 0);
-                    titleUi.setText(titleText);
-
-                    String snippet = marker.getSnippet();
-                    TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
-                    if (snippet != null) {
-                        String[] snippetArray = snippet.split("\n");
-
-                        SpannableString time = new SpannableString(snippetArray[0]);
-                        SpannableString wifi = new SpannableString(" Wi-fi ");
-                        SpannableString socket = new SpannableString(" Socket ");
-                        SpannableStringBuilder snippetSpannable = new SpannableStringBuilder();
-
-                        // Text color
-                        wifi.setSpan(new ForegroundColorSpan(Color.WHITE), 0, wifi.length(), 0);
-                        socket.setSpan(new ForegroundColorSpan(Color.WHITE), 0, socket.length(), 0);
-
-                        if (snippetArray[1].equals("Wi-fi: Available")) {
-                            wifi.setSpan(new BackgroundColorSpan(0xFFF5CC5B), 0, wifi.length(), 0);
-                        } else {
-                            wifi.setSpan(new BackgroundColorSpan(0xFFD3D3D3), 0, wifi.length(), 0);
-                        }
-
-                        if (snippetArray[2].equals("Socket: Available ")) {
-                            socket.setSpan(new BackgroundColorSpan(0xFFF5CC5B), 0, socket.length(), 0);
-                        } else {
-                            socket.setSpan(new BackgroundColorSpan(0xFFD3D3D3), 0, socket.length(), 0);
-                        }
-
-                        snippetSpannable.append(time + "\n");
-                        snippetSpannable.append(wifi);
-                        snippetSpannable.append(" ");
-                        snippetSpannable.append(socket);
-
-                        snippetUi.setText(snippetSpannable);
-
-                    }
-
-                    return view;
-                }
-
-                @Override
-                public View getInfoContents(Marker marker) {
-                    return null;
-                }
-            });
-
-            // action when a user click cafe information window
-            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    //Log.d("Click Info Window", "Click Info Window");
-                    Intent intent = new Intent(getApplication(), CafeActivity.class);
-                    LatLng latlng = marker.getPosition();
-
-                    // viewMode: 0 => make a new data, 1 => display cafe info 2 => preview
-                    boolean existingDataFlag = true;
-                    if (marker.getTitle().equals("Add your cafe")) existingDataFlag = false;
-
-                    intent.putExtra("lat", latlng.latitude);
-                    intent.putExtra("lon", latlng.longitude);
-                    intent.putExtra("existingDataFlag", existingDataFlag);
-                    if (marker.getTag().toString().equals("owner")) {
-                        intent.putExtra("ownerFlag", true);
-                    } else {
-                        intent.putExtra("ownerFlag", false);
-                    }
-
-                    startActivity(intent);
-                }
-            });
-
-            // Add a marker process
-            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(LatLng point) {
-                    // hide the keyboard
-                    inputMethodManager.hideSoftInputFromWindow(mainLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                    if (!disableClickEvent) {
-                        // display marker's location for debug
-                        // Toast.makeText(getApplicationContext(), "Latitude：" + point.latitude + "\nLongitude:" + point.longitude, Toast.LENGTH_SHORT).show();
-                        // Log.d("Location ", "Latitude + " + point.latitude + " Longitude + " + point.longitude);
-                        // A marker can exist only one
-                        if (currentMarker != null) currentMarker.remove();
-                        // Location
-                        LatLng latLng = new LatLng(point.latitude, point.longitude);
-                        currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Add your cafe").draggable(true)); // add the marker
-                        currentMarker.setTag("user");
-                        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-                        CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(17).build();
-                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                    } else {
-                        disableClickEvent = false;
-                    }
-                }
-            });
-
-
+            // setting location
             if (defaultPosLat != 0.0 && defaultPosLon != 0.0) { // From detail page after set user map cafe
                 LatLng position = new LatLng(defaultPosLat, defaultPosLon);
 
                 // move camera
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 16));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
             } else {
-
-                //LocationManagerの取得(初回のマップ移動)
+                // set first location
                 LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 List<String> providers = locationManager.getProviders(true);
                 Location bestLocation = null;
@@ -331,7 +184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (myLocate != null) {
                     LatLng currentLocation = new LatLng(myLocate.getLatitude(), myLocate.getLongitude());
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to connect gps", Toast.LENGTH_LONG).show();
@@ -343,13 +196,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
 
-            // search cafe
+            // search cafe event
             final EditText searchText = (EditText) findViewById(R.id.search_text);
-            // control keyboard object
-            this.inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             searchText.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    //イベントを取得するタイミングには、ボタンが押されてなおかつエンターキーだったときを指定
+                    // get an event when pressed button that is the enter key.
                     if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                         // close android keyboard
                         inputMethodManager.hideSoftInputFromWindow(searchText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
@@ -362,7 +213,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-            // bookmark
+            // bookmark button event
             final ImageButton bookmarkButton = (ImageButton) findViewById(R.id.bookmark_button);
             bookmarkButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -382,7 +233,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         } else {
             Log.d("debug", "permission error");
+            Toast.makeText(getApplicationContext(), "Please enable permission to use GPS.", Toast.LENGTH_LONG).show();
             return;
+        }
+    }
+
+    /**
+     * Sets positioning precision and battery priority
+     *
+     */
+    private void setLocationPriority(){
+        // setting positioning precision and battery priority
+        this.locationPriority = priority[1];
+
+        if (locationPriority == priority[0]) {
+            // give priority to positioning precision
+            locationRequest.setPriority(locationPriority);
+            locationRequest.setInterval(5000);
+            locationRequest.setFastestInterval(16);
+        } else if (locationPriority == priority[1]) {
+            // give priority to a battery
+            locationRequest.setPriority(locationPriority);
+            locationRequest.setInterval(60000);
+            locationRequest.setFastestInterval(16);
+        } else if (locationPriority == priority[2]) {
+            // "city" level accuracy
+            locationRequest.setPriority(locationPriority);
+        } else {
+            // 外部からのトリガーでの測位のみ
+            locationRequest.setPriority(locationPriority);
         }
     }
 
@@ -413,7 +292,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private LocationRequest createLocationRequest() {
-        Log.d("Debug", "createLocationRequest");
+//        Log.d("Debug", "createLocationRequest");
         FusedLocationProviderApi fusedLocationProviderApi = LocationServices.FusedLocationApi;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return null;
@@ -439,7 +318,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public boolean onMyLocationButtonClick() {
         Log.d("debug", "onMyLocationButtonClick");
-
         return false;
     }
 
@@ -456,6 +334,144 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onBackPressed() {
+        // Don't allow back to MainActivity
     }
 
+    @Override
+    public View getInfoWindow(Marker marker) {
+        disableClickEvent = true;
+
+        // Making a new cafe data
+        if (marker.getTitle().equals("Add your cafe")) {
+            View view = getLayoutInflater().inflate(R.layout.info_window_new, null);
+            String title = marker.getTitle();
+
+            TextView titleUi = (TextView) view.findViewById(R.id.title);
+            titleUi.setText(title);
+            return view;
+        }
+
+        // Set view
+        View view = getLayoutInflater().inflate(R.layout.info_window, null);
+        // set up image
+        ImageView img = (ImageView) view.findViewById(R.id.badge);
+        // get cafe image
+        Bitmap image = null;
+        if (marker.getTag().toString().equals("user")) {
+            image = userCafeMapModel.getCafeImage(marker.getPosition().latitude, marker.getPosition().longitude);
+        } else { // in owner case
+            try {
+                InputStream inputStream = getResources().getAssets().open(marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png");
+                image = BitmapFactory.decodeStream(inputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        img.setImageBitmap(image);
+
+        // set title
+        String title = marker.getTitle();
+        TextView titleUi = (TextView) view.findViewById(R.id.title);
+        // Spannable string allows us to edit the formatting of the text.
+        SpannableString titleText = new SpannableString(title);
+        titleText.setSpan(new ForegroundColorSpan(Color.BLACK), 0, titleText.length(), 0);
+        titleUi.setText(titleText);
+
+        String snippet = marker.getSnippet();
+        TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
+        if (snippet != null) {
+            String[] snippetArray = snippet.split("\n");
+
+            SpannableString time = new SpannableString(snippetArray[0]);
+            SpannableString wifi = new SpannableString(" Wi-fi ");
+            SpannableString socket = new SpannableString(" Socket ");
+            SpannableStringBuilder snippetSpannable = new SpannableStringBuilder();
+
+            // Text color
+            wifi.setSpan(new ForegroundColorSpan(Color.WHITE), 0, wifi.length(), 0);
+            socket.setSpan(new ForegroundColorSpan(Color.WHITE), 0, socket.length(), 0);
+
+            if (snippetArray[1].equals("Wi-fi: Available")) {
+                wifi.setSpan(new BackgroundColorSpan(0xFFF5CC5B), 0, wifi.length(), 0);
+            } else {
+                wifi.setSpan(new BackgroundColorSpan(0xFFD3D3D3), 0, wifi.length(), 0);
+            }
+
+            if (snippetArray[2].equals("Socket: Available ")) {
+                socket.setSpan(new BackgroundColorSpan(0xFFF5CC5B), 0, socket.length(), 0);
+            } else {
+                socket.setSpan(new BackgroundColorSpan(0xFFD3D3D3), 0, socket.length(), 0);
+            }
+
+            snippetSpannable.append(time + "\n");
+            snippetSpannable.append(wifi);
+            snippetSpannable.append(" ");
+            snippetSpannable.append(socket);
+
+            snippetUi.setText(snippetSpannable);
+
+        }
+
+        return view;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent intent = new Intent(getApplication(), CafeActivity.class);
+        LatLng latlng = marker.getPosition();
+
+        // set flag that is a new location or not
+        boolean existingDataFlag = true;
+        if (marker.getTitle().equals("Add your cafe")) existingDataFlag = false;
+
+        intent.putExtra("lat", latlng.latitude);
+        intent.putExtra("lon", latlng.longitude);
+        intent.putExtra("existingDataFlag", existingDataFlag);
+        if (marker.getTag().toString().equals("owner")) {
+            intent.putExtra("ownerFlag", true);
+        } else {
+            intent.putExtra("ownerFlag", false);
+        }
+
+        startActivity(intent);
+    }
+
+    @Override
+    public void onMapClick(LatLng point) {
+        // hide the keyboard
+        inputMethodManager.hideSoftInputFromWindow(mainLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        if (!disableClickEvent) {
+            // A marker can exist only one
+            if (currentMarker != null) currentMarker.remove();
+            // Location
+            LatLng latLng = new LatLng(point.latitude, point.longitude);
+            currentMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Add your cafe").draggable(true)); // add the marker
+            currentMarker.setTag("user");
+            //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+            CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(17).build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        } else {
+            disableClickEvent = false;
+        }
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        // update marker's LatLng
+        marker.setPosition(marker.getPosition());
+    }
 }

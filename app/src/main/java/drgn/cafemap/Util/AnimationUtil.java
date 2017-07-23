@@ -17,6 +17,8 @@ import drgn.cafemap.R;
 
 public class AnimationUtil {
 
+    public AnimationUtil(){}
+
     public void clickFadeInFadeOutAnimation(ImageButton button){
         AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
         alphaAnimation.setDuration(100);

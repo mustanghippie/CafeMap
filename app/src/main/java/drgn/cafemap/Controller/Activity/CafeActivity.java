@@ -42,7 +42,6 @@ public class CafeActivity extends AppCompatActivity implements DetailPageFragmen
             // add a new cafe data
             fragmentManager.beginTransaction()
                     .replace(R.id.container, EditPageFragment.newInstance(lat, lon, ownerFlag, existingDataFlag))
-                    .addToBackStack(null)
                     .commit();
         }
 
