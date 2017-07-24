@@ -170,7 +170,7 @@ public class AsyncTaskSendMail extends AsyncTask<String, String, String> {
 
         cafe = new CafeUserTblHelper(context).executeSelect(lat, lon);
 
-        MailAttachment mailAttachment = new MailAttachment(lat, lon, cafe.get("cafeName").toString(), cafe.get("cafeAddress").toString(),
+        MailAttachment mailAttachment = new MailAttachment(String.valueOf(lat), String.valueOf(lon), cafe.get("cafeName").toString(), cafe.get("cafeAddress").toString(),
                 cafe.get("cafeTime").toString(), cafe.get("cafeTel").toString(), cafe.get("cafeSocket").toString(), cafe.get("cafeWifi").toString());
 
         String attachment = new Gson().toJson(mailAttachment);
@@ -183,7 +183,7 @@ public class AsyncTaskSendMail extends AsyncTask<String, String, String> {
 
             // save image to local
             FileOutputStream imageFile = context.openFileOutput("image.png", MODE_PRIVATE);
-            Bitmap image = new UserCafeMapModel(context).getCafeImage(lat,lon);
+            Bitmap image = new UserCafeMapModel(context).getCafeImage(lat, lon);
 
             image.compress(Bitmap.CompressFormat.PNG, 100, imageFile);
             imageFile.close();

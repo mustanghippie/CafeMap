@@ -295,7 +295,7 @@ public class CafeUserTblHelper {
                 statement.bindString(8, socket);
                 statement.bindBlob(9, image);
                 statement.bindLong(10, sendFlag);
-                statement.bindLong(10, 0);
+                statement.bindLong(10, 0); // bookmark flag *default = 0
                 statement.executeInsert();
             } catch (SQLiteConstraintException e) {
                 Log.d(TAG, "SQLiteConstraintException@executeInsert, execute executeUpdate");

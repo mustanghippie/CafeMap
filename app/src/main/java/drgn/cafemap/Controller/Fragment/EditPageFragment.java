@@ -10,9 +10,12 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethod;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -29,7 +32,7 @@ import drgn.cafemap.Util.EditPageHandlers;
 import static android.app.Activity.RESULT_OK;
 
 
-public class EditPageFragment extends Fragment implements EditPageHandlers {
+public class EditPageFragment extends Fragment implements EditPageHandlers,View.OnKeyListener {
 
     private Context context;
     private FragmentEditPageBinding binding;
@@ -98,6 +101,9 @@ public class EditPageFragment extends Fragment implements EditPageHandlers {
         // prepare binding
         this.binding = FragmentEditPageBinding.bind(view);
         binding.setHandlers(this);
+        // close the keyboard window
+        binding.cafeAddress.setOnKeyListener(this);
+        binding.cafeTel.setOnKeyListener(this);
 
         if (existingDataFlag) {
             Cafe cafe = cafeModel.getCafeInstance(ownerFlag, lat, lon);
@@ -136,6 +142,26 @@ public class EditPageFragment extends Fragment implements EditPageHandlers {
         }
     }
 
+    /**
+     * Closes the keyboard window after pressed the enter key.
+     *
+     * @param v
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        // get an event when pressed button that is the enter key.
+        if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+            // close android keyboard
+            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(binding.cafeTel.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN); // or binding cafeAddress
+            return true;
+        }
+
+        return false;
+    }
     /**
      * Opens user's picture folder and uploads a image
      * when a user click the upload button.

@@ -104,6 +104,9 @@ public class DetailPageFragment extends Fragment implements DetailPageHandlers {
         } else {
             binding.addBookmarkButton.setImageResource(R.drawable.icon_bookmark_add);
         }
+
+        // hide eMail button in owner data case
+        if (ownerFlag) binding.mailButton.setVisibility(View.INVISIBLE);
     }
 
     @Override

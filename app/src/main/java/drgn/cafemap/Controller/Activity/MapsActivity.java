@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import drgn.cafemap.Model.CafeModel;
 import drgn.cafemap.R;
 import drgn.cafemap.Model.UserCafeMapModel;
 import drgn.cafemap.Util.AnimationUtil;
@@ -240,9 +241,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Sets positioning precision and battery priority
-     *
      */
-    private void setLocationPriority(){
+    private void setLocationPriority() {
         // setting positioning precision and battery priority
         this.locationPriority = priority[1];
 
@@ -360,12 +360,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (marker.getTag().toString().equals("user")) {
             image = userCafeMapModel.getCafeImage(marker.getPosition().latitude, marker.getPosition().longitude);
         } else { // in owner case
-            try {
-                InputStream inputStream = getResources().getAssets().open(marker.getTitle().replaceAll(" ", "_").toLowerCase() + ".png");
-                image = BitmapFactory.decodeStream(inputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            image = new CafeModel(getApplicationContext(), getResources()).getCafeImage(true, marker.getPosition().latitude, marker.getPosition().longitude);
         }
         img.setImageBitmap(image);
 

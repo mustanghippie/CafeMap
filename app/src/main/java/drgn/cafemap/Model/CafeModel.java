@@ -79,10 +79,15 @@ public class CafeModel {
      * @return bitmap
      */
     public Bitmap getCafeImage(boolean ownerFlag, double lat, double lon) {
-        Bitmap image;
+        Bitmap image = null;
         if (ownerFlag) {
-            String cafeName = new CafeMasterTblHelper(context).executeSelectCafeName(lat, lon);
-            image = this.getImageFromAssets(cafeName);
+            InputStream inputStream = null;
+            try {
+                inputStream = resources.getAssets().open("CafeImages/" + this.makeImageName(lat, lon) + ".png");
+                image = BitmapFactory.decodeStream(inputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             image = new UserCafeMapModel(context).getCafeImage(lat, lon);
         }
@@ -131,25 +136,6 @@ public class CafeModel {
         }
 
         return successfully;
-    }
-
-    /**
-     * Obtains PNG image from assets folder.
-     *
-     * @param name
-     * @return Bitmap image
-     */
-    private Bitmap getImageFromAssets(String name) {
-        Bitmap bitmap = null;
-
-        try {
-            InputStream inputStream = resources.getAssets().open(name.replaceAll(" ", "_").toLowerCase() + ".png");
-            bitmap = BitmapFactory.decodeStream(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return bitmap;
     }
 
     public void setSpinnerData(Spinner spinner, String value) {
@@ -443,11 +429,26 @@ public class CafeModel {
         return result;
     }
 
+    /**
+     * Checks email of cafe information already sent or not
+     *
+     * @param lat
+     * @param lon
+     * @return sendFlag
+     */
     public boolean checkMailSendFlag(double lat, double lon) {
         boolean sendFlag = false;
 
         sendFlag = new CafeUserTblHelper(context).checkSendFlag(lat, lon);
 
         return sendFlag;
+    }
+
+    private String makeImageName(double lat, double lon) {
+        String strLat = String.valueOf(lat).replaceAll("\\.", "");
+        String strLon = String.valueOf(lon).replaceAll("\\.", "");
+        String imageName = strLat + strLon;
+
+        return imageName;
     }
 }

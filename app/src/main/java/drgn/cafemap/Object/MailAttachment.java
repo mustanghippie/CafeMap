@@ -6,8 +6,8 @@ package drgn.cafemap.Object;
 
 
 public class MailAttachment {
-    private double lat;
-    private double lon;
+    private String lat;
+    private String lon;
     private String cafeName;
     private String cafeAddress;
     private String cafeTime;
@@ -16,7 +16,7 @@ public class MailAttachment {
     private String cafeTel;
     private String sql;
 
-    public MailAttachment(double lat, double lon, String cafeName, String cafeAddress, String cafeTime, String cafeTel, String cafeSocket, String cafeWifi) {
+    public MailAttachment(String lat, String lon, String cafeName, String cafeAddress, String cafeTime, String cafeTel, String cafeSocket, String cafeWifi) {
         this.lat = lat;
         this.lon = lon;
         this.cafeName = cafeName;
@@ -30,7 +30,7 @@ public class MailAttachment {
 
     private String makeInsertSQL() {
         sql = "INSERT INTO cafe_master_tbl(lat, lon, name, address, time, tel, wifi, socket) " +
-                "VALUES('" + String.valueOf(lat) + "', '" + String.valueOf(lon) + "', '" + cafeName + "', '" + cafeAddress + "', " +
+                "VALUES('" + lat + "', '" + lon + "', '" + cafeName + "', '" + cafeAddress + "', " +
                 "'" + cafeTime + "', '" + cafeTel + "', '" + cafeSocket + "', '" + cafeWifi + "');";
 
         return sql;
