@@ -189,6 +189,7 @@
 
                 <TextView
                     android:id="@+id/cafeTel"
+                    android:onClick="@{handlers.onClickPhoneNumber}"
                     android:text="@{cafe.cafeTel}"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"

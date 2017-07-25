@@ -12,4 +12,6 @@ public interface DetailPageHandlers {
     void onClickAddBookmarkButton(View view);
 
     void onClickEditButton(View view);
+
+    void onClickPhoneNumber(View view);
 }

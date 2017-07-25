@@ -3,9 +3,13 @@ package drgn.cafemap.Controller.Fragment;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,6 +111,29 @@ public class DetailPageFragment extends Fragment implements DetailPageHandlers {
 
         // hide eMail button in owner data case
         if (ownerFlag) binding.mailButton.setVisibility(View.INVISIBLE);
+
+    }
+
+    @Override
+    public void onClickPhoneNumber(View view) {
+
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Phone")
+//                .setMessage(binding.cafeTel.getText().toString())
+                .setPositiveButton("Call", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // OK button pressed
+                        Uri uri = Uri.parse("tel:" + binding.cafeTel.getText().toString());
+                        Intent i = new Intent(Intent.ACTION_DIAL, uri);
+                        startActivity(i);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+
+
     }
 
     @Override

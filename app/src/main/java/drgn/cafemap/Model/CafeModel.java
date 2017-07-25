@@ -85,6 +85,14 @@ public class CafeModel {
             try {
                 inputStream = resources.getAssets().open("CafeImages/" + this.makeImageName(lat, lon) + ".png");
                 image = BitmapFactory.decodeStream(inputStream);
+            } catch (FileNotFoundException e) {
+                // read no image file
+                try {
+                    inputStream = resources.getAssets().open("noImage.png");
+                    image = BitmapFactory.decodeStream(inputStream);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
