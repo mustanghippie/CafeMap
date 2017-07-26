@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "396798729218",
+    "firebase_url": "https://cafemap-530a2.firebaseio.com",
+    "project_id": "cafemap-530a2",
+    "storage_bucket": "cafemap-530a2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:396798729218:android:2885fbb522c7a081",
+        "android_client_info": {
+          "package_name": "drgn.cafemap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "396798729218-62kfd1ag2m3kejifqjk1f672s225vn9l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "drgn.cafemap",
+            "certificate_hash": "253fe4a14429dde570e3c076870a3d57dac6f1a7"
+          }
+        },
+        {
+          "client_id": "396798729218-e5v4dvftnhe7r40mj84uku343icegbnr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk_eGaenJXhnJLHAICqXg7ub2a-Z-joCU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "396798729218-e5v4dvftnhe7r40mj84uku343icegbnr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
