@@ -8,8 +8,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,9 +140,9 @@ public class DetailPageFragment extends Fragment implements DetailPageHandlers {
         new AnimationUtil().clickFadeInFadeOutAnimation(binding.mailButton);
 
         new AlertDialog.Builder(getActivity())
-                .setTitle("Would it be possible to send your cafe map?")
-                .setMessage("About your cafe information submitted here, we'll register this with " +
-                        "our application database.\nPlease press the \"AGREE\" button if you agree with us.")
+                .setTitle("Could we send this to us?")
+                .setMessage("This information will be submitted to our database. " +
+                        "Please press \"AGREE\" if you agree.")
                 .setPositiveButton("Agree", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

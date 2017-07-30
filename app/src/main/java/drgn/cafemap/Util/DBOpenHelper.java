@@ -51,6 +51,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         InputStream in = null;
         InputStreamReader inReader = null;
         BufferedReader reader = null;
+        int line = 0;
         try {
             // 文字コード(UTF-8)を指定して、ファイルを読み込み
             in = m_context.getAssets().open(fileName);
@@ -65,6 +66,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
                 // 文字が存在する場合（空白行は処理しない）
                 if (0 < s.length()) {
+                    line++;
+//                    System.out.println("Line: "+line);
                     // SQL実行
                     db.execSQL(s);
                 }
