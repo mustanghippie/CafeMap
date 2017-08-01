@@ -3,7 +3,6 @@ package drgn.cafemap.Controller.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.StrictMode;
@@ -45,8 +44,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import drgn.cafemap.Model.CafeModel;
