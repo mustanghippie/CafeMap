@@ -17,6 +17,7 @@ import android.widget.Spinner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -70,13 +71,13 @@ public class CafeModel {
     }
 
     /**
-     * Obtains a cafe image by using cafe name in owner case.
-     * Or by using lat and lon in user data case.
-     *
      * @param ownerFlag
      * @param lat
      * @param lon
      * @return bitmap
+     * <p>
+     * Obtains a cafe image by using cafe name in owner case.
+     * Or by using lat and lon in user data case.
      */
     public Bitmap getCafeImage(boolean ownerFlag, double lat, double lon) {
         Bitmap image = null;
@@ -452,11 +453,37 @@ public class CafeModel {
         return sendFlag;
     }
 
-    private String makeImageName(double lat, double lon) {
+    public String makeImageName(double lat, double lon) {
         String strLat = String.valueOf(lat).replaceAll("\\.", "");
         String strLon = String.valueOf(lon).replaceAll("\\.", "");
         String imageName = strLat + strLon;
 
         return imageName;
+    }
+
+
+    public Bitmap getCafeImageCache(String imageName) {
+        Bitmap cafeImage = null;
+
+        try {
+            InputStream in = context.openFileInput(imageName + ".png");
+            cafeImage = BitmapFactory.decodeStream(in);
+        } catch (FileNotFoundException e) {
+            System.out.println("No image cache");
+        }
+
+        return cafeImage;
+    }
+
+    public void saveImageInLocal(Bitmap image, String imageName) {
+        FileOutputStream out = null;
+        try {
+            out = context.openFileOutput(imageName + ".png", Context.MODE_PRIVATE);
+            image.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.close();
+            out = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
