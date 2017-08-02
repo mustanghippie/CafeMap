@@ -3,6 +3,7 @@ package drgn.cafemap.Controller.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.StrictMode;
@@ -44,9 +45,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-
 import drgn.cafemap.Model.CafeModel;
+import drgn.cafemap.Model.FirebaseStorageConnection;
 import drgn.cafemap.R;
 import drgn.cafemap.Model.UserCafeMapModel;
 import drgn.cafemap.Util.AnimationUtil;
@@ -58,7 +61,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMyLocationButtonClickListener, LocationSource,
         GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener, GoogleMap.InfoWindowAdapter,
-        GoogleMap.OnInfoWindowClickListener {
+        GoogleMap.OnInfoWindowClickListener, FirebaseStorageConnection.FirebaseStorageListener {
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -66,6 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private UiSettings mUiSettings;
     private Marker currentMarker = null;
     private UserCafeMapModel userCafeMapModel;
+    private CafeModel cafeModel;
 
     private OnLocationChangedListener onLocationChangedListener = null;
 
@@ -79,6 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int displayBookmark = 1;
     private InputMethodManager inputMethodManager;
     private LinearLayout mainLayout;
+
+    // thumbnail
+    private ImageView cafeThumbnail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();
         // Initialize
         this.userCafeMapModel = new UserCafeMapModel(getApplicationContext());
+        this.cafeModel = new CafeModel(getApplicationContext(), getResources());
         // Create database
         DBHelper dbHelper = new DBHelper(getApplicationContext());
 
@@ -351,15 +359,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Set view
         View view = getLayoutInflater().inflate(R.layout.info_window, null);
         // set up image
-        ImageView img = (ImageView) view.findViewById(R.id.badge);
+        cafeThumbnail = (ImageView) view.findViewById(R.id.badge);
         // get cafe image
         Bitmap image = null;
         if (marker.getTag().toString().equals("user")) {
             image = userCafeMapModel.getCafeImage(marker.getPosition().latitude, marker.getPosition().longitude);
+            cafeThumbnail.setImageBitmap(image);
         } else { // in owner case
-            image = new CafeModel(getApplicationContext(), getResources()).getCafeImage(true, marker.getPosition().latitude, marker.getPosition().longitude);
+            String imageName = cafeModel.makeImageName(marker.getPosition().latitude, marker.getPosition().longitude);
+            // get image cache from an android's local
+            image = cafeModel.getCafeImageCache(imageName);
+            if (image == null) {
+                // set loading image
+                try {
+                    InputStream inputStream = getAssets().open("noImage.png");
+                    image = BitmapFactory.decodeStream(inputStream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                cafeThumbnail.setImageBitmap(image);
+
+                // read image from firebase storage and save in a local
+                // InfoWindow's gonna be reloaded after a cafe image loaded in FirebaseStorageConnection
+                FirebaseStorageConnection firebaseStorageConnection = new FirebaseStorageConnection(this, getResources());
+                firebaseStorageConnection.getImageFromFirebaseStorage(imageName, marker);
+            } else {
+                cafeThumbnail.setImageBitmap(image);
+            }
         }
-        img.setImageBitmap(image);
 
         // set title
         String title = marker.getTitle();
@@ -466,4 +493,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // update marker's LatLng
         marker.setPosition(marker.getPosition());
     }
+
+    @Override
+    public void updateInfoWindowView(Marker marker) {
+        marker.showInfoWindow();
+    }
+
 }
