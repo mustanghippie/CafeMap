@@ -76,28 +76,17 @@ public class CafeModel {
      * @param lon
      * @return bitmap
      * <p>
-     * Obtains a cafe image by using cafe name in owner case.
-     * Or by using lat and lon in user data case.
+     * Obtains a cafe image from a local in owner case.
+     * Obtains a cafe image from database in user case.
      */
     public Bitmap getCafeImage(boolean ownerFlag, double lat, double lon) {
         Bitmap image = null;
+
         if (ownerFlag) {
-            InputStream inputStream = null;
-            try {
-                inputStream = resources.getAssets().open("CafeImages/" + this.makeImageName(lat, lon) + ".png");
-                image = BitmapFactory.decodeStream(inputStream);
-            } catch (FileNotFoundException e) {
-                // read no image file
-                try {
-                    inputStream = resources.getAssets().open("noImage.png");
-                    image = BitmapFactory.decodeStream(inputStream);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            // get a image from an android's local
+            image = this.getCafeImageCache(this.makeImageName(lat, lon));
         } else {
+            // get a image from database
             image = new UserCafeMapModel(context).getCafeImage(lat, lon);
         }
 
@@ -470,6 +459,13 @@ public class CafeModel {
             cafeImage = BitmapFactory.decodeStream(in);
         } catch (FileNotFoundException e) {
             System.out.println("No image cache");
+            try {
+                InputStream inputStream = resources.getAssets().open("noImage.png");
+                cafeImage = BitmapFactory.decodeStream(inputStream);
+                inputStream.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
 
         return cafeImage;
