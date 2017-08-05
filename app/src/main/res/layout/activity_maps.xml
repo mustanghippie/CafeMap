@@ -1,5 +1,5 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/map"
     android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -7,21 +7,27 @@
     android:layout_height="match_parent"
     tools:context="drgn.cafemap.Controller.Activity.MapsActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/mapsLayout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="#00000000"
-        android:orientation="horizontal">
+        android:background="#00000000">
+
+        <ImageButton
+            android:id="@+id/disable_click_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:src="@drawable/disable_click_background"/>
 
         <ImageButton
             android:id="@+id/search_button"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginRight="5dp"
+            android:layout_marginTop="16dp"
             android:background="@null"
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -31,36 +37,41 @@
             android:id="@+id/search_text"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
             android:layout_marginRight="20dp"
-            android:layout_weight="1"
+            android:layout_marginTop="14dp"
+            android:layout_toRightOf="@+id/search_button"
+            android:cursorVisible="true"
             android:hint="Cafe name"
             android:inputType="text"
-            android:cursorVisible="true"
             android:textSize="14sp" />
 
         <ImageButton
             android:id="@+id/bookmark_button"
+            android:layout_alignParentRight="true"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="70dp"
             android:background="@null"
             android:src="@drawable/icon_bookmark_list" />
 
-        <ImageButton
-            android:id="@+id/gps_button"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="15dp"
-            android:background="@null"
-            android:src="@drawable/icon_gps"
-            android:visibility="invisible"/>
+    </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/adsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    </LinearLayout>
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/ad_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id" />
+
+    </RelativeLayout>
 
 </fragment>

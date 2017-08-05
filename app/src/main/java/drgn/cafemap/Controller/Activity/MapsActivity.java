@@ -24,10 +24,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
@@ -44,6 +45,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean disableClickEvent = false;
     private int displayBookmark = 1;
     private InputMethodManager inputMethodManager;
-    private LinearLayout mainLayout;
+    private RelativeLayout mainLayout;
 
     // thumbnail
     private ImageView cafeThumbnail;
@@ -120,7 +124,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         StrictMode.setThreadPolicy(policy);
 
         // main layout
-        this.mainLayout = (LinearLayout) findViewById(R.id.mapsLayout);
+        this.mainLayout = (RelativeLayout) findViewById(R.id.mapsLayout);
+        // Initialize ads
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713");
+        AdView mAdView = (AdView) findViewById(R.id.ad_view);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        mAdView.loadAd(adRequest);
+
+        // adjust position of the google maps toolbar
+        View toolbar = ((View) mapFragment.getView().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("4"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) toolbar.getLayoutParams();
+        // position on right bottom
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.setMargins(0, 0, 0, 150);
 
     }
 
@@ -150,7 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             // zoom up and zoom down buttons
-            this.mUiSettings.setZoomControlsEnabled(true);
+            this.mUiSettings.setZoomControlsEnabled(false);
             // Sets markers and reads data from cafe_user_tbl and cafe_master_tbl
             this.userCafeMapModel.setCafeMapMarkers(mMap);
             // control keyboard object
@@ -234,6 +253,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         userCafeMapModel.setCafeMapMarkers(mMap);
                     }
                     displayBookmark++;
+                }
+            });
+
+            // disable click event of adding a marker behind top icons
+            ImageButton disableClickImage = (ImageButton) findViewById(R.id.disable_click_background);
+            disableClickImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // do nothing
                 }
             });
 
