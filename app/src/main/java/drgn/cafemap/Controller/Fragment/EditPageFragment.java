@@ -31,7 +31,7 @@ import drgn.cafemap.Util.EditPageHandlers;
 import static android.app.Activity.RESULT_OK;
 
 
-public class EditPageFragment extends Fragment implements EditPageHandlers,View.OnKeyListener {
+public class EditPageFragment extends Fragment implements EditPageHandlers, View.OnKeyListener {
 
     private Context context;
     private FragmentEditPageBinding binding;
@@ -109,15 +109,17 @@ public class EditPageFragment extends Fragment implements EditPageHandlers,View.
             // setting cafe detail
             binding.setCafe(cafe);
             // setting cafe time spinners
-            String[] timeArray = cafe.getCafeTime().split(" - ");
-            String fromTime = timeArray[0].replaceAll("AM", "").replaceAll("PM", ""); // EX) 10:00
-            String toTime = timeArray[1].replaceAll("AM", "").replaceAll("PM", ""); // EX) 19:00
-            cafeModel.setSpinnerData(binding.startHour, fromTime.split(":")[0]);
-            cafeModel.setSpinnerData(binding.startMinute, fromTime.split(":")[1]);
-            cafeModel.setSpinnerData(binding.startAmPm, timeArray[0].substring(timeArray[0].length() - 2, timeArray[0].length()));
-            cafeModel.setSpinnerData(binding.endHour, toTime.split(":")[0]);
-            cafeModel.setSpinnerData(binding.endMinute, toTime.split(":")[1]);
-            cafeModel.setSpinnerData(binding.endAmPm, timeArray[1].substring(timeArray[1].length() - 2, timeArray[1].length()));
+            if (!cafe.getCafeTime().equals("")) {
+                String[] timeArray = cafe.getCafeTime().split(" - ");
+                String fromTime = timeArray[0].replaceAll("AM", "").replaceAll("PM", ""); // EX) 10:00
+                String toTime = timeArray[1].replaceAll("AM", "").replaceAll("PM", ""); // EX) 19:00
+                cafeModel.setSpinnerData(binding.startHour, fromTime.split(":")[0]);
+                cafeModel.setSpinnerData(binding.startMinute, fromTime.split(":")[1]);
+                cafeModel.setSpinnerData(binding.startAmPm, timeArray[0].substring(timeArray[0].length() - 2, timeArray[0].length()));
+                cafeModel.setSpinnerData(binding.endHour, toTime.split(":")[0]);
+                cafeModel.setSpinnerData(binding.endMinute, toTime.split(":")[1]);
+                cafeModel.setSpinnerData(binding.endAmPm, timeArray[1].substring(timeArray[1].length() - 2, timeArray[1].length()));
+            }
             // setting socket spinner
             cafeModel.setSpinnerData(binding.cafeSocket, cafe.getCafeSocket());
             // setting wifi spinner
@@ -161,6 +163,7 @@ public class EditPageFragment extends Fragment implements EditPageHandlers,View.
 
         return false;
     }
+
     /**
      * Opens user's picture folder and uploads a image
      * when a user click the upload button.

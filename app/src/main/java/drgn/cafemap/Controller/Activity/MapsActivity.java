@@ -126,12 +126,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // main layout
         this.mainLayout = (RelativeLayout) findViewById(R.id.mapsLayout);
         // Initialize ads
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713");
-        AdView mAdView = (AdView) findViewById(R.id.ad_view);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-        mAdView.loadAd(adRequest);
+//        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713");
+//        AdView mAdView = (AdView) findViewById(R.id.ad_view);
+//        AdRequest adRequest = new AdRequest.Builder()
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//                .build();
+//        mAdView.loadAd(adRequest);
 
         // adjust position of the google maps toolbar
         View toolbar = ((View) mapFragment.getView().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("4"));
@@ -169,7 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             // zoom up and zoom down buttons
-            this.mUiSettings.setZoomControlsEnabled(false);
+            this.mUiSettings.setZoomControlsEnabled(true);
             // Sets markers and reads data from cafe_user_tbl and cafe_master_tbl
             this.userCafeMapModel.setCafeMapMarkers(mMap);
             // control keyboard object
