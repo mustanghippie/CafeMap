@@ -67,7 +67,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                 // 文字が存在する場合（空白行は処理しない）
                 if (0 < s.length()) {
                     line++;
-                    System.out.println("Line: "+line);
+                    //System.out.println("Line: "+line);
                     // SQL実行
                     db.execSQL(s);
                 }
