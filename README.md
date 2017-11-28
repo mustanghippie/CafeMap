@@ -1,1 +1,2 @@
 # CafeMap
+Vancouver Cafe Map
